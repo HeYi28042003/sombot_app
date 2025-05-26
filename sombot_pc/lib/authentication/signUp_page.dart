@@ -1,6 +1,10 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/auth_controller.dart';
+
 @RoutePage()
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -24,23 +28,33 @@ class _SignUpPageState extends State<SignUpPage> {
 
     setState(() => _isLoading = true);
 
-    try {
-      // TODO: Add FirebaseAuth sign-up logic here
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email.text.trim(),
-        password: _password.text,
-      );
+    final authController = Provider.of<AuthController>(context, listen: false);
+    final error = await authController.signUp(_email.text, _password.text);
 
+    setState(() => _isLoading = false);
+
+    if (error == null) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await _usreInfo(user.uid, user.email ?? _email.text);
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Sign up successful")),
       );
-    } catch (e) {
+      context.router.replaceNamed('/');
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sign up failed: $e")),
+        SnackBar(content: Text("Sign up failed: $error")),
       );
-    } finally {
-      setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _usreInfo(String uid, String email) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'uid': uid,
+      'email': email,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
   @override
@@ -61,7 +75,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
-
                   TextFormField(
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
@@ -70,13 +83,13 @@ class _SignUpPageState extends State<SignUpPage> {
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Email is required';
+                      if (value == null || value.isEmpty)
+                        return 'Email is required';
                       if (!value.contains('@')) return 'Enter a valid email';
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
                   TextFormField(
                     controller: _password,
                     obscureText: !_isPasswordVisible,
@@ -84,9 +97,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       labelText: 'Password',
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
-                        icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
-                          setState(() => _isPasswordVisible = !_isPasswordVisible);
+                          setState(
+                              () => _isPasswordVisible = !_isPasswordVisible);
                         },
                       ),
                     ),
@@ -98,7 +114,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   TextFormField(
                     controller: _confirmPassword,
                     obscureText: !_isConfirmPasswordVisible,
@@ -106,9 +121,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       labelText: 'Confirm Password',
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
-                        icon: Icon(_isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
-                          setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                          setState(() => _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible);
                         },
                       ),
                     ),
@@ -119,9 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       return null;
                     },
                   ),
-
                   const SizedBox(height: 24),
-
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -131,9 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           : const Text('Sign Up'),
                     ),
                   ),
-
                   const SizedBox(height: 12),
-
                   TextButton(
                     onPressed: () {
                       // TODO: Navigate back to LoginPage

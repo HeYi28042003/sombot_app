@@ -1,6 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/auth_controller.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
@@ -20,33 +23,30 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
 
-    try {
-      // TODO: Firebase Auth login logic here
-      // Example:
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _email.text.trim(),
-        password: _password.text,
-      );
+    final authController = Provider.of<AuthController>(context, listen: false);
+    final error = await authController.login(_email.text, _password.text);
 
+    setState(() => _isLoading = false);
+
+    if (error == null) {
+      // Login successful, navigate to home or root
       context.router.replaceNamed('/root');
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login successful")),
+        SnackBar(content: Text('Login successful')),
       );
-    } catch (e) {
+    } else {
+      // Show error
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login failed: $e")),
+        SnackBar(content: Text(error)),
       );
-    } finally {
-      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -58,15 +58,16 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Login',
+                  Text(
+                    loc.locale.languageCode == 'km' ? 'សូមចុះឈ្មោះ' : 'Login',
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _email,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
+                    decoration: InputDecoration(
+                      labelText:
+                          loc.locale.languageCode == 'km' ? 'អ៊ីមែល' : 'Email',
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
@@ -82,7 +83,9 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _password,
                     obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: loc.locale.languageCode == 'km'
+                          ? 'ពាក្យសម្ងាត់'
+                          : 'Password',
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(_isPasswordVisible
@@ -102,12 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                         _login();
-                          context.router.replaceNamed('/root');
-                        });
-                      },
+                      onPressed: _isLoading ? null : _login,
                       child: _isLoading
                           ? const CircularProgressIndicator()
                           : const Text('Login'),
@@ -116,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () {
-                      context.router.pushNamed('/register');
+                      context.router.pushNamed('/signup');
                     },
                     child: const Text("Don't have an account? Register"),
                   )

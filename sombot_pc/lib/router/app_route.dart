@@ -5,7 +5,9 @@ import 'package:sombot_pc/authentication/signUp_page.dart';
 import 'package:sombot_pc/authentication/splash.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/pages/detail_page.dart';
+import 'package:sombot_pc/pages/favorite.dart';
 import 'package:sombot_pc/pages/home_page.dart';
+import 'package:sombot_pc/pages/profile_page.dart';
 
 import '../pages/root.dart';
 
@@ -24,5 +26,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(path: '/login', page: LoginRoute.page),
         AutoRoute(path: '/signup', page: SignUpRoute.page),
         AutoRoute(path: '/splash', page: SplashRoute.page, initial: true),
+        AutoRoute(path: '/profile', page: ProfileRoute.page),
+        AutoRoute(path: '/favorite', page: FavoriteRoute.page),
       ];
 }

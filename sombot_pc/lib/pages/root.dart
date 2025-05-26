@@ -3,7 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sombot_pc/pages/favorite.dart';
 import 'package:sombot_pc/pages/home_page.dart';
+import 'package:sombot_pc/pages/language.dart';
+import 'package:sombot_pc/pages/profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sombot_pc/pages/shopping_card.dart';
 
 @RoutePage()
 class RootPage extends StatefulWidget {
@@ -17,27 +23,92 @@ class _ExampleState extends State<RootPage> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    Text(
-      'Likes',
-      style: optionStyle,
-    ),
+    FavoritePage(),
     Text(
       'Search',
       style: optionStyle,
     ),
-    Text(
-      'Profile',
-      style: optionStyle,
-    ),
+    ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 20,
         title: const Text('Sombot PC'),
+        actions: [
+          // Shopping cart with badge
+          if (user != null)
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('cart')
+                  .where('userId', isEqualTo: user.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                int cartCount = 0;
+                if (snapshot.hasData) {
+                  cartCount = snapshot.data!.docs.length;
+                }
+                return Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.shopping_cart),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShoppingCartPage(),
+                            ));
+                      },
+                      tooltip: 'Shopping Cart',
+                    ),
+                    if (cartCount > 0)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Text(
+                            '$cartCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              onPressed: () {
+                // TODO: Navigate to cart page
+              },
+              tooltip: 'Shopping Cart',
+            ),
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              // TODO: Navigate to notifications page
+            },
+            tooltip: 'Notifications',
+          ),
+        ],
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
