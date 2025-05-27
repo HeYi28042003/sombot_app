@@ -25,7 +25,7 @@ class _ExampleState extends State<RootPage> {
     HomePage(),
     FavoritePage(),
     Text(
-      'Search',
+      'Caht Statistics',
       style: optionStyle,
     ),
     ProfilePage(),
@@ -146,8 +146,8 @@ class _ExampleState extends State<RootPage> {
                   text: 'Likes',
                 ),
                 GButton(
-                  icon: LineIcons.gratipayGittip,
-                  text: 'Statistics',
+                  icon: LineIcons.facebookMessenger,
+                  text: 'chat',
                 ),
                 GButton(
                   icon: Icons.settings,

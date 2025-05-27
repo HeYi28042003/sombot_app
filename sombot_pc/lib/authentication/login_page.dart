@@ -21,6 +21,13 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
@@ -34,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
       // Login successful, navigate to home or root
       context.router.replaceNamed('/root');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login successful')),
+        const SnackBar(content: Text('Login successful')),
       );
     } else {
       // Show error
@@ -59,22 +66,26 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    loc.locale.languageCode == 'km' ? 'សូមចុះឈ្មោះ' : 'Login',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    'Login',
+                    style: const TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _email,
                     decoration: InputDecoration(
-                      labelText:
-                          loc.locale.languageCode == 'km' ? 'អ៊ីមែល' : 'Email',
-                      border: OutlineInputBorder(),
+                      labelText: 'Email',
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Email required';
-                      if (!value.contains('@')) return 'Invalid email';
+                      }
+                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                      if (!emailRegex.hasMatch(value)) {
+                        return 'Invalid email';
+                      }
                       return null;
                     },
                   ),
@@ -83,9 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _password,
                     obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
-                      labelText: loc.locale.languageCode == 'km'
-                          ? 'ពាក្យសម្ងាត់'
-                          : 'Password',
+                      labelText: 'Password',
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(_isPasswordVisible
@@ -98,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     validator: (value) => (value == null || value.length < 6)
-                        ? 'Min 6 characters'
+                        ? ('Min 6 characters')
                         : null,
                   ),
                   const SizedBox(height: 24),
@@ -108,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: _isLoading ? null : _login,
                       child: _isLoading
                           ? const CircularProgressIndicator()
-                          : const Text('Login'),
+                          : Text('Login'),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -116,7 +125,9 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       context.router.pushNamed('/signup');
                     },
-                    child: const Text("Don't have an account? Register"),
+                    child: Text(
+                      "Don't have an account? Register",
+                    ),
                   )
                 ],
               ),
