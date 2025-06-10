@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sombot_pc/pages/chat.dart';
 import 'package:sombot_pc/pages/favorite.dart';
 import 'package:sombot_pc/pages/home_page.dart';
 import 'package:sombot_pc/pages/language.dart';
+import 'package:sombot_pc/pages/list_chat.dart';
 import 'package:sombot_pc/pages/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,10 +26,7 @@ class _ExampleState extends State<RootPage> {
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     FavoritePage(),
-    Text(
-      'Caht Statistics',
-      style: optionStyle,
-    ),
+    ChatScreen(),
     ProfilePage(),
   ];
 

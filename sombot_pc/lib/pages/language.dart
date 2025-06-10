@@ -1,8 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
-
+import 'package:sombot_pc/l10n/app_localizations.dart';
 
 class LanguageSwitcherScreen extends StatelessWidget {
   const LanguageSwitcherScreen({super.key});
@@ -13,7 +12,7 @@ class LanguageSwitcherScreen extends StatelessWidget {
     final currentLocale = provider.locale;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Change Language')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.localeName)),
       body: Column(
         children: L10n.all.map((locale) {
           final isSelected = locale == currentLocale;

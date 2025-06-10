@@ -1,5 +1,15 @@
 {
   "@@locale": "km",
-  "hello": "សួស្តី",
-  "welcome": "សូមស្វាគមន៍មកកាន់កម្មវិធី!"
+  "profile": "ប្រវត្តិរូប",
+  "viewProfile": "មើលប្រវត្តិរូប",
+  "orderHistory": "ប្រវត្តិនៃការបញ្ជាទិញ",
+  "changeLanguage": "ផ្លាស់ប្តូរភាសា",
+  "aboutUs": "អំពីពួកយើង",
+  "inviteFriend": "អញ្ជើញមិត្តរបស់អ្នក",
+  "makePayment": "បង់ប្រាក់",
+  "logout": "ចាកចេញ",
+  "logoutConfirm": "តើអ្នកប្រាកដជាចង់ចាកចេញមែនទេ?",
+  "cancel": "បោះបង់",
+  "addToCart" : "បន្ថែមទៅរទេះ"
 }
+ 

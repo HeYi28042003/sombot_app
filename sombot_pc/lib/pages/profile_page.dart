@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
-import 'package:sombot_pc/pages/language.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 
 @RoutePage()
 class ProfilePage extends StatelessWidget {
@@ -12,13 +16,11 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<LocaleProvider>(context);
-    final autProvider = Provider.of<AuthController>(context);
+    final autProvider = Provider.of<AuthController>(context, listen: false);
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: provider.locale.languageCode == 'kh'
-            ? const Text('ប្រវត្តិរូប')
-            : const Text('Profili'),
+        title: Text(loc.profile),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -29,67 +31,66 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage(
-                    'assets/images/user.png'), // replace with actual asset or NetworkImage
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.pink,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/images/user.png'),
                 ),
-                child: const Icon(Icons.edit, size: 20, color: Colors.white),
-              )
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildMenuItem(
-            Icons.person,
-            provider.locale.languageCode == 'en'
-                ? 'View Profile'
-                : 'មើលប្រវត្តិរូប',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileDetailPage()),
-              );
-            },
-          ),
-          _buildMenuItem(
-              Icons.history,
-              provider.locale.languageCode == 'en'
-                  ? 'Order History'
-                  : 'ប្រវត្តិនៃការបញ្ជាទិញ',
-              onTap: () {}),
-          _buildMenuItem(
-              Icons.language,
-              provider.locale.languageCode == 'en'
-                  ? 'Change Language'
-                  : 'ផ្លាស់ប្តូរភាសា',
-              onTap: () => showLanguageBottomSheet(context)),
-          _buildMenuItem(Icons.info_outline,
-              provider.locale.languageCode == 'en' ? 'About Us' : 'អំពីពួកយើង',
-              onTap: () {}),
-          _buildMenuItem(
-              Icons.group_add,
-              provider.locale.languageCode == 'en'
-                  ? 'Invite your friend'
-                  : 'អញ្ជើញមិត្តរបស់អ្នក',
-              onTap: () {}),
-          _buildMenuItem(
-            Icons.logout,
-            provider.locale.languageCode == 'en' ? 'Logout' : 'ចាកចេញ',
-            onTap: () => _showLogoutDialog(context, autProvider),
-          ),
-        ],
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.pink,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Icon(Icons.edit, size: 20, color: Colors.white),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            _buildMenuItem(
+              Icons.person,
+              loc.viewProfile,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileDetailPage()),
+                );
+              },
+            ),
+            _buildMenuItem(
+                Icons.history,
+                loc.orderHistory,
+                onTap: () {}),
+            _buildMenuItem(
+                Icons.language,
+                loc.changeLanguage,
+                onTap: () => showLanguageBottomSheet(context)),
+            _buildMenuItem(
+                Icons.info_outline,
+                loc.aboutUs,
+                onTap: () {}),
+            _buildMenuItem(
+                Icons.group_add,
+                loc.inviteFriend,
+                onTap: () {}),
+            _buildMenuItem(
+              Icons.payment,
+              loc.makePayment,
+              onTap: () {},
+            ),
+            _buildMenuItem(
+              Icons.logout,
+              loc.logout,
+              onTap: () => _showLogoutDialog(context, autProvider),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -133,21 +134,22 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context, AuthController autProvider) {
+    final loc = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(loc.logout),
+        content: Text(loc.logoutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () {
               autProvider.logout(context);
             },
-            child: const Text('Logout'),
+            child: Text(loc.logout),
           ),
         ],
       ),
@@ -181,4 +183,6 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
+ 
 }

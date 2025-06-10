@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
-import 'package:sombot_pc/l10n/app_localizations.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
@@ -53,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -65,17 +62,17 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Login',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _email,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Email',
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -125,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       context.router.pushNamed('/signup');
                     },
-                    child: Text(
+                    child: const Text(
                       "Don't have an account? Register",
                     ),
                   )

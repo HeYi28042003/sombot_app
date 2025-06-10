@@ -20,14 +20,14 @@ class LocaleProvider extends ChangeNotifier {
 class L10n {
   static final all = [
     const Locale('en'),
-    const Locale('kh'),
+    const Locale('km'),
   ];
 
   static String getLanguageName(Locale locale) {
     switch (locale.languageCode) {
       case 'en':
         return 'English';
-      case 'kh':
+      case 'km':
         return 'ភាសាខ្មែរ';
       default:
         return '';
@@ -38,7 +38,7 @@ class L10n {
     switch (locale.languageCode) {
       case 'en':
         return '🇬🇧';
-      case 'kh':
+      case 'km':
         return '🇰🇭';
       default:
         return '';

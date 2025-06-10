@@ -23,13 +23,30 @@ class _FavoritePageState extends State<FavoritePage> {
     setState(() {});
   }
 
-  Future<void> addToCart(Map<String, dynamic> favorite) async {
+  Future<void> addToCart(Map<String, dynamic> product) async {
+    final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    await FirebaseFirestore.instance.collection('cart').add({
-      'userId': user!.uid,
-      'productId': favorite['productId'],
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    final cartQuery = await FirebaseFirestore.instance
+        .collection('cart')
+        .where('userId', isEqualTo: user.uid)
+        .where('productId', isEqualTo: product['productId'])
+        .limit(1)
+        .get();
+
+    if (cartQuery.docs.isNotEmpty) {
+      // Product already in cart, increment qty
+      final cartDoc = cartQuery.docs.first;
+      final currentQty = (cartDoc['qty'] ?? 1) as int;
+      await cartDoc.reference.update({'qty': currentQty + 1});
+    } else {
+      // Add new product to cart with qty 1
+      await FirebaseFirestore.instance.collection('cart').add({
+        'userId': user.uid,
+        'productId': product['productId'],
+        'qty': 1,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Added to cart')),
     );

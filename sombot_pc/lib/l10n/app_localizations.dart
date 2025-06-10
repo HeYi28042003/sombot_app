@@ -98,17 +98,71 @@ abstract class AppLocalizations {
     Locale('km')
   ];
 
-  /// No description provided for @hello.
+  /// No description provided for @profile.
   ///
   /// In en, this message translates to:
-  /// **'Hello'**
-  String get hello;
+  /// **'Profile'**
+  String get profile;
 
-  /// No description provided for @welcome.
+  /// No description provided for @viewProfile.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to the app!'**
-  String get welcome;
+  /// **'View Profile'**
+  String get viewProfile;
+
+  /// No description provided for @orderHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Order History'**
+  String get orderHistory;
+
+  /// No description provided for @changeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Language'**
+  String get changeLanguage;
+
+  /// No description provided for @aboutUs.
+  ///
+  /// In en, this message translates to:
+  /// **'About Us'**
+  String get aboutUs;
+
+  /// No description provided for @inviteFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite your friend'**
+  String get inviteFriend;
+
+  /// No description provided for @makePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Payment'**
+  String get makePayment;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @addToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get addToCart;
 }
 
 class _AppLocalizationsDelegate

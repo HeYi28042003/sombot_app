@@ -8,7 +8,7 @@ class AuthController extends ChangeNotifier {
 
   bool get isAuthenticated => _isAuthenticated;
   String? get userToken => _userToken;
-  User? get firebaseUser => FirebaseAuth.instance.currentUser;
+  User? get user => FirebaseAuth.instance.currentUser;
 
   Future<String?> login(String email, String password) async {
     try {
@@ -48,5 +48,19 @@ class AuthController extends ChangeNotifier {
     FirebaseAuth.instance.signOut();
     context.router.replaceNamed('/login');
     notifyListeners();
+  }
+  Future<void> checkAuthentication(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _isAuthenticated = true;
+      _userToken = await user.getIdToken();
+      notifyListeners();
+      context.router.replaceNamed('/root');
+    } else {
+      _isAuthenticated = false;
+      _userToken = null;
+      notifyListeners();
+      context.router.replaceNamed('/login');
+    }
   }
 }

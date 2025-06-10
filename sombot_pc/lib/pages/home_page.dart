@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
@@ -142,6 +143,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+     final loc = AppLocalizations.of(context)!;
     final filteredOrders = _searchQuery.isEmpty
         ? _orders
         : _orders.where((product) {
@@ -162,7 +164,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
-            _buildProductGrid(filteredOrders),
+            _buildProductGrid(filteredOrders,loc),
           ],
         ),
       ),
@@ -220,19 +222,24 @@ class _HomePageState extends State<HomePage> {
                         width: 1,
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        e.imageUrl.isNotEmpty
-                            ? Image.memory(
-                                base64Decode(e.imageUrl),
-                                width: 35,
-                                height: 35,
-                                fit: BoxFit.cover,
-                              )
-                            : const SizedBox(width: 35, height: 35),
-                        const SizedBox(width: 10),
-                        Text(e.name, style: normal),
-                      ],
+                    child: Center(
+                      child: Row(
+                        children: [
+                          e.imageUrl.isNotEmpty
+                              ? Image.memory(
+                                  base64Decode(e.imageUrl),
+                                  width: 35,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                )
+                              : const SizedBox(width: 20, height: 35),
+                          const SizedBox(width: 10),
+                          Text(e.name,
+                              style: e.imageUrl.isNotEmpty
+                                  ? normal
+                                  : normal.copyWith(fontSize: 20)),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -241,24 +248,24 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-  Widget _buildProductGrid(List<Map<String, dynamic>> filteredOrders) {
+  Widget _buildProductGrid(List<Map<String, dynamic>> filteredOrders,AppLocalizations loc) {
     if (_searchQuery.isNotEmpty) {
-      return _buildGrid(filteredOrders, emptyText: 'No products found.');
+      return _buildGrid(filteredOrders,loc ,emptyText: 'No products found.');
     } else if (_selectedCategoryId != null) {
       if (_isCategoryProductsLoading) {
         return const Center(child: CircularProgressIndicator());
       } else {
-        return _buildGrid(_categoryProducts,
+        return _buildGrid(_categoryProducts,loc,
             emptyText: 'No products in this category.');
       }
     } else if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     } else {
-      return _buildGrid(filteredOrders, emptyText: 'No products found.');
+      return _buildGrid(filteredOrders,loc, emptyText: 'No products found.');
     }
   }
 
-  Widget _buildGrid(List<Map<String, dynamic>> products,
+  Widget _buildGrid(List<Map<String, dynamic>> products,AppLocalizations loc,
       {required String emptyText}) {
     if (products.isEmpty) {
       return Center(child: Text(emptyText));
@@ -269,9 +276,9 @@ class _HomePageState extends State<HomePage> {
       itemCount: products.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 8 / 12,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+        childAspectRatio: 7 / 12,
       ),
       itemBuilder: (context, index) {
         final product = products[index];
@@ -414,7 +421,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '฿${product['price'] ?? ''}',
+                            '\$${product['price'] ?? ''}',
                             style: normal.copyWith(
                               fontSize: 14,
                               color: Colors.green,
@@ -456,13 +463,13 @@ class _HomePageState extends State<HomePage> {
                                 const SnackBar(content: Text('Added to cart')),
                               );
                             },
-                            icon: const Icon(Icons.shopping_cart, size: 18),
-                            label: const Text('Add to cart',
-                                style: TextStyle(fontSize: 12)),
+                            icon: const Icon(Icons.shopping_cart, size: 14),
+                            label:  Text(loc.addToCart,
+                                style: const TextStyle(fontSize: 10)),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              textStyle: const TextStyle(fontSize: 12),
+                                  horizontal: 6, vertical: 3),
+                              textStyle: const TextStyle(fontSize: 10),
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,
                               minimumSize: const Size(0, 32),
