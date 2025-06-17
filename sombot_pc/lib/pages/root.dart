@@ -58,7 +58,7 @@ class _ExampleState extends State<RootPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ShoppingCartPage(),
+                              builder: (context) => const ShoppingCartPage(),
                             ));
                       },
                       tooltip: 'Shopping Cart',

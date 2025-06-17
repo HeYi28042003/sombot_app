@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sombot_pc/data/models/user_model.dart';
 
 class AuthController extends ChangeNotifier {
   bool _isAuthenticated = false;
@@ -49,6 +51,7 @@ class AuthController extends ChangeNotifier {
     context.router.replaceNamed('/login');
     notifyListeners();
   }
+
   Future<void> checkAuthentication(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -62,5 +65,13 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
       context.router.replaceNamed('/login');
     }
+  }
+  Future<Users?> getUserProfile() async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+    print("User ${user!.uid} Profile: ${doc.data()}");
+    if (doc.exists && doc.data() != null) {
+      return Users.fromJson(doc.data()!);
+    }
+    return null;
   }
 }

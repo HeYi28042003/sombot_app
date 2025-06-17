@@ -5,10 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
+
 
 @RoutePage()
 class ProfilePage extends StatelessWidget {
@@ -17,6 +16,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final autProvider = Provider.of<AuthController>(context, listen: false);
+    final firebaseUser = autProvider.user;
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -42,13 +42,21 @@ class ProfilePage extends StatelessWidget {
                   radius: 50,
                   backgroundImage: AssetImage('assets/images/user.png'),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.pink,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
+                InkWell(
+                  onTap: () {
+                      Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditProfilePage(uid: firebaseUser!.uid)),
+    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.pink,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: const Icon(Icons.edit, size: 20, color: Colors.white),
                   ),
-                  child: const Icon(Icons.edit, size: 20, color: Colors.white),
                 )
               ],
             ),

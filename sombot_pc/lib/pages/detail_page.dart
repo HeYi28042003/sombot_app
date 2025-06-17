@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 
 @RoutePage()
@@ -29,6 +31,7 @@ class _DetailScreenState extends State<DetailScreen> {
     super.initState();
     _checkFavorite();
     _fetchCartQty();
+     Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
   }
 
   Future<void> _checkFavorite() async {
@@ -164,6 +167,8 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     final price = widget.productModel?.price ?? 0.0;
+   final controller = Provider.of<ProductController>(context);
+final isFav = controller.isInFavorites(widget.productModel!);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -192,32 +197,42 @@ class _DetailScreenState extends State<DetailScreen> {
                         color: Colors.yellow[700],
                         fontWeight: FontWeight.bold),
                   ),
-                  // --- Real-time favorite icon ---
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseAuth.instance.currentUser == null ||
-                            widget.productModel == null
-                        ? const Stream.empty()
-                        : FirebaseFirestore.instance
-                            .collection('favorites')
-                            .where('userId',
-                                isEqualTo:
-                                    FirebaseAuth.instance.currentUser!.uid)
-                            .where('productId',
-                                isEqualTo: widget.productModel!.id)
-                            .snapshots(),
-                    builder: (context, snapshot) {
-                      final isFavorite =
-                          snapshot.hasData && snapshot.data!.docs.isNotEmpty;
-                      return IconButton(
-                        onPressed: _toggleFavorite,
-                        icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite ? Colors.red : Colors.grey,
-                          size: 30,
-                        ),
-                      );
+                  IconButton(
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.red : Colors.grey,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      await controller.toggleFavorite(widget.productModel!);
                     },
                   ),
+                  // --- Real-time favorite icon ---
+                  // StreamBuilder<QuerySnapshot>(
+                  //   stream: FirebaseAuth.instance.currentUser == null ||
+                  //           widget.productModel == null
+                  //       ? const Stream.empty()
+                  //       : FirebaseFirestore.instance
+                  //           .collection('favorites')
+                  //           .where('userId',
+                  //               isEqualTo:
+                  //                   FirebaseAuth.instance.currentUser!.uid)
+                  //           .where('productId',
+                  //               isEqualTo: widget.productModel!.id)
+                  //           .snapshots(),
+                  //   builder: (context, snapshot) {
+                  //     final isFavorite =
+                  //         snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+                  //     return IconButton(
+                  //       onPressed: _toggleFavorite,
+                  //       icon: Icon(
+                  //         isFavorite ? Icons.favorite : Icons.favorite_border,
+                  //         color: isFavorite ? Colors.red : Colors.grey,
+                  //         size: 30,
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

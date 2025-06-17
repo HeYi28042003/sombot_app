@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () {
-                      // TODO: Navigate back to LoginPage
+                      context.router.replaceNamed('/login');
                     },
                     child: const Text("Already have an account? Log in"),
                   ),

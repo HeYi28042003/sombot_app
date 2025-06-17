@@ -1,72 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:sombot_pc/controller/auth_controller.dart';
+import 'package:sombot_pc/data/models/user_model.dart';
+import 'package:sombot_pc/utils/text_style.dart';
 
 class ProfileDetailPage extends StatelessWidget {
   const ProfileDetailPage({Key? key}) : super(key: key);
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> _getUserProfile(String uid) {
-    return FirebaseFirestore.instance.collection('users').doc(uid).get();
-  }
+
 
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthController>(context, listen: false);
-    final firebaseUser = authController.user;
-
-    if (firebaseUser == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
-        body: const Center(child: Text('No user logged in.')),
-      );
-    }
-
-    final uid = firebaseUser.uid;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Detail'),
       ),
-      body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        future: _getUserProfile(uid),
+      body: FutureBuilder<Users?>(
+        future: authController.getUserProfile(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
+          if (!snapshot.hasData) {
             return const Center(child: Text('User profile not found.'));
           }
 
-          final data = snapshot.data!.data()!;
-          final email = data['email'] ?? '';
-          final createdAt = data['createdAt']?.toDate(); // if using Timestamp
-          final displayName = firebaseUser.displayName ?? 'No Name';
-
+          final data = snapshot.data;
+        
           return Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 20,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: firebaseUser.photoURL != null
-                      ? NetworkImage(firebaseUser.photoURL!)
-                      : const AssetImage('assets/images/user.png') as ImageProvider,
+               Container(
+                width: double.infinity,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  image: DecorationImage(image: data!.photoURL!.isNotEmpty
+                      ? NetworkImage(data.photoURL ?? '')
+                      : const AssetImage('assets/images/user.png') as ImageProvider,)
                 ),
+                  
+               ),
+                
                 const SizedBox(height: 24),
-                Text(
-                  displayName,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      data.displayName ?? '',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
-                Text(email, style: const TextStyle(fontSize: 16, color: Colors.grey)),
-                if (createdAt != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text('Created: ${createdAt.toLocal()}'),
-                  ),
+                Text(data.email, style: medium),
+                Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+                Text(data.phone ?? '', style:medium),
+                Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+                Text('Created: ${data.createdAt.toLocal().toString().split(' ')[0]}',
+                    style: medium),
+                Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
               ],
             ),
           );

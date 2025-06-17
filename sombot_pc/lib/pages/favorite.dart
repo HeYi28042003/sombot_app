@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sombot_pc/data/models/product_model.dart';
 import 'dart:convert';
+import 'package:sombot_pc/pages/detail_page.dart';
 
 @RoutePage()
 class FavoritePage extends StatefulWidget {
@@ -16,10 +18,7 @@ class _FavoritePageState extends State<FavoritePage> {
   final user = FirebaseAuth.instance.currentUser;
 
   Future<void> removeFavorite(String docId) async {
-    await FirebaseFirestore.instance
-        .collection('favorites')
-        .doc(docId)
-        .delete();
+    await FirebaseFirestore.instance.collection('favorites').doc(docId).delete();
     setState(() {});
   }
 
@@ -34,12 +33,10 @@ class _FavoritePageState extends State<FavoritePage> {
         .get();
 
     if (cartQuery.docs.isNotEmpty) {
-      // Product already in cart, increment qty
       final cartDoc = cartQuery.docs.first;
       final currentQty = (cartDoc['qty'] ?? 1) as int;
       await cartDoc.reference.update({'qty': currentQty + 1});
     } else {
-      // Add new product to cart with qty 1
       await FirebaseFirestore.instance.collection('cart').add({
         'userId': user.uid,
         'productId': product['productId'],
@@ -85,55 +82,62 @@ class _FavoritePageState extends State<FavoritePage> {
                     .doc(productId)
                     .get(),
                 builder: (context, productSnapshot) {
-                  if (productSnapshot.connectionState ==
-                      ConnectionState.waiting) {
+                  if (productSnapshot.connectionState == ConnectionState.waiting) {
                     return const ListTile(title: Text('Loading...'));
                   }
-                  if (!productSnapshot.hasData ||
-                      !productSnapshot.data!.exists) {
+                  if (!productSnapshot.hasData || !productSnapshot.data!.exists) {
                     return const ListTile(title: Text('Product not found'));
                   }
-                  final product =
-                      productSnapshot.data!.data() as Map<String, dynamic>;
-                  return Card(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    child: ListTile(
-                      leading: product['image'] != null
-                          ? Image.memory(
-                              // decode base64 image
-                              base64Decode(product['image']),
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            )
-                          : const SizedBox(width: 60, height: 60),
-                      title: Text(product['productName'] ?? ''),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(product['productDetails'] ?? '',
-                              maxLines: 2, overflow: TextOverflow.ellipsis),
-                          Text('฿${product['price'] ?? ''}',
-                              style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.shopping_cart),
-                            onPressed: () => addToCart(data),
-                            tooltip: 'Add to cart',
+                  final product = productSnapshot.data!.data() as Map<String, dynamic>;
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                            productModel: ProductsModel.fromMap(productId,product),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => removeFavorite(fav.id),
-                            tooltip: 'Remove',
-                          ),
-                        ],
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: ListTile(
+                        leading: product['image'] != null
+                            ? Image.memory(
+                                base64Decode(product['image']),
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              )
+                            : const SizedBox(width: 60, height: 60),
+                        title: Text(product['productName'] ?? ''),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product['productDetails'] ?? '',
+                                maxLines: 2, overflow: TextOverflow.ellipsis),
+                            Text('฿${product['price'] ?? ''}',
+                                style: const TextStyle(
+                                    color: Colors.green, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.shopping_cart),
+                              onPressed: () => addToCart(data),
+                              tooltip: 'Add to cart',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => removeFavorite(fav.id),
+                              tooltip: 'Remove',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
