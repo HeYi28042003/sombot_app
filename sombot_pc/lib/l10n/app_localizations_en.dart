@@ -40,4 +40,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addToCart => 'Add to cart';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get sombotPC => 'Sombot PC';
+
+  @override
+  String get productDetail => 'Item Detail';
+
+  @override
+  String get addMore => 'Add More';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get chanegAddress => 'Change Address';
 }

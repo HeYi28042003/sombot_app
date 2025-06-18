@@ -10,5 +10,12 @@
   "logout": "Logout",
   "logoutConfirm": "Are you sure you want to logout?",
   "cancel": "Cancel",
-  "addToCart" : "Add to cart"
+  "addToCart" : "Add to cart",
+  "all" : "All",
+  "search" : "Search",
+  "sombotPC" : "Sombot PC",
+  "productDetail" : "Item Detail",
+  "addMore" : "Add More",
+  "total" : "Total",
+  "chanegAddress" : "Change Address"
 }

@@ -5,10 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sombot_pc/api/map_api.dart';
 import 'package:sombot_pc/data/models/map_model.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/detail_page.dart';
 import 'package:sombot_pc/pages/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sombot_pc/utils/text_style.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class ShoppingCartPage extends StatefulWidget {
   const ShoppingCartPage({super.key});
@@ -61,7 +65,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final api = MapApi();
-
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: const Text('Shopping Cart')),
       body: Stack(
@@ -289,8 +293,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                     });
 
                                     final existingDocs = await FirebaseFirestore.instance
-                                        .collection('user_addresses')
-                                        .where('userId', isEqualTo: user.uid)
+                                        .collection('users')
+                                        .where('uid', isEqualTo: user.uid)
                                         .limit(1)
                                         .get();
 
@@ -302,7 +306,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                       });
                                     } else {
                                       await FirebaseFirestore.instance
-                                          .collection('user_addresses')
+                                          .collection('users')
                                           .add({
                                         'userId': user.uid,
                                         'address': address.displayName,
@@ -333,7 +337,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text("Change Address"),
+                            :  Text(loc.chanegAddress),
                       ),
                       Container(
                         padding: const EdgeInsets.all(16),
@@ -343,8 +347,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Total:',
-                                    style: TextStyle(
+                                 Text(loc.total,
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold)),
                                 Text(
@@ -360,9 +364,23 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  _showPaymentOptions(context);
+                                   onPressed: () async {
+                                  final cartSnapshot = await FirebaseFirestore.instance
+                                      .collection('cart')
+                                      .where('userId', isEqualTo: user.uid)
+                                      .get();
+                                  final cartItems = await _fetchCartProducts(cartSnapshot.docs);
+                                  final total = cartItems.fold(0.0, (sum, item) =>
+                                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
+
+                                  await _generateInvoice(cartItems, total);
+
+                                  // Optional: Clear cart or navigate to success page
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Invoice generated successfully!')),
+                                  );
                                 },
+
                                 child: const Text('Order'),
                               ),
                             ),
@@ -445,41 +463,89 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     );
   }
 
-  void _showPaymentOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Future<void> _generateInvoice(List<Map<String, dynamic>> cartItems, double total) async {
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.Page(
+      build: (context) => pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text('Invoice', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 20),
+          pw.Text('Date: ${DateTime.now()}'),
+          pw.SizedBox(height: 10),
+          pw.Text('Items:', style: pw.TextStyle(fontSize: 18)),
+          pw.SizedBox(height: 10),
+          ...cartItems.map((item) {
+            final qty = item['qty'] ?? 1;
+            final price = item['price'] ?? 0.0;
+            return pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.SizedBox(width: 200,
+                child: pw.Text(item['productName'] ?? '',maxLines: 2,overflow: pw.TextOverflow.clip),),
+                
+                pw.Text('x$qty'),
+                pw.Text('\$${(qty * price).toStringAsFixed(2)}'),
+              ],
+            );
+          }),
+          pw.Divider(),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Payment Options',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: Image.asset('assets/images/aba.png', width: 30),
-                title: const Text('Pay with ABA'),
-                onTap: () => Navigator.pop(context),
-              ),
-              ListTile(
-                leading: Image.asset('assets/images/ac.png', width: 30),
-                title: const Text('Pay with ACLEDA'),
-                onTap: () => Navigator.pop(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.money),
-                title: const Text('Cash on delivery'),
-                onTap: () => Navigator.pop(context),
-              ),
+              pw.Text('Total:', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              pw.Text('\$${total.toStringAsFixed(2)}',
+                  style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
             ],
           ),
-        );
-      },
-    );
-  }
+        ],
+      ),
+    ),
+  );
+
+  await Printing.layoutPdf(
+    onLayout: (PdfPageFormat format) async => pdf.save(),
+  );
+}
+
+
+  // void _showPaymentOptions(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (context) {
+  //       return Container(
+  //         padding: const EdgeInsets.all(16),
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             const Text('Payment Options',
+  //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+  //             const SizedBox(height: 16),
+  //             ListTile(
+  //               leading: Image.asset('assets/images/aba.png', width: 30),
+  //               title: const Text('Pay with ABA'),
+  //               onTap: () => Navigator.pop(context),
+  //             ),
+  //             ListTile(
+  //               leading: Image.asset('assets/images/ac.png', width: 30),
+  //               title: const Text('Pay with ACLEDA'),
+  //               onTap: () => Navigator.pop(context),
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.money),
+  //               title: const Text('Cash on delivery'),
+  //               onTap: () => Navigator.pop(context),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

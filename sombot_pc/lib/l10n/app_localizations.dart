@@ -163,6 +163,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add to cart'**
   String get addToCart;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @sombotPC.
+  ///
+  /// In en, this message translates to:
+  /// **'Sombot PC'**
+  String get sombotPC;
+
+  /// No description provided for @productDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Detail'**
+  String get productDetail;
+
+  /// No description provided for @addMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More'**
+  String get addMore;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @chanegAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Address'**
+  String get chanegAddress;
 }
 
 class _AppLocalizationsDelegate

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 
 @RoutePage()
 class DetailScreen extends StatefulWidget {
@@ -169,6 +170,7 @@ class _DetailScreenState extends State<DetailScreen> {
     final price = widget.productModel?.price ?? 0.0;
    final controller = Provider.of<ProductController>(context);
 final isFav = controller.isInFavorites(widget.productModel!);
+ final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -400,7 +402,7 @@ final isFav = controller.isInFavorites(widget.productModel!);
                     child: Card(
                       elevation: 0,
                       child: ExpansionTile(
-                        title: const Text('Item Details'),
+                        title:  Text(loc.productDetail),
                         children: [
                           Text(widget.productModel?.productDetails ??
                               'No description')
@@ -419,7 +421,7 @@ final isFav = controller.isInFavorites(widget.productModel!);
                               : _addToCart,
                           icon: const Icon(Icons.shopping_cart),
                           label: Text(cartQty > 0
-                              ? 'Add More (${cartQty} in cart)'
+                              ? '${loc.addMore} (${cartQty} in cart)'
                               : 'Add to Cart'),
                         ),
                       ),

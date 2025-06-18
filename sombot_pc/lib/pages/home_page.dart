@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            _buildSearchField(),
+            _buildSearchField(loc),
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSearchField() {
+  Widget _buildSearchField(AppLocalizations loc) {
     return SizedBox(
       width: double.infinity,
       height: 55,
@@ -173,8 +173,8 @@ class _HomePageState extends State<HomePage> {
             _searchQuery = value.trim().toLowerCase();
           });
         },
-        decoration: const InputDecoration(
-          hintText: 'Search...',
+        decoration:  InputDecoration(
+          hintText: loc.search,
           border: OutlineInputBorder(),
           suffixIcon: Icon(Icons.search),
         ),
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 35,
                                   fit: BoxFit.cover,
                                 )
-                              : const SizedBox(width: 20, height: 35),
+                              : const SizedBox(),
                           const SizedBox(width: 10),
                           Text(e.name,
                               style: e.imageUrl.isNotEmpty

@@ -7,6 +7,7 @@ class Users{
    String? photoURL;
   final DateTime createdAt;
   String? phone;
+  String? address;
 
   Users({
     required this.uid,
@@ -15,6 +16,7 @@ class Users{
      this.photoURL,
     required this.createdAt,
     this.phone,
+    this.address,
   });
 
   factory Users.fromJson(Map<String, dynamic> data) {
@@ -25,6 +27,7 @@ class Users{
       photoURL: data['photoURL'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       phone: data['phone'] ?? '',
+      address: data['address'] ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class Users{
       'photoURL': photoURL,
       'createdAt': Timestamp.fromDate(createdAt),
       'phone': phone,
+      'address': address,
     };
   }
 }

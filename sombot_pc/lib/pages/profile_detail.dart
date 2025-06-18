@@ -65,6 +65,8 @@ class ProfileDetailPage extends StatelessWidget {
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
                 Text(data.phone ?? '', style:medium),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+                Text(data.address ?? '', style:medium),
+                Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
                 Text('Created: ${data.createdAt.toLocal().toString().split(' ')[0]}',
                     style: medium),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),

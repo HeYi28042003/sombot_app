@@ -33,11 +33,32 @@ class AppLocalizationsKm extends AppLocalizations {
   String get logout => 'ចាកចេញ';
 
   @override
-  String get logoutConfirm => 'តើអ្នកប្រាកដជាចង់ចាកចេញមែនទេ?';
+  String get logoutConfirm => 'តើអ្នកប្រាកដថាចង់ចាកចេញមែនទេ?';
 
   @override
   String get cancel => 'បោះបង់';
 
   @override
   String get addToCart => 'បន្ថែមទៅរទេះ';
+
+  @override
+  String get all => 'ទាំងអស់';
+
+  @override
+  String get search => 'ស្វែងរក';
+
+  @override
+  String get sombotPC => 'សំបូត ភីស៊ី';
+
+  @override
+  String get productDetail => 'ព័ត៌មានលម្អិតអំពីផលិតផល';
+
+  @override
+  String get addMore => 'បន្ថែមទៀត';
+
+  @override
+  String get total => 'សរុប';
+
+  @override
+  String get chanegAddress => 'ផ្លាស់ប្តូរអាសយដ្ឋាន';
 }

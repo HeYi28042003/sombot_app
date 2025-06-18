@@ -1,10 +1,11 @@
-import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+import 'package:sombot_pc/pages/about_us.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
 
@@ -82,7 +83,12 @@ class ProfilePage extends StatelessWidget {
             _buildMenuItem(
                 Icons.info_outline,
                 loc.aboutUs,
-                onTap: () {}),
+                onTap: () {
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AboutUs()),
+                );
+                }),
             _buildMenuItem(
                 Icons.group_add,
                 loc.inviteFriend,
