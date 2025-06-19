@@ -63,7 +63,7 @@ class AuthController extends ChangeNotifier {
       _isAuthenticated = false;
       _userToken = null;
       notifyListeners();
-      context.router.replaceNamed('/login');
+      context.router.replaceNamed('/root');
     }
   }
   Future<Users?> getUserProfile() async {

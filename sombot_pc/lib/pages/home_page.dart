@@ -318,7 +318,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () => controller.toggleFavorite(productModel),
+                              onPressed: () {
+                                 final user = FirebaseAuth.instance.currentUser;
+                                 if (user == null) {
+                                  context.router.pushNamed('/login');
+                                  return;
+                                }
+                                controller.toggleFavorite(productModel);
+                              } ,
                               icon: controller.isLoading ? const SizedBox(
                                 width: 30,
                                 height: 30,
@@ -353,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () async {
                                 final user = FirebaseAuth.instance.currentUser;
                                 if (user == null) {
-                                  context.router.push(const LoginRoute());
+                                  context.router.pushNamed('/login');
                                   return;
                                 }
                                 final cartQuery = await FirebaseFirestore.instance
