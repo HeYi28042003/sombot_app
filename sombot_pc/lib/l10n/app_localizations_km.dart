@@ -61,4 +61,13 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get chanegAddress => 'ផ្លាស់ប្តូរអាសយដ្ឋាន';
+
+  @override
+  String get seeAll => 'មើលទាំងអស់';
+
+  @override
+  String get hotNew => 'ព័ត៌មានថ្មីៗអំពីផលិតផល';
+
+  @override
+  String get popular => 'ផលិតផលដែលពេញនិយម';
 }

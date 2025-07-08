@@ -205,6 +205,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change Address'**
   String get chanegAddress;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get seeAll;
+
+  /// No description provided for @hotNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot New Products'**
+  String get hotNew;
+
+  /// No description provided for @popular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Products'**
+  String get popular;
 }
 
 class _AppLocalizationsDelegate

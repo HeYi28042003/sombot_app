@@ -1,7 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sombot_pc/utils/text_style.dart';
 
+@RoutePage()
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -114,13 +117,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       subtitle: isMe
-                          ? null
-                          : const Align(
+                          ? Align(
+                            alignment: Alignment.centerRight,
+                            child: Text("You",style: chatType),)
+                          :  Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'From Admin',
-                          style: TextStyle(
-                              fontSize: 10, color: Colors.black54),
+                          style: chatType
                         ),
                       ),
                     );

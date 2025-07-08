@@ -8,9 +8,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+
+import '../utils/colors.dart';
+import '../utils/text_style.dart';
 
 @RoutePage()
 class DetailScreen extends StatefulWidget {
@@ -22,6 +26,7 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  final PageController _pageController = PageController();
   bool isFavorite = false;
   int cartQty = 0;
   String? cartDocId;
@@ -184,7 +189,37 @@ final isFav = controller.isInFavorites(widget.productModel!);
                 },
               ),
             ),
-            CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
+            Container(
+              width: double.infinity,
+              height: 160,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.productModel?.imagePreview?.length ?? 0,
+                itemBuilder: (context, index) {
+                  var imgs = widget.productModel?.imagePreview?[index];
+                  return ClipRRect(
+
+                    //borderRadius: BorderRadius.circular(10),
+                    child: Image.memory(
+                      base64Decode(imgs.toString()),
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+            SmoothPageIndicator(
+              controller: _pageController,
+              count: widget.productModel?.imagePreview?.length ?? 0,
+              effect: WormEffect(
+                dotHeight: 10,
+                dotWidth: 10,
+                activeDotColor: Colors.black,
+                dotColor: Colors.grey.shade300,
+              ),
+            ),
+           // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(10),

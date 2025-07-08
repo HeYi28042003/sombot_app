@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
-import 'package:sombot_pc/pages/about_us.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
+import 'package:sombot_pc/router/app_route.dart';
 
 
 @RoutePage()
@@ -20,18 +20,18 @@ class ProfilePage extends StatelessWidget {
     final firebaseUser = autProvider.user;
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loc.profile),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pinkAccent, Colors.orangeAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: Text(loc.profile),
+      //   flexibleSpace: Container(
+      //     decoration: const BoxDecoration(
+      //       gradient: LinearGradient(
+      //         colors: [Colors.pinkAccent, Colors.orangeAccent],
+      //         begin: Alignment.topLeft,
+      //         end: Alignment.bottomRight,
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -75,7 +75,7 @@ class ProfilePage extends StatelessWidget {
             _buildMenuItem(
                 Icons.history,
                 loc.orderHistory,
-                onTap: () {}),
+                onTap: ()=> context.router.push(const OrderHistoryRoute())),
             _buildMenuItem(
                 Icons.language,
                 loc.changeLanguage,
@@ -84,10 +84,7 @@ class ProfilePage extends StatelessWidget {
                 Icons.info_outline,
                 loc.aboutUs,
                 onTap: () {
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AboutUs()),
-                );
+                  context.router.push(const AboutUsRoute());
                 }),
             _buildMenuItem(
                 Icons.group_add,

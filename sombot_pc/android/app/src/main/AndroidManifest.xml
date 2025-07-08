@@ -7,6 +7,7 @@
 
 
     <application
+        android:enableOnBackInvokedCallback="true"
         android:label="sombot_pc"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

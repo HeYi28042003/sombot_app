@@ -21,7 +21,7 @@ class ProductsModel {
   final int? ramGB;
   final String? gpu;
   final String? style;
-  final String? createdAt;
+  final Timestamp? createdAt;
 
   ProductsModel({
     this.id,
@@ -91,9 +91,9 @@ class ProductsModel {
       ramGB: map['ramGB'],
       gpu: map['gpu'],
       style: map['style'],
-      createdAt: map['createdAt'] != null
-          ? (map['createdAt'] as Timestamp).toDate().toIso8601String()
-          : DateTime.now().toIso8601String(),
+      createdAt: map['createdAt'] is Timestamp
+          ? map['createdAt']
+          : Timestamp.fromDate(DateTime.now()),
     );
   }
 }

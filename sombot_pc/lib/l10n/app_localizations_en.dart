@@ -61,4 +61,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chanegAddress => 'Change Address';
+
+  @override
+  String get seeAll => 'See All';
+
+  @override
+  String get hotNew => 'Hot New Products';
+
+  @override
+  String get popular => 'Popular Products';
 }

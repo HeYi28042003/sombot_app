@@ -17,5 +17,8 @@
   "productDetail" : "Item Detail",
   "addMore" : "Add More",
   "total" : "Total",
-  "chanegAddress" : "Change Address"
+  "chanegAddress" : "Change Address",
+  "seeAll" : "See All",
+  "hotNew" : "Hot New Products",
+  "popular" : "Popular Products"
 }

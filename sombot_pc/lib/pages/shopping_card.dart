@@ -9,6 +9,8 @@ import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/detail_page.dart';
 import 'package:sombot_pc/pages/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sombot_pc/pages/order.dart';
+import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -22,52 +24,43 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class _ShoppingCartPageState extends State<ShoppingCartPage> {
-  bool _isLoadingAddress = false;
-  PlaceModel? _place;
-  LatLng? _currentLatLng;
-  Marker? _marker;
 
-  Future<void> _loadUserAddress() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final snapshot = await FirebaseFirestore.instance
-        .collection('user_addresses')
-        .where('userId', isEqualTo: user.uid)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isNotEmpty) {
-      final data = snapshot.docs.first.data();
-      setState(() {
-        _place = PlaceModel(
-          displayName: data['address'] ?? '',
-          lat: data['latitude'] ?? 0.0,
-          lon: data['longitude'] ?? 0.0,
-          address: Address(city: 'Detected City'),
-        );
-        _currentLatLng = LatLng(_place!.lat , _place!.lon);
-        _marker = Marker(
-          markerId: const MarkerId('selected_location'),
-          position: _currentLatLng!,
-        );
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    _loadUserAddress();
+   // _loadUserAddress();
   }
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final api = MapApi();
+
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Shopping Cart')),
+      backgroundColor: AppColors.white,
+      appBar: AppBar(title: const Text('Shopping Cart'),actions: [
+        IconButton(
+          icon: const Icon(Icons.download),
+          onPressed: () async {
+            final cartSnapshot = await FirebaseFirestore.instance
+                                      .collection('cart')
+                                      .where('userId', isEqualTo: user!.uid)
+                                      .get();
+                                  final cartItems = await _fetchCartProducts(cartSnapshot.docs);
+                                  final total = cartItems.fold(0.0, (sum, item) =>
+                                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
+
+                                  await _generateInvoice(cartItems, total);
+
+                                  // Optional: Clear cart or navigate to success page
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Invoice generated successfully!')),
+                                  );
+          },
+          
+        ),
+      ],),
       body: Stack(
         children: [
           StreamBuilder<QuerySnapshot>(
@@ -256,89 +249,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       //       onMapCreated: (controller) {},
                       //     ),
                       //   ),
-                      cardAddress(_place),
-                      ElevatedButton(
-                        onPressed: _isLoadingAddress
-                            ? null
-                            : () async {
-                                final location = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ChooseLocationScreen(),
-                                  ),
-                                );
-                                if (location != null) {
-                                  setState(() {
-                                    _isLoadingAddress = true;
-                                  });
-
-                                  final address = await api.reverseGeocode(
-                                    lat: location.latitude,
-                                    lon: location.longitude,
-                                    onLoading: (loading) {
-                                      setState(() {
-                                        _isLoadingAddress = loading;
-                                      });
-                                    },
-                                  );
-
-                                  if (address != null) {
-                                    setState(() {
-                                      _place = address;
-                                      _currentLatLng = LatLng(location.latitude, location.longitude);
-                                      _marker = Marker(
-                                        markerId: const MarkerId('selected_location'),
-                                        position: _currentLatLng!,
-                                      );
-                                    });
-
-                                    final existingDocs = await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .where('uid', isEqualTo: user.uid)
-                                        .limit(1)
-                                        .get();
-
-                                    if (existingDocs.docs.isNotEmpty) {
-                                      await existingDocs.docs.first.reference.update({
-                                        'address': address.displayName,
-                                        'latitude': location.latitude,
-                                        'longitude': location.longitude,
-                                      });
-                                    } else {
-                                      await FirebaseFirestore.instance
-                                          .collection('users')
-                                          .add({
-                                        'userId': user.uid,
-                                        'address': address.displayName,
-                                        'latitude': location.latitude,
-                                        'longitude': location.longitude,
-                                      });
-                                    }
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Address saved successfully!')),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Failed to get address.')),
-                                    );
-                                  }
-
-                                  setState(() {
-                                    _isLoadingAddress = false;
-                                  });
-                                }
-                              },
-                        child: _isLoadingAddress
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            :  Text(loc.chanegAddress),
-                      ),
+                     
                       Container(
                         padding: const EdgeInsets.all(16),
                         color: Colors.white,
@@ -364,23 +275,14 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                   onPressed: () async {
-                                  final cartSnapshot = await FirebaseFirestore.instance
-                                      .collection('cart')
-                                      .where('userId', isEqualTo: user.uid)
-                                      .get();
-                                  final cartItems = await _fetchCartProducts(cartSnapshot.docs);
-                                  final total = cartItems.fold(0.0, (sum, item) =>
-                                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
-
-                                  await _generateInvoice(cartItems, total);
-
-                                  // Optional: Clear cart or navigate to success page
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Invoice generated successfully!')),
+                                  onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => OrderSummaryPage(cartItems: cartItems, total: total),
+                                    ),
                                   );
                                 },
-
                                 child: const Text('Order'),
                               ),
                             ),
@@ -393,11 +295,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
               );
             },
           ),
-          if (_isLoadingAddress)
-            Container(
-              color: Colors.black.withOpacity(0.2),
-              child: const Center(child: CircularProgressIndicator()),
-            ),
+         
         ],
       ),
     );
@@ -432,36 +330,6 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     return cartItems;
   }
 
-  Widget cardAddress(PlaceModel? place) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(place?.displayName ?? 'Your Address',
-                style:
-                    normal),
-            const SizedBox(height: 8),
-            // Text(place?.address?.city ?? 'City not set',
-            //     style: const TextStyle(fontSize: 14, color: Colors.black54)),
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<void> _generateInvoice(List<Map<String, dynamic>> cartItems, double total) async {
   final pdf = pw.Document();
@@ -477,6 +345,17 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
           pw.SizedBox(height: 10),
           pw.Text('Items:', style: pw.TextStyle(fontSize: 18)),
           pw.SizedBox(height: 10),
+
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Product', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(width: 20),
+              pw.Text('Qty', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('Price', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 20),
           ...cartItems.map((item) {
             final qty = item['qty'] ?? 1;
             final price = item['price'] ?? 0.0;
