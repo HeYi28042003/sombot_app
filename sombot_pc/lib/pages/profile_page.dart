@@ -1,37 +1,65 @@
+import 'dart:convert';
+import 'dart:typed_data'; // Import for Uint8List
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
+import 'package:sombot_pc/data/models/user_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
 import 'package:sombot_pc/router/app_route.dart';
 
-
 @RoutePage()
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  Users? user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final autProvider = Provider.of<AuthController>(context, listen: false);
+    final fetchedUser = await autProvider.getUserProfile();
+    setState(() {
+      user = fetchedUser;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final autProvider = Provider.of<AuthController>(context, listen: false);
     final firebaseUser = autProvider.user;
     final loc = AppLocalizations.of(context)!;
+
+    // Determine the image provider based on user data
+    ImageProvider userImageProvider;
+    if (user != null && user!.photoURL != null && user!.photoURL!.isNotEmpty) {
+      try {
+        // Decode the base64 string to Uint8List
+        final Uint8List bytes = base64Decode(user!.photoURL!);
+        userImageProvider = MemoryImage(bytes);
+      } catch (e) {
+        // Fallback to default image if base64 decoding fails
+        userImageProvider = const AssetImage('assets/images/user.png');
+        print('Error decoding base64 image: $e');
+      }
+    } else {
+      userImageProvider = const AssetImage('assets/images/user.png');
+    }
+
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(loc.profile),
-      //   flexibleSpace: Container(
-      //     decoration: const BoxDecoration(
-      //       gradient: LinearGradient(
-      //         colors: [Colors.pinkAccent, Colors.orangeAccent],
-      //         begin: Alignment.topLeft,
-      //         end: Alignment.bottomRight,
-      //       ),
-      //     ),
-      //   ),
-      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -39,16 +67,24 @@ class ProfilePage extends StatelessWidget {
             Stack(
               alignment: Alignment.bottomRight,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/images/user.png'),
+                  backgroundImage: userImageProvider, // Use the determined image provider
                 ),
                 InkWell(
                   onTap: () {
+                    // Ensure firebaseUser is not null before navigating
+                    if (firebaseUser != null) {
                       Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditProfilePage(uid: firebaseUser!.uid)),
-    );
+                        context,
+                        MaterialPageRoute(builder: (context) => EditProfilePage(uid: firebaseUser.uid)),
+                      );
+                    } else {
+                      // Optionally, show a message or handle the case where firebaseUser is null
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Exit User")), // Example of localized message
+                      );
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -72,24 +108,12 @@ class ProfilePage extends StatelessWidget {
                 );
               },
             ),
-            _buildMenuItem(
-                Icons.history,
-                loc.orderHistory,
-                onTap: ()=> context.router.push(const OrderHistoryRoute())),
-            _buildMenuItem(
-                Icons.language,
-                loc.changeLanguage,
-                onTap: () => showLanguageBottomSheet(context)),
-            _buildMenuItem(
-                Icons.info_outline,
-                loc.aboutUs,
-                onTap: () {
-                  context.router.push(const AboutUsRoute());
-                }),
-            _buildMenuItem(
-                Icons.group_add,
-                loc.inviteFriend,
-                onTap: () {}),
+            _buildMenuItem(Icons.history, loc.orderHistory, onTap: () => context.router.push(const OrderHistoryRoute())),
+            _buildMenuItem(Icons.language, loc.changeLanguage, onTap: () => showLanguageBottomSheet(context)),
+            _buildMenuItem(Icons.info_outline, loc.aboutUs, onTap: () {
+              context.router.push(const AboutUsRoute());
+            }),
+            _buildMenuItem(Icons.group_add, loc.inviteFriend, onTap: () {}),
             _buildMenuItem(
               Icons.payment,
               loc.makePayment,
@@ -194,6 +218,4 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
- 
 }

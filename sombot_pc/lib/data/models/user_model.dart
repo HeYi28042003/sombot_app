@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Users{
+class Users {
   final String uid;
   final String email;
-   String? displayName;
-   String? photoURL;
+  String? displayName;
+  String? photoURL;
   final DateTime createdAt;
   String? phone;
   String? address;
@@ -12,8 +12,8 @@ class Users{
   Users({
     required this.uid,
     required this.email,
-     this.displayName,
-     this.photoURL,
+    this.displayName,
+    this.photoURL,
     required this.createdAt,
     this.phone,
     this.address,
@@ -24,7 +24,7 @@ class Users{
       uid: data['uid'] ?? '',
       email: data['email'] ?? '',
       displayName: data['name'] ?? 'No Name',
-      photoURL: data['photoURL'] ?? '',
+      photoURL: data['profileImageBase64'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       phone: data['phone'] ?? '',
       address: data['address'] ?? '',

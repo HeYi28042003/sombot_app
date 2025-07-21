@@ -1,13 +1,11 @@
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sombot_pc/api/notification.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
@@ -58,6 +56,7 @@ class _HomePageState extends State<HomePage> {
     fetchOrders();
     fetchCategories();
     fetchProducts();
+    fetchNews();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
     });
@@ -96,12 +95,29 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  List<String> imgs = [];
+
+  Future<void> fetchNews() async {
+    try {
+      // Fix: collection name should not have `=`, assuming you meant "Hot-News"
+      var response = await FirebaseFirestore.instance.collection("Hot_News").get();
+
+      // Loop through each document and extract the image URL (assumes field is named "image" or similar)
+      for (var doc in response.docs) {
+        String? imageUrl = doc.data()['image']; // Adjust field name if needed
+        if (imageUrl != null) {
+          imgs.add(imageUrl);
+        }
+      }
+    } catch (e) {
+      print('Error fetching news: $e');
+    }
+  }
+
   Future<void> fetchCategories() async {
     try {
       var snapshot = await FirebaseFirestore.instance.collection('categories').get();
-      List<CategoryModel> categories = snapshot.docs
-          .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
-          .toList();
+      List<CategoryModel> categories = snapshot.docs.map((doc) => CategoryModel.fromMap(doc.id, doc.data())).toList();
       categories.insert(0, CategoryModel(id: 'all', name: 'All', imageUrl: ''));
       setState(() {
         _categories = categories;
@@ -121,10 +137,7 @@ class _HomePageState extends State<HomePage> {
       _selectedCategoryId = categoryId;
     });
     try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('Product Master')
-          .where('category', isEqualTo: categoryId)
-          .get();
+      var snapshot = await FirebaseFirestore.instance.collection('Product Master').where('category', isEqualTo: categoryId).get();
       List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
@@ -167,7 +180,6 @@ class _HomePageState extends State<HomePage> {
           }).toList();
 
     return Scaffold(
-     
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -175,16 +187,14 @@ class _HomePageState extends State<HomePage> {
           children: [
             _buildSearchField(loc),
             const SizedBox(height: 10),
-            if (_searchQuery.isEmpty) _buildCategoryList(),
-            const SizedBox(height: 10),
             Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            const CarouselDemo(imageUrls: [
-              'assets/images/pc3.png',
-              'assets/images/pc1.png',
-              'assets/images/pc4.png',
-            ]),
+            CarouselDemo(imageUrls: imgs),
             const SizedBox(height: 20),
+            Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            if (_searchQuery.isEmpty) _buildCategoryList(),
+            const SizedBox(height: 10),
             Text(loc.popular, style: normal.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             _buildHorizontalProductList(displayList, productController, loc),
@@ -193,9 +203,16 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("All Products", style: normal.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
-                TextButton(onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAll(),));
-                }, child:  Text(loc.seeAll),),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SeeAll(),
+                        ));
+                  },
+                  child: Text(loc.seeAll),
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -249,14 +266,13 @@ class _HomePageState extends State<HomePage> {
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ?  AppColors.primary : AppColors.white,
+                      color: isSelected ? AppColors.grey.withOpacity(0.4) : AppColors.white,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isSelected ?  AppColors.primary : AppColors.white),
+                      border: Border.all(color: isSelected ? AppColors.grey.withOpacity(0.4) : AppColors.white),
                     ),
                     child: Row(
                       children: [
-                        if (category.imageUrl.isNotEmpty)
-                          Image.memory(base64Decode(category.imageUrl), width: 30, height: 30),
+                        if (category.imageUrl.isNotEmpty) Image.memory(base64Decode(category.imageUrl), width: 30, height: 30),
                         if (category.imageUrl.isNotEmpty) const SizedBox(width: 8),
                         Text(category.name, style: normal.copyWith(color: isSelected ? Colors.white : AppColors.primary)),
                       ],
@@ -268,7 +284,7 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-Widget _buildHorizontalProductList(List<Map<String, dynamic>> products, ProductController controller, AppLocalizations loc) {
+  Widget _buildHorizontalProductList(List<Map<String, dynamic>> products, ProductController controller, AppLocalizations loc) {
     if (products.isEmpty) {
       return const Center(child: Text("No products available"));
     }
@@ -417,10 +433,16 @@ class CarouselDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
-      items: imageUrls.map((url) => ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset(url, fit: BoxFit.cover, width: double.infinity),
-      )).toList(),
+      items: imageUrls
+          .map(
+            (url) => ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.memory(
+                base64Decode(url),
+              ),
+            ),
+          )
+          .toList(),
       options: CarouselOptions(
         height: 180,
         autoPlay: true,
