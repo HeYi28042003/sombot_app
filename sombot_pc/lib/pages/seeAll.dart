@@ -39,13 +39,15 @@ class _SeeAllState extends State<SeeAll> {
     super.initState();
     fetchOrders();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
+      Provider.of<ProductController>(context, listen: false)
+          .loadFavoritesFromFirestore();
     });
   }
 
   Future<void> fetchOrders() async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').get();
+      var snapshot =
+          await FirebaseFirestore.instance.collection('Product Master').get();
       List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
         return {'id': doc.id, ...doc.data()};
       }).toList();
@@ -74,7 +76,8 @@ class _SeeAllState extends State<SeeAll> {
       List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+          data['createdAt'] =
+              (data['createdAt'] as Timestamp).toDate().toIso8601String();
         }
         return {'id': doc.id, ...data};
       }).toList();
@@ -100,25 +103,37 @@ class _SeeAllState extends State<SeeAll> {
     final displayList = _searchQuery.isEmpty
         ? allList
         : allList.where((product) {
-            final name = (product['productName'] ?? '').toString().toLowerCase();
-            final details = (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) || details.contains(_searchQuery);
+            final name =
+                (product['productName'] ?? '').toString().toLowerCase();
+            final details =
+                (product['productDetails'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) ||
+                details.contains(_searchQuery);
           }).toList();
 
-    final isLoading = _selectedCategoryId == null
-        ? _isLoading
-        : _isCategoryProductsLoading;
+    final isLoading =
+        _selectedCategoryId == null ? _isLoading : _isCategoryProductsLoading;
 
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.transparent,
+        elevation: 0,
+        title: _buildSearchField(loc),
+        toolbarHeight: 65,
+        iconTheme: IconThemeData(
+          color: AppColors.white,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            _buildSearchField(loc),
+            // _buildSearchField(loc),
             const SizedBox(height: 10),
             if (isLoading)
-              const Center(child: CircularProgressIndicator())
+              // const Center(child: CircularProgressIndicator())
+              _loadingGrid(screenWidth)
             else
               _buildGrid(displayList, loc, productController, screenWidth),
           ],
@@ -129,10 +144,14 @@ class _SeeAllState extends State<SeeAll> {
 
   Widget _buildSearchField(AppLocalizations loc) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: SizedBox(
         height: 50,
         child: TextField(
+          cursorColor: AppColors.primary,
+          style: TextStyle(
+            color: AppColors.white,
+          ),
           controller: _searchController,
           onChanged: (value) {
             setState(() {
@@ -141,9 +160,27 @@ class _SeeAllState extends State<SeeAll> {
           },
           decoration: InputDecoration(
             hintText: loc.search,
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
+            hintStyle: TextStyle(
+              color: AppColors.grey,
+            ),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: AppColors.white,
+            ),
+            // border: OutlineInputBorder(
+            //   borderRadius: BorderRadius.circular(8),
+            // ),
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.white,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.primary,
+              ),
             ),
           ),
         ),
@@ -151,9 +188,45 @@ class _SeeAllState extends State<SeeAll> {
     );
   }
 
-  Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc, ProductController controller, double screenWidth) {
+  Widget _loadingGrid(double screenWidth) {
+    double aspectRatio = screenWidth > 400 ? 0.7 : 0.58;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: aspectRatio,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.second2,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
+      ProductController controller, double screenWidth) {
     if (products.isEmpty) {
-      return const Center(child: Text('No products found.'));
+      return const Center(
+        child: Text(
+          'No products found.',
+          style: TextStyle(
+            color: AppColors.white,
+          ),
+        ),
+      );
     }
 
     double aspectRatio = screenWidth > 400 ? 0.7 : 0.58;
@@ -164,8 +237,8 @@ class _SeeAllState extends State<SeeAll> {
       itemCount: products.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
         childAspectRatio: aspectRatio,
       ),
       itemBuilder: (context, index) {
@@ -174,21 +247,22 @@ class _SeeAllState extends State<SeeAll> {
         final isFavorite = controller.isInFavorites(productModel);
 
         return InkWell(
-          onTap: () => context.router.push(DetailRoute(productModel: productModel)),
+          onTap: () =>
+              context.router.push(DetailRoute(productModel: productModel)),
           child: Container(
             decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-              color: AppColors.white,
-              border: Border.all(
-                color: AppColors.grey.withOpacity(0.2),
-                width: 1,
-              ),
+              // boxShadow: [
+              //   BoxShadow(
+              //     color: Colors.black.withOpacity(0.2),
+              //     blurRadius: 10,
+              //     offset: const Offset(0, 5),
+              //   ),
+              // ],
+              color: AppColors.second2,
+              // border: Border.all(
+              //   color: AppColors.grey.withOpacity(0.2),
+              //   width: 1,
+              // ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -222,7 +296,10 @@ class _SeeAllState extends State<SeeAll> {
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: normal.copyWith(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.white,
+                              ),
                             ),
                           ),
                           IconButton(
@@ -241,8 +318,12 @@ class _SeeAllState extends State<SeeAll> {
                                     child: CircularProgressIndicator(),
                                   )
                                 : Icon(
-                                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                                    color: isFavorite ? AppColors.error : AppColors.grey,
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: isFavorite
+                                        ? AppColors.error
+                                        : AppColors.white,
                                     size: 30,
                                   ),
                           ),
@@ -252,7 +333,8 @@ class _SeeAllState extends State<SeeAll> {
                         product['productDetails'],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: normal.copyWith(fontSize: 12, color: AppColors.darkGrey),
+                        style: normal.copyWith(
+                            fontSize: 12, color: AppColors.white),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -283,9 +365,12 @@ class _SeeAllState extends State<SeeAll> {
                               if (cartQuery.docs.isNotEmpty) {
                                 final cartDoc = cartQuery.docs.first;
                                 final currentQty = (cartDoc['qty'] ?? 1) as int;
-                                await cartDoc.reference.update({'qty': currentQty + 1});
+                                await cartDoc.reference
+                                    .update({'qty': currentQty + 1});
                               } else {
-                                await FirebaseFirestore.instance.collection('cart').add({
+                                await FirebaseFirestore.instance
+                                    .collection('cart')
+                                    .add({
                                   'userId': user.uid,
                                   'productId': product['id'],
                                   'qty': 1,
@@ -298,9 +383,11 @@ class _SeeAllState extends State<SeeAll> {
                               );
                             },
                             icon: const Icon(Icons.shopping_cart, size: 14),
-                            label: Text(loc.addToCart, style: const TextStyle(fontSize: 10)),
+                            label: Text(loc.addToCart,
+                                style: const TextStyle(fontSize: 10)),
                             style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 3),
                               textStyle: const TextStyle(fontSize: 10),
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,

@@ -12,6 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sombot_pc/pages/search/search_product.dart';
 import 'package:sombot_pc/pages/shopping_card.dart';
+import 'package:sombot_pc/utils/app_images.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class RootPage extends StatefulWidget {
@@ -27,17 +29,26 @@ class _ExampleState extends State<RootPage> {
     FavoritePage(),
     ChatScreen(),
     ProfilePage(),
-   
   ];
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-     final loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:  Text(loc.sombotPC),
+        // title: Text(
+        //   loc.sombotPC,
+        //   style: TextStyle(color: AppColors.white),
+        // ),
+        title: Image.asset(
+          AppImages.sombotLogo,
+          width: 100,
+        ),
+        toolbarHeight: 65,
+        elevation: 0,
+        backgroundColor: AppColors.transparent,
         actions: [
           // Shopping cart with badge
           if (user != null)
@@ -53,19 +64,20 @@ class _ExampleState extends State<RootPage> {
                 }
                 return InkWell(
                   onTap: () {
-                     Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ShoppingCartPage(),
-                            ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ShoppingCartPage(),
+                        ));
                   },
                   child: Stack(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.shopping_cart),
-                        onPressed: () {
-                         
-                        },
+                        icon: const Icon(
+                          Icons.shopping_cart,
+                          color: AppColors.primary,
+                        ),
+                        onPressed: () {},
                         tooltip: 'Shopping Cart',
                       ),
                       if (cartCount > 0)
@@ -100,14 +112,20 @@ class _ExampleState extends State<RootPage> {
             )
           else
             IconButton(
-              icon: const Icon(Icons.shopping_cart),
+              icon: const Icon(
+                Icons.shopping_cart,
+                color: AppColors.primary,
+              ),
               onPressed: () {
                 // TODO: Navigate to cart page
               },
               tooltip: 'Shopping Cart',
             ),
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(
+              Icons.notifications,
+              color: AppColors.primary,
+            ),
             onPressed: () {
               // TODO: Navigate to notifications page
             },
@@ -120,7 +138,8 @@ class _ExampleState extends State<RootPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          // color: Colors.white,
+          color: AppColors.background,
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
@@ -132,15 +151,18 @@ class _ExampleState extends State<RootPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
             child: GNav(
-              rippleColor: Colors.grey[300]!,
-              hoverColor: Colors.grey[100]!,
+              // rippleColor: Colors.grey[300]!,
+              // hoverColor: Colors.grey[100]!,
               gap: 4,
-              activeColor: Colors.black,
+              // activeColor: Colors.black,
+              activeColor: AppColors.white,
               iconSize: 24,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: Duration(milliseconds: 400),
-              tabBackgroundColor: Colors.pink[100]!,
-              color: Colors.black,
+              // tabBackgroundColor: Colors.pink[100]!,
+              tabBackgroundColor: AppColors.primary,
+              // color: Colors.black,
+              color: AppColors.white,
               tabs: const [
                 GButton(
                   icon: LineIcons.home,
