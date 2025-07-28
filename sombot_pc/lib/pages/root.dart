@@ -10,6 +10,7 @@ import 'package:sombot_pc/pages/home_page.dart';
 import 'package:sombot_pc/pages/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sombot_pc/pages/search/search_product.dart';
 import 'package:sombot_pc/pages/shopping_card.dart';
 
 @RoutePage()
@@ -22,9 +23,11 @@ class _ExampleState extends State<RootPage> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
+    SearchProductPage(),
     FavoritePage(),
     ChatScreen(),
     ProfilePage(),
+   
   ];
 
   @override
@@ -131,7 +134,7 @@ class _ExampleState extends State<RootPage> {
             child: GNav(
               rippleColor: Colors.grey[300]!,
               hoverColor: Colors.grey[100]!,
-              gap: 8,
+              gap: 4,
               activeColor: Colors.black,
               iconSize: 24,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -141,19 +144,23 @@ class _ExampleState extends State<RootPage> {
               tabs: const [
                 GButton(
                   icon: LineIcons.home,
-                  text: 'Home',
+                  // text: 'Home',
+                ),
+                GButton(
+                  icon: LineIcons.search,
+                  // text: 'Search',
                 ),
                 GButton(
                   icon: LineIcons.heart,
-                  text: 'Likes',
+                  // text: 'Likes',
                 ),
                 GButton(
                   icon: LineIcons.facebookMessenger,
-                  text: 'chat',
+                  // text: 'chat',
                 ),
                 GButton(
                   icon: Icons.settings,
-                  text: 'Setting',
+                  // text: 'Setting',
                 ),
               ],
               selectedIndex: _selectedIndex,

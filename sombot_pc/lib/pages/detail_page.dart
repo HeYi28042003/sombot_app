@@ -13,9 +13,6 @@ import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 
-import '../utils/colors.dart';
-import '../utils/text_style.dart';
-
 @RoutePage()
 class DetailScreen extends StatefulWidget {
   DetailScreen({super.key, this.productModel});
@@ -28,16 +25,17 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   final PageController _pageController = PageController();
   bool isFavorite = false;
-  int cartQty = 0;
+  int cartQty = 1;
   String? cartDocId;
   double cartPrice = 0.0;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _checkFavorite();
     _fetchCartQty();
-     Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
+    Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
   }
 
   Future<void> _checkFavorite() async {
@@ -71,7 +69,7 @@ class _DetailScreenState extends State<DetailScreen> {
       });
     } else {
       setState(() {
-        cartQty = 0;
+        cartQty = 1;
         cartDocId = null;
         cartPrice = 0.0;
       });
@@ -173,9 +171,14 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     final price = widget.productModel?.price ?? 0.0;
-   final controller = Provider.of<ProductController>(context);
-final isFav = controller.isInFavorites(widget.productModel!);
- final loc = AppLocalizations.of(context)!;
+    final controller = Provider.of<ProductController>(context);
+    final isFav = controller.isInFavorites(widget.productModel!);
+    final loc = AppLocalizations.of(context)!;
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -219,7 +222,7 @@ final isFav = controller.isInFavorites(widget.productModel!);
                 dotColor: Colors.grey.shade300,
               ),
             ),
-           // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
+            // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(10),
@@ -437,7 +440,7 @@ final isFav = controller.isInFavorites(widget.productModel!);
                     child: Card(
                       elevation: 0,
                       child: ExpansionTile(
-                        title:  Text(loc.productDetail),
+                        title: Text(loc.productDetail),
                         children: [
                           Text(widget.productModel?.productDetails ??
                               'No description')

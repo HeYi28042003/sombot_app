@@ -55,7 +55,7 @@ class _FavoritePageState extends State<FavoritePage> {
       return const Center(child: Text('Please login to view favorites.'));
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
+      // appBar: AppBar(title: const Text('Favorites')),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('favorites')

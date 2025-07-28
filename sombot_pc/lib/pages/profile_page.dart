@@ -113,12 +113,12 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildMenuItem(Icons.info_outline, loc.aboutUs, onTap: () {
               context.router.push(const AboutUsRoute());
             }),
-            _buildMenuItem(Icons.group_add, loc.inviteFriend, onTap: () {}),
-            _buildMenuItem(
-              Icons.payment,
-              loc.makePayment,
-              onTap: () {},
-            ),
+            // _buildMenuItem(Icons.group_add, loc.inviteFriend, onTap: () {}),
+            // _buildMenuItem(
+            //   Icons.payment,
+            //   loc.makePayment,
+            //   onTap: () {},
+            // ),
             _buildMenuItem(
               Icons.logout,
               loc.logout,

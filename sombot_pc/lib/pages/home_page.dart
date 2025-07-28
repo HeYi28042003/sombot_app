@@ -185,13 +185,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchField(loc),
+           //  _buildSearchField(loc),
             const SizedBox(height: 10),
-            Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            CarouselDemo(imageUrls: imgs),
-            const SizedBox(height: 20),
-            Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+           // Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            CarouselDemoWithIndicator(imageUrls: imgs),
+            // Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
@@ -249,16 +247,16 @@ class _HomePageState extends State<HomePage> {
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final category = _categories[index];
-                final isSelected = category.name == _selectedCategoryId || (category.name == 'all' && _selectedCategoryId == null);
+                final isSelected = category.id == _selectedCategoryId || (category.id == 'all' && _selectedCategoryId == null);
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      if (category.name == 'all') {
+                      if (category.id == 'all') {
                         _selectedCategoryId = null;
                         _categoryProducts = [];
                       } else {
-                        _selectedCategoryId = category.name;
-                        fetchCategoryProducts(category.name);
+                        _selectedCategoryId = category.id;
+                        fetchCategoryProducts(category.id);
                       }
                     });
                   },
@@ -426,32 +424,79 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class CarouselDemo extends StatelessWidget {
+
+class CarouselDemoWithIndicator extends StatefulWidget {
   final List<String> imageUrls;
-  const CarouselDemo({super.key, required this.imageUrls});
+  const CarouselDemoWithIndicator({super.key, required this.imageUrls});
+
+  @override
+  State<CarouselDemoWithIndicator> createState() => _CarouselDemoWithIndicatorState();
+}
+
+class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
+  int _current = 0;
+  final CarouselSliderController _controller = CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
-    return CarouselSlider(
-      items: imageUrls
-          .map(
-            (url) => ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.memory(
-                base64Decode(url),
+    if (widget.imageUrls.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        CarouselSlider(
+          items: widget.imageUrls
+              .map(
+                (url) => ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    base64Decode(url),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          carouselController: _controller,
+          options: CarouselOptions(
+            height: 180,
+            autoPlay: true,
+            enlargeCenterPage: true,
+            enableInfiniteScroll: true,
+            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            viewportFraction: 0.8,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _current = index;
+              });
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: widget.imageUrls.asMap().entries.map((entry) {
+            return GestureDetector(
+              onTap: () => _controller.animateToPage(entry.key, duration: const Duration(milliseconds: 300), curve: Curves.linear),
+              child: Container(
+                width: 8.0,
+                height: 8.0,
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black)
+                      .withOpacity(_current == entry.key ? 0.9 : 0.4),
+                ),
               ),
-            ),
-          )
-          .toList(),
-      options: CarouselOptions(
-        height: 180,
-        autoPlay: true,
-        enlargeCenterPage: true,
-        enableInfiniteScroll: true,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        viewportFraction: 0.8,
-      ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

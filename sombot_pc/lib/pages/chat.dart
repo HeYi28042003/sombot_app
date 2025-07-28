@@ -1,8 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sombot_pc/utils/text_style.dart';
+import 'package:image_picker/image_picker.dart';
 
 @RoutePage()
 class ChatScreen extends StatefulWidget {
@@ -22,11 +24,10 @@ class _ChatScreenState extends State<ChatScreen> {
     if (messageText.isEmpty || user == null) return;
 
     final chatDoc = FirebaseFirestore.instance.collection('chats').doc(user.uid);
-
     final messageEntry = {
       'text': messageText,
       'createdAt': Timestamp.now(),
-      'senderId': user.uid, // ✅ Track who sent it
+      'senderId': user.uid,
     };
 
     await FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -45,8 +46,46 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     _messageController.clear();
+    _scrollToBottom();
+  }
 
-    // Scroll to bottom after a short delay
+  Future<void> _sendImageMessage() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+
+    final bytes = await pickedFile.readAsBytes();
+    final base64Image = base64Encode(bytes);
+
+    final chatDoc = FirebaseFirestore.instance.collection('chats').doc(user.uid);
+    final messageEntry = {
+      'image': base64Image,
+      'createdAt': Timestamp.now(),
+      'senderId': user.uid,
+    };
+
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      final snapshot = await transaction.get(chatDoc);
+      if (snapshot.exists) {
+        transaction.update(chatDoc, {
+          'messages': FieldValue.arrayUnion([messageEntry])
+        });
+      } else {
+        transaction.set(chatDoc, {
+          'userId': user.uid,
+          'email': user.email,
+          'messages': [messageEntry],
+        });
+      }
+    });
+
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 300), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -63,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat')),
+     // appBar: AppBar(title: const Text('Chat')),
       body: Column(
         children: [
           Expanded(
@@ -94,7 +133,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     final msg = messages[index];
                     final isMe = msg['senderId'] == user.uid;
-                    final text = msg['text'] ?? '';
+                    final text = msg['text'];
+                    final image = msg['image'];
 
                     return ListTile(
                       title: Align(
@@ -108,23 +148,17 @@ class _ChatScreenState extends State<ChatScreen> {
                             color: isMe ? Colors.blue[100] : Colors.orange[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            text,
-                            style: TextStyle(
-                              color: isMe ? Colors.black : Colors.black87,
-                            ),
-                          ),
+                          child: image != null
+                              ? Image.memory(base64Decode(image), width: 200)
+                              : Text(text ?? ''),
                         ),
                       ),
-                      subtitle: isMe
-                          ? Align(
-                            alignment: Alignment.centerRight,
-                            child: Text("You",style: chatType),)
-                          :  Align(
-                        alignment: Alignment.centerLeft,
+                      subtitle: Align(
+                        alignment:
+                        isMe ? Alignment.centerRight : Alignment.centerLeft,
                         child: Text(
-                          'From Admin',
-                          style: chatType
+                          isMe ? "You" : "From Admin",
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ),
                     );
@@ -138,11 +172,14 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.image),
+                  onPressed: _sendImageMessage,
+                ),
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration:
-                    const InputDecoration(hintText: 'Send a message...'),
+                    decoration: const InputDecoration(hintText: 'Send a message...'),
                   ),
                 ),
                 IconButton(
