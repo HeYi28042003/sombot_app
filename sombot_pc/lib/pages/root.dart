@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_import
+// ignore_for_file: unnecessary_import, unused_local_variable
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,6 +44,12 @@ class _ExampleState extends State<RootPage> {
         //   loc.sombotPC,
         //   style: TextStyle(color: AppColors.white),
         // ),
+        shape: Border(
+          bottom: BorderSide(
+            color: AppColors.primary,
+            width: 0.5,
+          ),
+        ),
         iconTheme: null,
         title: Image.asset(
           AppImages.sombotWeb02,
@@ -141,14 +147,13 @@ class _ExampleState extends State<RootPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          // color: Colors.white,
           color: AppColors.background,
-          // boxShadow: [
-          //   BoxShadow(
-          //     blurRadius: 20,
-          //     color: Colors.black.withOpacity(.1),
-          //   )
-          // ],
+          border: Border(
+            top: BorderSide(
+              width: 0.5,
+              color: AppColors.primary,
+            ),
+          ),
         ),
         child: SafeArea(
           child: Padding(

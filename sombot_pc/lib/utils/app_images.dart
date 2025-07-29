@@ -14,4 +14,7 @@ class AppImages {
       '${basePath}sombot_pc_logo_web_v_1_0_1-01.png';
   static const String sombotWeb02 =
       '${basePath}sombot_pc_logo_web_v_1_0_1-02.png';
+
+  // user icon
+  static const String userIcon = '${basePath}user-profile.png';
 }
