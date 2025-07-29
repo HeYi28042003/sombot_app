@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'dart:convert';
 import 'package:sombot_pc/pages/detail_page.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class FavoritePage extends StatefulWidget {
@@ -18,7 +19,10 @@ class _FavoritePageState extends State<FavoritePage> {
   final user = FirebaseAuth.instance.currentUser;
 
   Future<void> removeFavorite(String docId) async {
-    await FirebaseFirestore.instance.collection('favorites').doc(docId).delete();
+    await FirebaseFirestore.instance
+        .collection('favorites')
+        .doc(docId)
+        .delete();
     setState(() {});
   }
 
@@ -52,10 +56,18 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Center(child: Text('Please login to view favorites.'));
+      return const Center(
+        child: Text(
+          'Please login to view favorites.',
+          style: TextStyle(
+            color: AppColors.white,
+          ),
+        ),
+      );
     }
     return Scaffold(
       // appBar: AppBar(title: const Text('Favorites')),
+      backgroundColor: AppColors.background,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('favorites')
@@ -66,7 +78,14 @@ class _FavoritePageState extends State<FavoritePage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No favorites found.'));
+            return const Center(
+              child: Text(
+                'No favorites found.',
+                style: TextStyle(
+                  color: AppColors.white,
+                ),
+              ),
+            );
           }
           final favorites = snapshot.data!.docs;
           return ListView.builder(
@@ -82,13 +101,30 @@ class _FavoritePageState extends State<FavoritePage> {
                     .doc(productId)
                     .get(),
                 builder: (context, productSnapshot) {
-                  if (productSnapshot.connectionState == ConnectionState.waiting) {
-                    return const ListTile(title: Text('Loading...'));
+                  if (productSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const ListTile(
+                      title: Text(
+                        'Loading...',
+                        style: TextStyle(
+                          color: AppColors.white,
+                        ),
+                      ),
+                    );
                   }
-                  if (!productSnapshot.hasData || !productSnapshot.data!.exists) {
-                    return const ListTile(title: Text('Product not found'));
+                  if (!productSnapshot.hasData ||
+                      !productSnapshot.data!.exists) {
+                    return const ListTile(
+                      title: Text(
+                        'Product not found',
+                        style: TextStyle(
+                          color: AppColors.white,
+                        ),
+                      ),
+                    );
                   }
-                  final product = productSnapshot.data!.data() as Map<String, dynamic>;
+                  final product =
+                      productSnapshot.data!.data() as Map<String, dynamic>;
 
                   return InkWell(
                     onTap: () {
@@ -96,13 +132,16 @@ class _FavoritePageState extends State<FavoritePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailScreen(
-                            productModel: ProductsModel.fromMap(productId,product),
+                            productModel:
+                                ProductsModel.fromMap(productId, product),
                           ),
                         ),
                       );
                     },
                     child: Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      color: AppColors.second2,
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       child: ListTile(
                         leading: product['image'] != null
                             ? Image.memory(
@@ -118,9 +157,13 @@ class _FavoritePageState extends State<FavoritePage> {
                           children: [
                             Text(product['productDetails'] ?? '',
                                 maxLines: 2, overflow: TextOverflow.ellipsis),
-                            Text('฿${product['price'] ?? ''}',
-                                style: const TextStyle(
-                                    color: Colors.green, fontWeight: FontWeight.bold)),
+                            Text(
+                              '฿${product['price'] ?? ''}',
+                              style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         trailing: Row(
@@ -132,7 +175,10 @@ class _FavoritePageState extends State<FavoritePage> {
                               tooltip: 'Add to cart',
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
                               onPressed: () => removeFavorite(fav.id),
                               tooltip: 'Remove',
                             ),

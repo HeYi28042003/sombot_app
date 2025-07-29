@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sombot_pc/authentication/login_page.dart';
+import 'package:sombot_pc/authentication/otp_page.dart';
 import 'package:sombot_pc/authentication/signUp_page.dart';
 import 'package:sombot_pc/authentication/splash.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
@@ -38,6 +39,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(path: '/map', page: ChooseLocationRoute.page),
         AutoRoute(path: '/order', page: OrderProductRoute.page),
         AutoRoute(path: '/order-history', page: OrderHistoryRoute.page),
-
+        AutoRoute(path: '/otp', page: OtpRoute.page),
       ];
 }

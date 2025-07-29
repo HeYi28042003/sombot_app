@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
@@ -43,18 +45,18 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: 180,
+            top: 210,
             left: BorderSide.strokeAlignCenter,
             right: BorderSide.strokeAlignCenter,
             child: Center(
               child: Image.asset(
-                AppImages.sombotLogo,
+                AppImages.sombotWeb02,
                 width: 300,
               ),
             ),
           ),
           Positioned(
-            bottom: 25,
+            bottom: 35,
             left: BorderSide.strokeAlignCenter,
             right: BorderSide.strokeAlignCenter,
             child: Column(

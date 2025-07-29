@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:typed_data'; // Import for Uint8List
 
@@ -11,6 +13,7 @@ import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
 import 'package:sombot_pc/router/app_route.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class ProfilePage extends StatefulWidget {
@@ -60,6 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -69,7 +73,8 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: userImageProvider, // Use the determined image provider
+                  backgroundImage:
+                      userImageProvider, // Use the determined image provider
                 ),
                 InkWell(
                   onTap: () {
@@ -77,12 +82,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (firebaseUser != null) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EditProfilePage(uid: firebaseUser.uid)),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                EditProfilePage(uid: firebaseUser.uid)),
                       );
                     } else {
                       // Optionally, show a message or handle the case where firebaseUser is null
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Exit User")), // Example of localized message
+                        SnackBar(
+                            content: Text(
+                                "Exit User")), // Example of localized message
                       );
                     }
                   },
@@ -92,7 +101,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: const Icon(Icons.edit, size: 20, color: Colors.white),
+                    child:
+                        const Icon(Icons.edit, size: 20, color: Colors.white),
                   ),
                 )
               ],
@@ -108,8 +118,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-            _buildMenuItem(Icons.history, loc.orderHistory, onTap: () => context.router.push(const OrderHistoryRoute())),
-            _buildMenuItem(Icons.language, loc.changeLanguage, onTap: () => showLanguageBottomSheet(context)),
+            _buildMenuItem(Icons.history, loc.orderHistory,
+                onTap: () => context.router.push(const OrderHistoryRoute())),
+            _buildMenuItem(Icons.language, loc.changeLanguage,
+                onTap: () => showLanguageBottomSheet(context)),
             _buildMenuItem(Icons.info_outline, loc.aboutUs, onTap: () {
               context.router.push(const AboutUsRoute());
             }),

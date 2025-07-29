@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';

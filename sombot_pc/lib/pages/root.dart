@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +44,10 @@ class _ExampleState extends State<RootPage> {
         //   loc.sombotPC,
         //   style: TextStyle(color: AppColors.white),
         // ),
+        iconTheme: null,
         title: Image.asset(
-          AppImages.sombotLogo,
-          width: 100,
+          AppImages.sombotWeb02,
+          width: 120,
         ),
         toolbarHeight: 65,
         elevation: 0,
@@ -140,12 +143,12 @@ class _ExampleState extends State<RootPage> {
         decoration: BoxDecoration(
           // color: Colors.white,
           color: AppColors.background,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
-            )
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     blurRadius: 20,
+          //     color: Colors.black.withOpacity(.1),
+          //   )
+          // ],
         ),
         child: SafeArea(
           child: Padding(
