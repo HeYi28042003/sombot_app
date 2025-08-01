@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 
 @RoutePage()
 class OrderHistoryPage extends StatelessWidget {
@@ -18,8 +20,21 @@ class OrderHistoryPage extends StatelessWidget {
       );
     }
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Order History')),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(
+          'Order History',
+          style: TextStyle(
+            color: theme.unselectedWidgetColor,
+          ),
+        ),
+        backgroundColor: theme.colorScheme.surface,
+        iconTheme: IconThemeData(color: theme.unselectedWidgetColor),
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('order_history')
@@ -32,7 +47,14 @@ class OrderHistoryPage extends StatelessWidget {
 
           final docs = snapshot.data?.docs ?? [];
           if (docs.isEmpty) {
-            return const Center(child: Text('No orders yet.'));
+            return Center(
+              child: Text(
+                'No orders yet.',
+                style: TextStyle(
+                  color: theme.unselectedWidgetColor,
+                ),
+              ),
+            );
           }
 
           return ListView.builder(
@@ -42,7 +64,8 @@ class OrderHistoryPage extends StatelessWidget {
               final createdAt = (order['createdAt'] as Timestamp?)?.toDate();
               final total = order['total'] ?? 0.0;
               final payment = order['paymentMethod'] ?? 'Unknown';
-              final items = List<Map<String, dynamic>>.from(order['items'] ?? []);
+              final items =
+                  List<Map<String, dynamic>>.from(order['items'] ?? []);
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -56,7 +79,8 @@ class OrderHistoryPage extends StatelessWidget {
                     return ListTile(
                       title: Text(item['productName'] ?? ''),
                       subtitle: Text('Qty: ${item['qty']}'),
-                      trailing: Text('\$${item['subtotal']?.toStringAsFixed(2) ?? '0.00'}'),
+                      trailing: Text(
+                          '\$${item['subtotal']?.toStringAsFixed(2) ?? '0.00'}'),
                     );
                   }).toList(),
                 ),

@@ -1,10 +1,12 @@
-// ignore_for_file: unnecessary_import, unused_local_variable
+// ignore_for_file: unnecessary_import, unused_local_variable, library_private_types_in_public_api
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/chat.dart';
 import 'package:sombot_pc/pages/favorite.dart';
@@ -19,6 +21,8 @@ import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class RootPage extends StatefulWidget {
+  const RootPage({super.key});
+
   @override
   _ExampleState createState() => _ExampleState();
 }
@@ -37,6 +41,10 @@ class _ExampleState extends State<RootPage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final loc = AppLocalizations.of(context)!;
+
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -46,18 +54,20 @@ class _ExampleState extends State<RootPage> {
         // ),
         shape: Border(
           bottom: BorderSide(
-            color: AppColors.primary,
+            // color: AppColors.primary,
+            color: theme.primaryColor,
             width: 0.5,
           ),
         ),
         iconTheme: null,
         title: Image.asset(
-          AppImages.sombotWeb02,
+          AppImages.sombotWeb01,
           width: 120,
         ),
         toolbarHeight: 65,
         elevation: 0,
-        backgroundColor: AppColors.transparent,
+        // backgroundColor: AppColors.background,
+        backgroundColor: theme.scaffoldBackgroundColor,
         actions: [
           // Shopping cart with badge
           if (user != null)
@@ -82,9 +92,10 @@ class _ExampleState extends State<RootPage> {
                   child: Stack(
                     children: [
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.shopping_cart,
-                          color: AppColors.primary,
+                          // color: AppColors.primary,
+                          color: theme.primaryColor,
                         ),
                         onPressed: () {},
                         tooltip: 'Shopping Cart',
@@ -105,8 +116,8 @@ class _ExampleState extends State<RootPage> {
                             ),
                             child: Text(
                               '$cartCount',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: theme.unselectedWidgetColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -121,9 +132,9 @@ class _ExampleState extends State<RootPage> {
             )
           else
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.shopping_cart,
-                color: AppColors.primary,
+                color: theme.primaryColor,
               ),
               onPressed: () {
                 // TODO: Navigate to cart page
@@ -131,9 +142,9 @@ class _ExampleState extends State<RootPage> {
               tooltip: 'Shopping Cart',
             ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.notifications,
-              color: AppColors.primary,
+              color: theme.primaryColor,
             ),
             onPressed: () {
               // TODO: Navigate to notifications page
@@ -147,11 +158,11 @@ class _ExampleState extends State<RootPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: theme.scaffoldBackgroundColor,
           border: Border(
             top: BorderSide(
               width: 0.5,
-              color: AppColors.primary,
+              color: theme.primaryColor,
             ),
           ),
         ),
@@ -163,14 +174,14 @@ class _ExampleState extends State<RootPage> {
               // hoverColor: Colors.grey[100]!,
               gap: 4,
               // activeColor: Colors.black,
-              activeColor: AppColors.white,
+              // activeColor: AppColors.text,
+              activeColor: theme.unselectedWidgetColor,
               iconSize: 24,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: Duration(milliseconds: 400),
               // tabBackgroundColor: Colors.pink[100]!,
               tabBackgroundColor: AppColors.primary,
-              // color: Colors.black,
-              color: AppColors.white,
+              color: theme.unselectedWidgetColor,
               tabs: const [
                 GButton(
                   icon: LineIcons.home,

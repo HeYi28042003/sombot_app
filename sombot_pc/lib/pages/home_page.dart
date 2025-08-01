@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field, unused_element, avoid_print, use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
@@ -6,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redacted/redacted.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _categoryProducts = [];
   bool _isCategoryProductsLoading = false;
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   @override
@@ -63,12 +66,34 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Future<void> fetchOrders() async {
+  //   try {
+  //     var snapshot = await FirebaseFirestore.instance
+  //         .collection('Product Master')
+  //         .where('type', isEqualTo: 'popular')
+  //         .get();
+  //     List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
+  //       return {'id': doc.id, ...doc.data()};
+  //     }).toList();
+  //     setState(() {
+  //       _orders = orders;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching orders: $e');
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> fetchOrders() async {
     try {
       var snapshot = await FirebaseFirestore.instance
           .collection('Product Master')
           .where('type', isEqualTo: 'popular')
           .get();
+      if (!mounted) return;
       List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
         return {'id': doc.id, ...doc.data()};
       }).toList();
@@ -77,6 +102,7 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       print('Error fetching orders: $e');
       setState(() {
         _isLoading = false;
@@ -122,10 +148,31 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Future<void> fetchCategories() async {
+  //   try {
+  //     var snapshot =
+  //         await FirebaseFirestore.instance.collection('categories').get();
+  //     List<CategoryModel> categories = snapshot.docs
+  //         .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
+  //         .toList();
+  //     categories.insert(0, CategoryModel(id: 'all', name: 'All', imageUrl: ''));
+  //     setState(() {
+  //       _categories = categories;
+  //       _isCategoryLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching categories: $e');
+  //     setState(() {
+  //       _isCategoryLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> fetchCategories() async {
     try {
       var snapshot =
           await FirebaseFirestore.instance.collection('categories').get();
+      if (!mounted) return;
       List<CategoryModel> categories = snapshot.docs
           .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
           .toList();
@@ -135,6 +182,7 @@ class _HomePageState extends State<HomePage> {
         _isCategoryLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       print('Error fetching categories: $e');
       setState(() {
         _isCategoryLoading = false;
@@ -215,26 +263,32 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
-            Text(
-              loc.popular,
-              style: normal.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.white,
+            Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Text(
+                loc.popular,
+                style: ThemeStyles.normal(context).copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             _buildHorizontalProductList(displayList, productController, loc),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("All Products",
-                    style: normal.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                    )),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Text("All Products",
+                      style: ThemeStyles.normal(context).copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text,
+                      )),
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -252,9 +306,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             _buildHorizontalProductList(
                 filteredAllProducts, productController, loc),
+
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -272,7 +328,9 @@ class _HomePageState extends State<HomePage> {
       decoration: InputDecoration(
         hintText: loc.search,
         prefixIcon: const Icon(Icons.search),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
@@ -285,16 +343,34 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: 4,
-              padding: EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: 12),
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.only(left: 12),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.second,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.second),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text("asdfghjasdfgh"),
+                    ],
+                  ),
+                ).redacted(
+                  context: context,
+                  redact: true,
+                  configuration: RedactedConfiguration(
+                    redactedColor: AppColors.second,
                   ),
                 );
               },
@@ -330,13 +406,14 @@ class _HomePageState extends State<HomePage> {
                       color: isSelected
                           // ? AppColors.grey.withOpacity(0.4)
                           ? AppColors.primary
-                          : AppColors.second,
+                          : AppColors.second2,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: isSelected
-                              // ? AppColors.grey.withOpacity(0.4)
-                              ? AppColors.primary
-                              : AppColors.second),
+                        color: isSelected
+                            // ? AppColors.grey.withOpacity(0.4)
+                            ? AppColors.primary
+                            : AppColors.second2,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -345,11 +422,12 @@ class _HomePageState extends State<HomePage> {
                               width: 30, height: 30),
                         if (category.imageUrl.isNotEmpty)
                           const SizedBox(width: 8),
-                        Text(category.name,
-                            style: normal.copyWith(
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.white)),
+                        Text(
+                          category.name,
+                          style: ThemeStyles.normal(context).copyWith(
+                            color: isSelected ? Colors.white : AppColors.text,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -362,14 +440,6 @@ class _HomePageState extends State<HomePage> {
   Widget _buildHorizontalProductList(List<Map<String, dynamic>> products,
       ProductController controller, AppLocalizations loc) {
     if (products.isEmpty) {
-      // return const Center(
-      //   child: Text(
-      //     "No products available",
-      //     style: TextStyle(
-      //       color: AppColors.white,
-      //     ),
-      //   ),
-      // );
       return SizedBox(
         height: 280,
         child: ListView.builder(
@@ -381,19 +451,63 @@ class _HomePageState extends State<HomePage> {
               width: 200,
               margin: const EdgeInsets.only(left: 12),
               decoration: BoxDecoration(
-                color: AppColors.second2,
+                color: AppColors.second,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 140,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("sadfghjdfghn"),
+                        const SizedBox(height: 10),
+                        Text(
+                          "sdfghdfghsadfghjkhgfdsdfghsdfhghjgfdsweruyykjhgfdsf",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("\$10000"),
+                            Container(
+                              height: 32,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ).redacted(
+              context: context,
+              redact: true,
+              configuration: RedactedConfiguration(
+                redactedColor: AppColors.second,
               ),
             );
           },
         ),
       );
     }
+
     return SizedBox(
       height: 280,
       child: ListView.builder(
@@ -413,10 +527,6 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 color: AppColors.second2,
                 borderRadius: BorderRadius.circular(12),
-                // boxShadow: [
-                //   BoxShadow(
-                //       color: Colors.black.withOpacity(0.1), blurRadius: 5),
-                // ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,9 +554,9 @@ class _HomePageState extends State<HomePage> {
                                 product['productName'],
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: normal.copyWith(
+                                style: ThemeStyles.normal(context).copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.white),
+                                    color: AppColors.text),
                               ),
                             ),
                             IconButton(
@@ -454,8 +564,7 @@ class _HomePageState extends State<HomePage> {
                                 isFavorite
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color:
-                                    isFavorite ? Colors.red : AppColors.white,
+                                color: isFavorite ? Colors.red : AppColors.text,
                               ),
                               onPressed: () {
                                 final user = FirebaseAuth.instance.currentUser;
@@ -472,9 +581,9 @@ class _HomePageState extends State<HomePage> {
                           product['productDetails'],
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: normal.copyWith(
+                          style: ThemeStyles.normal(context).copyWith(
                             fontSize: 12,
-                            color: AppColors.white,
+                            color: AppColors.text,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -483,7 +592,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text(
                               '\$${product['price']}',
-                              style: normal.copyWith(
+                              style: ThemeStyles.normal(context).copyWith(
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -572,20 +681,45 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
       // return const SizedBox.shrink();
       return Center(
         child: Container(
-          height: 180,
-          width: MediaQuery.of(context).size.width * 0.85,
-          decoration: BoxDecoration(
-            color: AppColors.second2,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: EdgeInsets.only(bottom: 25),
-          child: Center(
-            child: SizedBox(
-              height: 50,
-              width: 50,
-              child: CircularProgressIndicator(
-                color: AppColors.primary,
+          child: Column(
+            children: [
+              Container(
+                height: 180,
+                width: MediaQuery.of(context).size.width * 0.85,
+                decoration: BoxDecoration(
+                  color: AppColors.second,
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              const SizedBox(height: 7),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 10,
+                    width: 10,
+                    margin: EdgeInsets.symmetric(horizontal: 2),
+                  ),
+                  Container(
+                    height: 10,
+                    width: 10,
+                    margin: EdgeInsets.symmetric(horizontal: 2),
+                  ),
+                  Container(
+                    height: 10,
+                    width: 10,
+                    margin: EdgeInsets.symmetric(horizontal: 2),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 7),
+            ],
+          ).redacted(
+            context: context,
+            redact: true,
+            configuration: RedactedConfiguration(
+              redactedColor: AppColors.second,
             ),
           ),
         ),
@@ -646,7 +780,7 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
                   //     .withOpacity(_current == entry.key ? 0.9 : 0.4),
                   color: _current == entry.key
                       ? AppColors.primary
-                      : AppColors.white,
+                      : AppColors.text,
                 ),
               ),
             );

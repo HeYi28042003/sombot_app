@@ -133,15 +133,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _name,
                   keyboardType: TextInputType.name,
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: AppColors.text),
                   cursorColor: AppColors.primary,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Name",
                     hintStyle: TextStyle(color: AppColors.grey),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
@@ -154,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     suffixIcon: Icon(
                       Icons.person,
-                      color: AppColors.white,
+                      color: AppColors.text,
                     ),
                   ),
                   validator: (value) {
@@ -168,15 +168,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: AppColors.text),
                   cursorColor: AppColors.primary,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Email",
                     hintStyle: TextStyle(color: AppColors.grey),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
@@ -189,7 +189,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     suffixIcon: Icon(
                       Icons.email,
-                      color: AppColors.white,
+                      color: AppColors.text,
                     ),
                   ),
                   validator: (value) {
@@ -207,19 +207,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _password,
                   obscureText: !_isPasswordVisible,
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: AppColors.text),
                   cursorColor: AppColors.primary,
                   decoration: InputDecoration(
                     hintText: "Password",
                     hintStyle: TextStyle(color: AppColors.grey),
-                    enabledBorder: const OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
-                    focusedBorder: const OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
                         color: AppColors.primary,
@@ -231,7 +231,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         _isPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: AppColors.white,
+                        color: AppColors.text,
                       ),
                       onPressed: () {
                         setState(
@@ -251,19 +251,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _confirmPassword,
                   obscureText: !_isConfirmPasswordVisible,
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: AppColors.text),
                   cursorColor: AppColors.primary,
                   decoration: InputDecoration(
                     hintText: "Confirm Password",
                     hintStyle: TextStyle(color: AppColors.grey),
-                    enabledBorder: const OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
-                    focusedBorder: const OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
                         color: AppColors.primary,
@@ -275,7 +275,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         _isConfirmPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: AppColors.white,
+                        color: AppColors.text,
                       ),
                       onPressed: () {
                         setState(

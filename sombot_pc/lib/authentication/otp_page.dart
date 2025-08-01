@@ -117,7 +117,7 @@ class _OtpPageState extends State<OtpPage> {
               Text(
                 "Enter OTP sent to ${widget.email}",
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.text,
                   fontSize: 16,
                 ),
               ),
@@ -138,7 +138,7 @@ class _OtpPageState extends State<OtpPage> {
                     ),
                   ),
                   textStyle: TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.text,
                     fontSize: 20,
                   ),
                 ),

@@ -56,11 +56,11 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Center(
+      return Center(
         child: Text(
           'Please login to view favorites.',
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.text,
           ),
         ),
       );
@@ -78,11 +78,11 @@ class _FavoritePageState extends State<FavoritePage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No favorites found.',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.text,
                 ),
               ),
             );
@@ -103,22 +103,31 @@ class _FavoritePageState extends State<FavoritePage> {
                 builder: (context, productSnapshot) {
                   if (productSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return const ListTile(
-                      title: Text(
-                        'Loading...',
-                        style: TextStyle(
-                          color: AppColors.white,
-                        ),
+                    // return ListTile(
+                    //   title: Text(
+                    //     'Loading...',
+                    //     style: TextStyle(
+                    //       color: AppColors.text,
+                    //     ),
+                    //   ),
+                    // );
+                    return Container(
+                      width: double.infinity,
+                      height: 100,
+                      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.second,
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     );
                   }
                   if (!productSnapshot.hasData ||
                       !productSnapshot.data!.exists) {
-                    return const ListTile(
+                    return ListTile(
                       title: Text(
                         'Product not found',
                         style: TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     );

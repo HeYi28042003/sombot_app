@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, avoid_print
+
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +22,7 @@ class _SearchProductPageState extends State<SearchProductPage>
   late AnimationController _controller;
   List<ProductsModel> _allProduct = [];
   List<ProductsModel> _filteredProduct = [];
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -82,12 +84,12 @@ class _SearchProductPageState extends State<SearchProductPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: TextField(
               controller: _searchController,
               cursorColor: AppColors.primary,
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.text,
               ),
               decoration: InputDecoration(
                 hintText: 'Search Products',
@@ -96,12 +98,12 @@ class _SearchProductPageState extends State<SearchProductPage>
                 ),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: AppColors.white,
+                  color: AppColors.text,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide(
-                    color: AppColors.white,
+                    color: AppColors.text,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -114,7 +116,7 @@ class _SearchProductPageState extends State<SearchProductPage>
                     ? IconButton(
                         icon: Icon(
                           Icons.clear,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                         onPressed: () {
                           _searchController.clear();
@@ -128,60 +130,72 @@ class _SearchProductPageState extends State<SearchProductPage>
           ),
           Expanded(
             child: _filteredProduct.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'No products found',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.text,
                       ),
                     ),
                   )
-                : ListView.builder(
-                    itemCount: _filteredProduct.length,
-                    itemBuilder: (context, index) {
-                      var product = _filteredProduct[index];
-                      return Card(
-                        elevation: 2,
-                        child: ListTile(
-                          leading: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: AppColors.grey,
-                            ),
-                            child: Image.memory(
-                              Base64Codec().decode(product.image ?? ''),
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.broken_image),
-                            ),
-                          ),
-                          title: Text(product.productName ?? 'No Name',
-                              style:
-                                  medium.copyWith(fontWeight: FontWeight.bold)),
-                          subtitle: Text(product.productDetails ?? '',
-                              maxLines: 2, overflow: TextOverflow.ellipsis),
-                          trailing: Text(
-                            '\$${product.price ?? 'N/A'}',
-                            style: medium.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.accentDark,
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailScreen(
-                                  productModel: product,
-                                ),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ListView.builder(
+                      itemCount: _filteredProduct.length,
+                      itemBuilder: (context, index) {
+                        var product = _filteredProduct[index];
+                        return Card(
+                          color: AppColors.second2,
+                          // elevation: 2,
+
+                          child: ListTile(
+                            leading: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.grey,
                               ),
-                            );
-                          },
-                        ),
-                      );
-                    },
+                              child: Image.memory(
+                                Base64Codec().decode(product.image ?? ''),
+                                width: 50,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image),
+                              ),
+                            ),
+                            title: Text(
+                              product.productName ?? 'No Name',
+                              style: ThemeStyles.medium(context).copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.text,
+                              ),
+                            ),
+                            subtitle: Text(
+                              product.productDetails ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: Text(
+                              '\$${product.price ?? 'N/A'}',
+                              style: ThemeStyles.medium(context).copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accentDark,
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailScreen(
+                                    productModel: product,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
           )
         ],

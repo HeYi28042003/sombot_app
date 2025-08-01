@@ -70,20 +70,20 @@ class _LoginPageState extends State<LoginPage> {
                   width: 120,
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Login',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.white,
+                    color: AppColors.text,
                   ),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _email,
                   cursorColor: AppColors.primary,
-                  style: TextStyle(color: AppColors.white),
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: AppColors.text),
+                  decoration: InputDecoration(
                     // labelText: 'Email',
                     hintText: "Email",
                     hintStyle: TextStyle(
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     suffixIcon: Icon(
                       Icons.email,
-                      color: AppColors.white,
+                      color: AppColors.text,
                     ),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -125,7 +125,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _password,
                   obscureText: !_isPasswordVisible,
                   cursorColor: AppColors.primary,
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: AppColors.text),
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     hintText: 'Password',
                     hintStyle: TextStyle(
@@ -134,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       borderSide: BorderSide(
-                        color: AppColors.white,
+                        color: AppColors.text,
                         width: 1.5,
                       ),
                     ),
@@ -150,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                         _isPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: AppColors.white,
+                        color: AppColors.text,
                       ),
                       onPressed: () {
                         setState(

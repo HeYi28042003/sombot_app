@@ -1,13 +1,11 @@
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, must_be_immutable
 
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -189,10 +187,10 @@ class _DetailScreenState extends State<DetailScreen> {
         child: Column(
           children: [
             AppBar(
-              title: const Text(
+              title: Text(
                 'Detail Screen',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.text,
                 ),
               ),
               leading: IconButton(
@@ -200,7 +198,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 onPressed: () {
                   context.router.pop();
                 },
-                color: AppColors.white,
+                color: AppColors.text,
               ),
               backgroundColor: AppColors.transparent,
               elevation: 0,
@@ -233,7 +231,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 // activeDotColor: Colors.black,
                 activeDotColor: AppColors.primary,
                 // dotColor: Colors.grey.shade300,
-                dotColor: AppColors.white,
+                dotColor: AppColors.text,
               ),
             ),
             // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
@@ -255,7 +253,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Colors.red : AppColors.white,
+                      color: isFav ? Colors.red : AppColors.text,
                       size: 30,
                     ),
                     onPressed: () async {
@@ -299,31 +297,31 @@ class _DetailScreenState extends State<DetailScreen> {
                 children: [
                   Text(
                     widget.productModel?.productName ?? 'No name',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.white,
+                      color: AppColors.text,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Quantity Available',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.quantity == 0
                             ? '0'
                             : '${widget.productModel?.quantity}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -334,14 +332,14 @@ class _DetailScreenState extends State<DetailScreen> {
                     height: 20,
                   ),
                   const SizedBox(height: 10),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Screen Size: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
@@ -349,7 +347,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -363,19 +361,19 @@ class _DetailScreenState extends State<DetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Brand: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.category ?? 'No brand',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -389,21 +387,21 @@ class _DetailScreenState extends State<DetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Hard Disk Size: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.storageGB == 0
                             ? 'No storage'
                             : '${widget.productModel?.storageGB} GB',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -417,19 +415,19 @@ class _DetailScreenState extends State<DetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Color: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.color ?? 'No color',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -443,21 +441,21 @@ class _DetailScreenState extends State<DetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'RAM Size: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.ramGB == 0
                             ? 'No RAM'
                             : '${widget.productModel?.ramGB} GB',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -471,21 +469,21 @@ class _DetailScreenState extends State<DetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Status: ',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.quantity == 0
                             ? 'Out of stock'
                             : 'In stock',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
@@ -501,13 +499,13 @@ class _DetailScreenState extends State<DetailScreen> {
                       color: AppColors.second2,
                       elevation: 0,
                       child: ExpansionTile(
-                        iconColor: AppColors.white,
-                        collapsedIconColor: AppColors.white,
+                        iconColor: AppColors.text,
+                        collapsedIconColor: AppColors.text,
                         backgroundColor: AppColors.background,
                         title: Text(
                           loc.productDetail,
                           style: TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.text,
                           ),
                         ),
                         children: [
@@ -515,7 +513,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             widget.productModel?.productDetails ??
                                 'No description',
                             style: TextStyle(
-                              color: AppColors.white,
+                              color: AppColors.text,
                             ),
                           )
                         ],
@@ -531,16 +529,16 @@ class _DetailScreenState extends State<DetailScreen> {
                         onPressed: widget.productModel?.quantity == 0
                             ? null
                             : _addToCart,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.shopping_cart,
-                          color: AppColors.white,
+                          color: AppColors.text,
                         ),
                         label: Text(
                           cartQty > 0
                               ? '${loc.addMore} (${cartQty} in cart)'
                               : 'Add to Cart',
                           style: TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.text,
                           ),
                         ),
                         style: ButtonStyle(
@@ -551,21 +549,21 @@ class _DetailScreenState extends State<DetailScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.remove_circle_outline,
-                              color: AppColors.white,
+                              color: AppColors.text,
                             ),
                             onPressed: _decreaseQty,
                           ),
                           Text('$cartQty',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: AppColors.white,
+                                color: AppColors.text,
                               )),
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.add_circle_outline,
-                              color: AppColors.white,
+                              color: AppColors.text,
                             ),
                             onPressed: _increaseQty,
                           ),
