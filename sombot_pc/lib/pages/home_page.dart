@@ -53,31 +53,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchOrders();
     fetchCategories();
     fetchProducts();
     fetchNews();
+    fetchAllByViewer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
     });
-  }
-
-  Future<void> fetchOrders() async {
-    try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').where('type', isEqualTo: 'popular').get();
-      List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-      setState(() {
-        _orders = orders;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching orders: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   List<Map<String, dynamic>> _allProduct = [];
@@ -156,6 +138,39 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+  String id = '';
+  int viewer = 0;
+  Future<void> viewerCount() async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('Product Master').doc(id).update({
+        'viewer': viewer,
+      });
+      
+    } catch (e) {
+      print('Error fetching viewer count: $e');
+    }
+  }
+  void incrementViewer() {
+    setState(() {
+      viewer++;
+    });
+  }
+
+  List<Map<String,dynamic>> allByViewer = [];
+  Future<void> fetchAllByViewer() async {
+    try {
+      var snapshot = await FirebaseFirestore.instance.collection('Product Master').orderBy('viewer', descending: true).limit(10).get();
+       allByViewer = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['createdAt'] is Timestamp) {
+          data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+        }
+        return {'id': doc.id, ...data};
+      }).toList();
+    } catch (e) {
+      print('Error fetching products by viewer count: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +210,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             Text(loc.popular, style: normal.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            _buildHorizontalProductList(displayList, productController, loc),
+            _buildHorizontalProductList(allByViewer, productController, loc),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -294,9 +309,14 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           final product = products[index];
           final productModel = ProductsModel.fromMap(product['id'], product);
+          id = product['id'];
           final isFavorite = controller.isInFavorites(productModel);
           return GestureDetector(
-            onTap: () => context.router.push(DetailRoute(productModel: productModel)),
+            onTap: () => {
+              incrementViewer(),
+              viewerCount(),
+              context.router.push(DetailRoute(productModel: productModel)),
+            },
             child: Container(
               width: 200,
               margin: const EdgeInsets.symmetric(horizontal: 8),
