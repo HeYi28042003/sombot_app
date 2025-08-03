@@ -58,14 +58,18 @@ class _HomePageState extends State<HomePage> {
     fetchNews();
     fetchAllByViewer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
+      Provider.of<ProductController>(context, listen: false)
+          .loadFavoritesFromFirestore();
     });
   }
 
   List<Map<String, dynamic>> _allProduct = [];
   Future<void> fetchProducts() async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').limit(20).get();
+      var snapshot = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .limit(20)
+          .get();
       List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
         return {'id': doc.id, ...doc.data()};
       }).toList();
@@ -82,7 +86,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchNews() async {
     try {
       // Fix: collection name should not have `=`, assuming you meant "Hot-News"
-      var response = await FirebaseFirestore.instance.collection("Hot_News").get();
+      var response =
+          await FirebaseFirestore.instance.collection("Hot_News").get();
 
       // Loop through each document and extract the image URL (assumes field is named "image" or similar)
       for (var doc in response.docs) {
@@ -98,8 +103,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchCategories() async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('categories').get();
-      List<CategoryModel> categories = snapshot.docs.map((doc) => CategoryModel.fromMap(doc.id, doc.data())).toList();
+      var snapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
+      List<CategoryModel> categories = snapshot.docs
+          .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
+          .toList();
       categories.insert(0, CategoryModel(id: 'all', name: 'All', imageUrl: ''));
       setState(() {
         _categories = categories;
@@ -119,11 +127,15 @@ class _HomePageState extends State<HomePage> {
       _selectedCategoryId = categoryId;
     });
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').where('category', isEqualTo: categoryId).get();
+      var snapshot = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .where('category', isEqualTo: categoryId)
+          .get();
       List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+          data['createdAt'] =
+              (data['createdAt'] as Timestamp).toDate().toIso8601String();
         }
         return {'id': doc.id, ...data};
       }).toList();
@@ -181,41 +193,60 @@ class _HomePageState extends State<HomePage> {
     final displayList = _searchQuery.isEmpty
         ? allList
         : allList.where((product) {
-            final name = (product['productName'] ?? '').toString().toLowerCase();
-            final details = (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) || details.contains(_searchQuery);
+            final name =
+                (product['productName'] ?? '').toString().toLowerCase();
+            final details =
+                (product['productDetails'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) ||
+                details.contains(_searchQuery);
           }).toList();
 
     final filteredAllProducts = _searchQuery.isEmpty
         ? _allProduct
         : _allProduct.where((product) {
-            final name = (product['productName'] ?? '').toString().toLowerCase();
-            final details = (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) || details.contains(_searchQuery);
+            final name =
+                (product['productName'] ?? '').toString().toLowerCase();
+            final details =
+                (product['productDetails'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) ||
+                details.contains(_searchQuery);
           }).toList();
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
+        // padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           //  _buildSearchField(loc),
+            //  _buildSearchField(loc),
             const SizedBox(height: 10),
-           // Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            // Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             CarouselDemoWithIndicator(imageUrls: imgs),
             // Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
-            Text(loc.popular, style: normal.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              loc.popular,
+              style: normal.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.white,
+              ),
+            ),
             const SizedBox(height: 10),
             _buildHorizontalProductList(allByViewer, productController, loc),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("All Products", style: normal.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("All Products",
+                    style: normal.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    )),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -224,12 +255,18 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => const SeeAll(),
                         ));
                   },
-                  child: Text(loc.seeAll),
+                  child: Text(
+                    loc.seeAll,
+                    style: TextStyle(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildHorizontalProductList(filteredAllProducts, productController, loc),
+            _buildHorizontalProductList(
+                filteredAllProducts, productController, loc),
           ],
         ),
       ),
@@ -254,15 +291,37 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCategoryList() {
     return _isCategoryLoading
-        ? const Center(child: CircularProgressIndicator())
+        // ? const Center(child: CircularProgressIndicator())
+        ? SizedBox(
+            height: 60,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              padding: EdgeInsets.only(right: 12),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.second,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.second),
+                  ),
+                );
+              },
+            ),
+          )
         : SizedBox(
             height: 60,
             child: ListView.builder(
+              padding: EdgeInsets.only(right: 12),
               scrollDirection: Axis.horizontal,
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final category = _categories[index];
-                final isSelected = category.id == _selectedCategoryId || (category.id == 'all' && _selectedCategoryId == null);
+                final isSelected = category.id == _selectedCategoryId ||
+                    (category.id == 'all' && _selectedCategoryId == null);
                 return GestureDetector(
                   onTap: () {
                     setState(() {
@@ -276,18 +335,33 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    margin: const EdgeInsets.only(left: 12),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.grey.withOpacity(0.4) : AppColors.white,
+                      color: isSelected
+                          // ? AppColors.grey.withOpacity(0.4)
+                          ? AppColors.primary
+                          : AppColors.second,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isSelected ? AppColors.grey.withOpacity(0.4) : AppColors.white),
+                      border: Border.all(
+                          color: isSelected
+                              // ? AppColors.grey.withOpacity(0.4)
+                              ? AppColors.primary
+                              : AppColors.second),
                     ),
                     child: Row(
                       children: [
-                        if (category.imageUrl.isNotEmpty) Image.memory(base64Decode(category.imageUrl), width: 30, height: 30),
-                        if (category.imageUrl.isNotEmpty) const SizedBox(width: 8),
-                        Text(category.name, style: normal.copyWith(color: isSelected ? Colors.white : AppColors.primary)),
+                        if (category.imageUrl.isNotEmpty)
+                          Image.memory(base64Decode(category.imageUrl),
+                              width: 30, height: 30),
+                        if (category.imageUrl.isNotEmpty)
+                          const SizedBox(width: 8),
+                        Text(category.name,
+                            style: normal.copyWith(
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.white)),
                       ],
                     ),
                   ),
@@ -297,13 +371,45 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-  Widget _buildHorizontalProductList(List<Map<String, dynamic>> products, ProductController controller, AppLocalizations loc) {
+  Widget _buildHorizontalProductList(List<Map<String, dynamic>> products,
+      ProductController controller, AppLocalizations loc) {
     if (products.isEmpty) {
-      return const Center(child: Text("No products available"));
+      // return const Center(
+      //   child: Text(
+      //     "No products available",
+      //     style: TextStyle(
+      //       color: AppColors.white,
+      //     ),
+      //   ),
+      // );
+      return SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: EdgeInsets.only(right: 12),
+          scrollDirection: Axis.horizontal,
+          itemCount: 2,
+          itemBuilder: (context, index) {
+            return Container(
+              width: 200,
+              margin: const EdgeInsets.only(left: 12),
+              decoration: BoxDecoration(
+                color: AppColors.second2,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primary,
+                ),
+              ),
+            );
+          },
+        ),
+      );
     }
     return SizedBox(
-      height: 310,
+      height: 280,
       child: ListView.builder(
+        padding: EdgeInsets.only(right: 12),
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
         itemBuilder: (context, index) {
@@ -312,26 +418,24 @@ class _HomePageState extends State<HomePage> {
           id = product['id'];
           final isFavorite = controller.isInFavorites(productModel);
           return GestureDetector(
-            onTap: () => {
-              incrementViewer(),
-              viewerCount(),
-              context.router.push(DetailRoute(productModel: productModel)),
-            },
+            onTap: () => context.router.push(DetailRoute(productModel: productModel)),
             child: Container(
               width: 200,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
+              margin: const EdgeInsets.only(left: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.second2,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5),
-                ],
+                // boxShadow: [
+                //   BoxShadow(
+                //       color: Colors.black.withOpacity(0.1), blurRadius: 5),
+                // ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.memory(
                       base64Decode(product['image']),
                       height: 140,
@@ -352,13 +456,18 @@ class _HomePageState extends State<HomePage> {
                                 product['productName'],
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: normal.copyWith(fontWeight: FontWeight.bold),
+                                style: normal.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.white),
                               ),
                             ),
                             IconButton(
                               icon: Icon(
-                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                color: isFavorite ? Colors.red : Colors.grey,
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color:
+                                    isFavorite ? Colors.red : AppColors.white,
                               ),
                               onPressed: () {
                                 final user = FirebaseAuth.instance.currentUser;
@@ -375,7 +484,10 @@ class _HomePageState extends State<HomePage> {
                           product['productDetails'],
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: normal.copyWith(fontSize: 12),
+                          style: normal.copyWith(
+                            fontSize: 12,
+                            color: AppColors.white,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Row(
@@ -395,19 +507,25 @@ class _HomePageState extends State<HomePage> {
                                   context.router.pushNamed('/login');
                                   return;
                                 }
-                                final cartQuery = await FirebaseFirestore.instance
+                                final cartQuery = await FirebaseFirestore
+                                    .instance
                                     .collection('cart')
                                     .where('userId', isEqualTo: user.uid)
-                                    .where('productId', isEqualTo: product['id'])
+                                    .where('productId',
+                                        isEqualTo: product['id'])
                                     .limit(1)
                                     .get();
 
                                 if (cartQuery.docs.isNotEmpty) {
                                   final cartDoc = cartQuery.docs.first;
-                                  final currentQty = (cartDoc['qty'] ?? 1) as int;
-                                  await cartDoc.reference.update({'qty': currentQty + 1});
+                                  final currentQty =
+                                      (cartDoc['qty'] ?? 1) as int;
+                                  await cartDoc.reference
+                                      .update({'qty': currentQty + 1});
                                 } else {
-                                  await FirebaseFirestore.instance.collection('cart').add({
+                                  await FirebaseFirestore.instance
+                                      .collection('cart')
+                                      .add({
                                     'userId': user.uid,
                                     'productId': product['id'],
                                     'qty': 1,
@@ -416,15 +534,18 @@ class _HomePageState extends State<HomePage> {
                                 }
 
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Added to cart')),
+                                  const SnackBar(
+                                      content: Text('Added to cart')),
                                 );
                               },
                               icon: const Icon(Icons.shopping_cart, size: 14),
-                              label: Text(loc.addToCart, style: const TextStyle(fontSize: 10)),
+                              label: Text(loc.addToCart,
+                                  style: const TextStyle(fontSize: 10)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 minimumSize: const Size(0, 32),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -444,13 +565,13 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
 class CarouselDemoWithIndicator extends StatefulWidget {
   final List<String> imageUrls;
   const CarouselDemoWithIndicator({super.key, required this.imageUrls});
 
   @override
-  State<CarouselDemoWithIndicator> createState() => _CarouselDemoWithIndicatorState();
+  State<CarouselDemoWithIndicator> createState() =>
+      _CarouselDemoWithIndicatorState();
 }
 
 class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
@@ -460,7 +581,27 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
   @override
   Widget build(BuildContext context) {
     if (widget.imageUrls.isEmpty) {
-      return const SizedBox.shrink();
+      // return const SizedBox.shrink();
+      return Center(
+        child: Container(
+          height: 180,
+          width: MediaQuery.of(context).size.width * 0.85,
+          decoration: BoxDecoration(
+            color: AppColors.second2,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: EdgeInsets.only(bottom: 25),
+          child: Center(
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ),
+      );
     }
     return Column(
       children: [
@@ -474,7 +615,8 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                      child: const Icon(Icons.broken_image,
+                          size: 40, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -500,17 +642,23 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: widget.imageUrls.asMap().entries.map((entry) {
             return GestureDetector(
-              onTap: () => _controller.animateToPage(entry.key, duration: const Duration(milliseconds: 300), curve: Curves.linear),
+              onTap: () => _controller.animateToPage(entry.key,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.linear),
               child: Container(
                 width: 8.0,
                 height: 8.0,
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black)
-                      .withOpacity(_current == entry.key ? 0.9 : 0.4),
+                  // color: (Theme.of(context).brightness == Brightness.dark
+                  //         ? Colors.white
+                  //         : Colors.black)
+                  //     .withOpacity(_current == entry.key ? 0.9 : 0.4),
+                  color: _current == entry.key
+                      ? AppColors.primary
+                      : AppColors.white,
                 ),
               ),
             );

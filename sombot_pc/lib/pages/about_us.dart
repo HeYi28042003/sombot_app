@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class AboutUsPage extends StatelessWidget {
@@ -8,17 +9,19 @@ class AboutUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('About Us'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pinkAccent, Colors.orangeAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        // flexibleSpace: Container(
+        //   decoration: const BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [Colors.pinkAccent, Colors.orangeAccent],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight,
+        //     ),
+        //   ),
+        // ),
+        backgroundColor: AppColors.second2,
       ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
@@ -27,7 +30,11 @@ class AboutUsPage extends StatelessWidget {
           children: [
             Text(
               'Sombot PC',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
             SizedBox(height: 10),
             Text(
@@ -37,7 +44,11 @@ class AboutUsPage extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               'Features:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
             SizedBox(height: 10),
             Text('- Intelligent conversation handling'),

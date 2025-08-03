@@ -4,7 +4,7 @@
 // AutoRouterGenerator
 // **************************************************************************
 
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_element_parameter
 // coverage:ignore-file
 
 part of 'app_route.dart';
@@ -96,6 +96,16 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const SplashScreen(),
+      );
+    },
+    OtpRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const OtpPage(
+          email: '',
+          password: '',
+          name: '',
+        ),
       );
     },
   };
@@ -304,4 +314,39 @@ class SplashRoute extends PageRouteInfo<void> {
   static const String name = 'SplashRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [OtpPage]
+class OtpRoute extends PageRouteInfo<OtpRouteArgs> {
+  OtpRoute({
+    required String email,
+    required String password,
+    required String name,
+    List<PageRouteInfo>? children,
+  }) : super(
+          OtpRoute.name,
+          args: OtpRouteArgs(
+            email: email,
+            password: password,
+            name: name,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'OtpRoute';
+
+  static const PageInfo<OtpRouteArgs> page = PageInfo<OtpRouteArgs>(name);
+}
+
+class OtpRouteArgs {
+  final String email;
+  final String password;
+  final String name;
+
+  const OtpRouteArgs({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
 }

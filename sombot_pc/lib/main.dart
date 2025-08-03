@@ -1,3 +1,5 @@
+// ignore_for_file: duplicate_import
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,7 +13,9 @@ import 'package:sombot_pc/router/app_route.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
     MultiProvider(providers: [
@@ -36,7 +40,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
     return MaterialApp.router(
-      title: 'L10n Demo',
+      title: 'SOMBOT PC Super App',
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -47,6 +51,8 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: provider.locale,
       routerConfig: _appRouter.config(),
+      // themeMode: ThemeMode.dark,
+      theme: ThemeData(brightness: Brightness.dark),
     );
   }
 }

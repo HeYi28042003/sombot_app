@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
@@ -12,6 +14,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class DetailScreen extends StatefulWidget {
@@ -35,7 +38,8 @@ class _DetailScreenState extends State<DetailScreen> {
     super.initState();
     _checkFavorite();
     _fetchCartQty();
-    Provider.of<ProductController>(context, listen: false).loadFavoritesFromFirestore();
+    Provider.of<ProductController>(context, listen: false)
+        .loadFavoritesFromFirestore();
   }
 
   Future<void> _checkFavorite() async {
@@ -180,28 +184,36 @@ class _DetailScreenState extends State<DetailScreen> {
       );
     }
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
             AppBar(
-              title: const Text('Detail Screen'),
+              title: const Text(
+                'Detail Screen',
+                style: TextStyle(
+                  color: AppColors.white,
+                ),
+              ),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   context.router.pop();
                 },
+                color: AppColors.white,
               ),
+              backgroundColor: AppColors.transparent,
+              elevation: 0,
             ),
             Container(
               width: double.infinity,
-              height: 160,
+              height: 250,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: widget.productModel?.imagePreview?.length ?? 0,
                 itemBuilder: (context, index) {
                   var imgs = widget.productModel?.imagePreview?[index];
                   return ClipRRect(
-
                     //borderRadius: BorderRadius.circular(10),
                     child: Image.memory(
                       base64Decode(imgs.toString()),
@@ -218,8 +230,10 @@ class _DetailScreenState extends State<DetailScreen> {
               effect: WormEffect(
                 dotHeight: 10,
                 dotWidth: 10,
-                activeDotColor: Colors.black,
-                dotColor: Colors.grey.shade300,
+                // activeDotColor: Colors.black,
+                activeDotColor: AppColors.primary,
+                // dotColor: Colors.grey.shade300,
+                dotColor: AppColors.white,
               ),
             ),
             // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
@@ -233,14 +247,15 @@ class _DetailScreenState extends State<DetailScreen> {
                   Text(
                     '\$${price.toStringAsFixed(2)}',
                     style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.yellow[700],
-                        fontWeight: FontWeight.bold),
+                      fontSize: 24,
+                      color: Colors.yellow[700],
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Colors.red : Colors.grey,
+                      color: isFav ? Colors.red : AppColors.white,
                       size: 30,
                     ),
                     onPressed: () async {
@@ -285,7 +300,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   Text(
                     widget.productModel?.productName ?? 'No name',
                     style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -293,14 +311,20 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'Quantity Available',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.quantity == 0
                             ? '0'
                             : '${widget.productModel?.quantity}',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -315,12 +339,18 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         'Screen Size: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         '15.6 Inches',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -335,12 +365,18 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'Brand: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.category ?? 'No brand',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -355,14 +391,20 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'Hard Disk Size: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.storageGB == 0
                             ? 'No storage'
                             : '${widget.productModel?.storageGB} GB',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -377,12 +419,18 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'Color: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.color ?? 'No color',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -397,14 +445,20 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'RAM Size: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.ramGB == 0
                             ? 'No RAM'
                             : '${widget.productModel?.ramGB} GB',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -419,14 +473,20 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       const Text(
                         'Status: ',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.white,
+                        ),
                       ),
                       Text(
                         widget.productModel?.quantity == 0
                             ? 'Out of stock'
                             : 'In stock',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -438,43 +498,83 @@ class _DetailScreenState extends State<DetailScreen> {
                   const SizedBox(height: 10),
                   SizedBox(
                     child: Card(
+                      color: AppColors.second2,
                       elevation: 0,
                       child: ExpansionTile(
-                        title: Text(loc.productDetail),
+                        iconColor: AppColors.white,
+                        collapsedIconColor: AppColors.white,
+                        backgroundColor: AppColors.background,
+                        title: Text(
+                          loc.productDetail,
+                          style: TextStyle(
+                            color: AppColors.white,
+                          ),
+                        ),
                         children: [
-                          Text(widget.productModel?.productDetails ??
-                              'No description')
+                          Text(
+                            widget.productModel?.productDetails ??
+                                'No description',
+                            style: TextStyle(
+                              color: AppColors.white,
+                            ),
+                          )
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        width: 200,
-                        child: ElevatedButton.icon(
-                          onPressed: widget.productModel?.quantity == 0
-                              ? null
-                              : _addToCart,
-                          icon: const Icon(Icons.shopping_cart),
-                          label: Text(cartQty > 0
+                      ElevatedButton.icon(
+                        onPressed: widget.productModel?.quantity == 0
+                            ? null
+                            : _addToCart,
+                        icon: const Icon(
+                          Icons.shopping_cart,
+                          color: AppColors.white,
+                        ),
+                        label: Text(
+                          cartQty > 0
                               ? '${loc.addMore} (${cartQty} in cart)'
-                              : 'Add to Cart'),
+                              : 'Add to Cart',
+                          style: TextStyle(
+                            color: AppColors.white,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStatePropertyAll(AppColors.primary),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
-                        onPressed: _decreaseQty,
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.remove_circle_outline,
+                              color: AppColors.white,
+                            ),
+                            onPressed: _decreaseQty,
+                          ),
+                          Text('$cartQty',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.white,
+                              )),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle_outline,
+                              color: AppColors.white,
+                            ),
+                            onPressed: _increaseQty,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                       ),
-                      Text('$cartQty', style: const TextStyle(fontSize: 16)),
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
-                        onPressed: _increaseQty,
-                      ),
-                      const SizedBox(width: 8),
                     ],
                   ),
+                  const SizedBox(height: 15),
                 ],
               ),
             )

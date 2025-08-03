@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class ChatScreen extends StatefulWidget {
@@ -23,7 +24,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final messageText = _messageController.text.trim();
     if (messageText.isEmpty || user == null) return;
 
-    final chatDoc = FirebaseFirestore.instance.collection('chats').doc(user.uid);
+    final chatDoc =
+        FirebaseFirestore.instance.collection('chats').doc(user.uid);
     final messageEntry = {
       'text': messageText,
       'createdAt': Timestamp.now(),
@@ -60,7 +62,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final bytes = await pickedFile.readAsBytes();
     final base64Image = base64Encode(bytes);
 
-    final chatDoc = FirebaseFirestore.instance.collection('chats').doc(user.uid);
+    final chatDoc =
+        FirebaseFirestore.instance.collection('chats').doc(user.uid);
     final messageEntry = {
       'image': base64Image,
       'createdAt': Timestamp.now(),
@@ -102,70 +105,77 @@ class _ChatScreenState extends State<ChatScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-     // appBar: AppBar(title: const Text('Chat')),
+      // appBar: AppBar(title: const Text('Chat')),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           Expanded(
             child: user == null
                 ? const Center(child: Text('Not logged in'))
                 : StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('chats')
-                  .doc(user.uid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return const Center(child: Text('No messages yet.'));
-                }
+                    stream: FirebaseFirestore.instance
+                        .collection('chats')
+                        .doc(user.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Center(child: Text('No messages yet.'));
+                      }
 
-                final data = snapshot.data!.data() as Map<String, dynamic>;
-                final List messages = data['messages'] ?? [];
+                      final data =
+                          snapshot.data!.data() as Map<String, dynamic>;
+                      final List messages = data['messages'] ?? [];
 
-                messages.sort((a, b) =>
-                    (a['createdAt'] as Timestamp).compareTo(b['createdAt'] as Timestamp));
+                      messages.sort((a, b) => (a['createdAt'] as Timestamp)
+                          .compareTo(b['createdAt'] as Timestamp));
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final msg = messages[index];
-                    final isMe = msg['senderId'] == user.uid;
-                    final text = msg['text'];
-                    final image = msg['image'];
+                      return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = messages[index];
+                          final isMe = msg['senderId'] == user.uid;
+                          final text = msg['text'];
+                          final image = msg['image'];
 
-                    return ListTile(
-                      title: Align(
-                        alignment:
-                        isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          margin:
-                          const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: isMe ? Colors.blue[100] : Colors.orange[100],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: image != null
-                              ? Image.memory(base64Decode(image), width: 200)
-                              : Text(text ?? ''),
-                        ),
-                      ),
-                      subtitle: Align(
-                        alignment:
-                        isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Text(
-                          isMe ? "You" : "From Admin",
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                          return ListTile(
+                            title: Align(
+                              alignment: isMe
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 4, horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: isMe
+                                      ? Colors.blue[100]
+                                      : Colors.orange[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: image != null
+                                    ? Image.memory(base64Decode(image),
+                                        width: 200)
+                                    : Text(text ?? ''),
+                              ),
+                            ),
+                            subtitle: Align(
+                              alignment: isMe
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Text(
+                                isMe ? "You" : "From Admin",
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
           const Divider(height: 1),
           Padding(
@@ -179,7 +189,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: const InputDecoration(hintText: 'Send a message...'),
+                    decoration:
+                        const InputDecoration(hintText: 'Send a message...'),
                   ),
                 ),
                 IconButton(

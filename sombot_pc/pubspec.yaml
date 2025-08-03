@@ -2,7 +2,7 @@ name: sombot_pc
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -22,8 +22,7 @@ version: 1.0.0+1
 # Enhancement : Fix bugs in the app
 
 environment:
-  sdk: '>=3.3.3 <4.0.0'
-
+  sdk: ">=3.3.3 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -38,8 +37,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: 0.20.2
-  
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -66,9 +63,8 @@ dependencies:
   firebase_analytics: ^11.5.0
   smooth_page_indicator: ^1.2.1
   image_picker: ^1.1.2
-
-
-
+  email_otp: ^3.0.2
+  pinput: ^5.0.1
 
 dev_dependencies:
   flutter_test:
@@ -88,20 +84,20 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo_sombot.png"
+  image_path: "assets/images/sombot_pc_logo_v_1_0_1-02.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/images/logo_sombot.png"
+    image_path: "assets/images/sombot_pc_logo_v_1_0_1-02.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/images/logo_sombot.png"
+    image_path: "assets/images/sombot_pc_logo_v_1_0_1-02.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/images/logo_sombot.png"
+    image_path: "assets/images/sombot_pc_logo_v_1_0_1-02.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:typed_data'; // Import for Uint8List
 
@@ -11,6 +13,8 @@ import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
 import 'package:sombot_pc/router/app_route.dart';
+import 'package:sombot_pc/utils/app_images.dart';
+import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
 class ProfilePage extends StatefulWidget {
@@ -52,49 +56,112 @@ class _ProfilePageState extends State<ProfilePage> {
         userImageProvider = MemoryImage(bytes);
       } catch (e) {
         // Fallback to default image if base64 decoding fails
-        userImageProvider = const AssetImage('assets/images/user.png');
+        userImageProvider = const AssetImage(AppImages.userIcon);
         print('Error decoding base64 image: $e');
       }
     } else {
-      userImageProvider = const AssetImage('assets/images/user.png');
+      // userImageProvider = const AssetImage('assets/images/user.png');
+      userImageProvider = const AssetImage(AppImages.userIcon);
     }
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
+
+            // Stack(
+            //   alignment: Alignment.bottomRight,
+            //   children: [
+            //     CircleAvatar(
+            //       radius: 50,
+            //       backgroundImage:
+            //           userImageProvider, // Use the determined image provider
+            //     ),
+            //     InkWell(
+            //       child: Container(
+            //         width: 30,
+            //         height: 30,
+            //         decoration: BoxDecoration(
+            //           color: AppColors.background,
+            //           shape: BoxShape.circle,
+            //           border: Border.all(color: Colors.white, width: 2),
+            //         ),
+            //         child: const Icon(
+            //           Icons.edit,
+            //           size: 20,
+            //           color: Colors.white,
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // ),
+
             Stack(
-              alignment: Alignment.bottomRight,
+              alignment: AlignmentDirectional.center,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: userImageProvider, // Use the determined image provider
-                ),
-                InkWell(
-                  onTap: () {
-                    // Ensure firebaseUser is not null before navigating
-                    if (firebaseUser != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditProfilePage(uid: firebaseUser.uid)),
-                      );
-                    } else {
-                      // Optionally, show a message or handle the case where firebaseUser is null
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Exit User")), // Example of localized message
-                      );
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.pink,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: AppColors.second2,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      width: 1.5,
+                      color: AppColors.primary,
                     ),
-                    child: const Icon(Icons.edit, size: 20, color: Colors.white),
                   ),
-                )
+                  child: Image(
+                    image: userImageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Ensure firebaseUser is not null before navigating
+                      if (firebaseUser != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditProfilePage(uid: firebaseUser.uid),
+                          ),
+                        );
+                      } else {
+                        // Optionally, show a message or handle the case where firebaseUser is null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Exit User",
+                            ),
+                          ), // Example of localized message
+                        );
+                      }
+                    },
+                    child: Container(
+                      height: 25,
+                      margin: EdgeInsets.all(1.5),
+                      decoration: BoxDecoration(
+                        color: AppColors.black.withOpacity(0.3),
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(20),
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.edit_document,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -108,8 +175,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-            _buildMenuItem(Icons.history, loc.orderHistory, onTap: () => context.router.push(const OrderHistoryRoute())),
-            _buildMenuItem(Icons.language, loc.changeLanguage, onTap: () => showLanguageBottomSheet(context)),
+            _buildMenuItem(Icons.history, loc.orderHistory,
+                onTap: () => context.router.push(const OrderHistoryRoute())),
+            _buildMenuItem(Icons.language, loc.changeLanguage,
+                onTap: () => showLanguageBottomSheet(context)),
             _buildMenuItem(Icons.info_outline, loc.aboutUs, onTap: () {
               context.router.push(const AboutUsRoute());
             }),
@@ -133,6 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void showLanguageBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: AppColors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -142,27 +212,51 @@ class _ProfilePageState extends State<ProfilePage> {
 
         return Column(
           mainAxisSize: MainAxisSize.min,
-          children: L10n.all.map((locale) {
-            return ListTile(
-              leading: Text(
-                L10n.getFlag(locale),
-                style: const TextStyle(fontSize: 28),
-              ),
-              title: Text(L10n.getLanguageName(locale)),
-              trailing: Radio<Locale>(
-                value: locale,
-                groupValue: currentLocale,
-                onChanged: (Locale? selected) {
-                  provider.setLocale(selected!);
-                  Navigator.pop(context);
-                },
-              ),
-              onTap: () {
-                provider.setLocale(locale);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
+          children: [
+            const SizedBox(height: 15),
+            Container(
+              height: 7,
+              width: 50,
+              decoration: BoxDecoration(
+                  color: AppColors.second2,
+                  borderRadius: BorderRadius.circular(50)),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: L10n.all.map((locale) {
+                return Container(
+                  margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                  decoration: BoxDecoration(
+                      color: AppColors.second2,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: ListTile(
+                    leading: Text(
+                      L10n.getFlag(locale),
+                      style: const TextStyle(
+                        fontSize: 28,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    title: Text(L10n.getLanguageName(locale)),
+                    trailing: Radio<Locale>(
+                      value: locale,
+                      groupValue: currentLocale,
+                      activeColor: AppColors.primary,
+                      onChanged: (Locale? selected) {
+                        provider.setLocale(selected!);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    onTap: () {
+                      provider.setLocale(locale);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 35),
+          ],
         );
       },
     );
@@ -200,7 +294,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
+            color: AppColors.second2,
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -210,9 +304,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           child: ListTile(
-            leading: Icon(icon, color: Colors.pink),
+            leading: Icon(icon, color: AppColors.primary),
             title: Text(text),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: AppColors.primary,
+            ),
           ),
         ),
       ),

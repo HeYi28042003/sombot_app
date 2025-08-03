@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,19 +32,42 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  // Future<String?> signUp(String email, String password) async {
+  //   try {
+  //     final userCredential =
+  //         await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  //       email: email.trim(),
+  //       password: password,
+  //     );
+
+  //     _isAuthenticated = true;
+  //     _userToken = await userCredential.user?.getIdToken();
+  //     notifyListeners();
+  //     return null; // success
+  //   } catch (e) {
+  //     return e.toString(); // error message
+  //   }
+  // }
+
   Future<String?> signUp(String email, String password) async {
     try {
-      final userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: email.trim(),
+            password: password,
+          )
+          .timeout(const Duration(seconds: 10));
+
       _isAuthenticated = true;
       _userToken = await userCredential.user?.getIdToken();
       notifyListeners();
-      return null; // success
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message; // Return user-friendly error message
+    } on TimeoutException {
+      return "Connection timed out";
     } catch (e) {
-      return e.toString(); // error message
+      return "An unknown error occurred";
     }
   }
 
@@ -66,8 +93,12 @@ class AuthController extends ChangeNotifier {
       context.router.replaceNamed('/root');
     }
   }
+
   Future<Users?> getUserProfile() async {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
     print("User ${user!.uid} Profile: ${doc.data()}");
     if (doc.exists && doc.data() != null) {
       return Users.fromJson(doc.data()!);
