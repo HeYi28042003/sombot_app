@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+import 'package:sombot_pc/pages/filtter/populor_filtter.dart';
 import 'package:sombot_pc/pages/seeAll.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
@@ -40,12 +41,12 @@ class CategoryModel {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _orders = [];
-  bool _isLoading = true;
+  // bool _isLoading = true;
   List<CategoryModel> _categories = [];
   bool _isCategoryLoading = true;
   String? _selectedCategoryId;
   List<Map<String, dynamic>> _categoryProducts = [];
-  bool _isCategoryProductsLoading = false;
+  //bool _isCategoryProductsLoading = false;
 
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -121,35 +122,35 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> fetchCategoryProducts(String categoryId) async {
-    setState(() {
-      _isCategoryProductsLoading = true;
-      _selectedCategoryId = categoryId;
-    });
-    try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('Product Master')
-          .where('category', isEqualTo: categoryId)
-          .get();
-      List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
-        final data = doc.data();
-        if (data['createdAt'] is Timestamp) {
-          data['createdAt'] =
-              (data['createdAt'] as Timestamp).toDate().toIso8601String();
-        }
-        return {'id': doc.id, ...data};
-      }).toList();
-      setState(() {
-        _categoryProducts = products;
-        _isCategoryProductsLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching category products: $e');
-      setState(() {
-        _isCategoryProductsLoading = false;
-      });
-    }
-  }
+  // Future<void> fetchCategoryProducts(String categoryId) async {
+  //   setState(() {
+  //     _isCategoryProductsLoading = true;
+  //     _selectedCategoryId = categoryId;
+  //   });
+  //   try {
+  //     var snapshot = await FirebaseFirestore.instance
+  //         .collection('Product Master')
+  //         .where('category', isEqualTo: categoryId)
+  //         .get();
+  //     List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
+  //       final data = doc.data();
+  //       if (data['createdAt'] is Timestamp) {
+  //         data['createdAt'] =
+  //             (data['createdAt'] as Timestamp).toDate().toIso8601String();
+  //       }
+  //       return {'id': doc.id, ...data};
+  //     }).toList();
+  //     setState(() {
+  //       _categoryProducts = products;
+  //       _isCategoryProductsLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching category products: $e');
+  //     setState(() {
+  //       _isCategoryProductsLoading = false;
+  //     });
+  //   }
+  // }
   String id = '';
   int viewer = 0;
   Future<void> viewerCount() async {
@@ -171,7 +172,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String,dynamic>> allByViewer = [];
   Future<void> fetchAllByViewer() async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').orderBy('viewer', descending: true).limit(10).get();
+      var snapshot = await FirebaseFirestore.instance.collection('Product Master').orderBy('viewer', descending: true).limit(5).get();
        allByViewer = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
@@ -325,13 +326,13 @@ class _HomePageState extends State<HomePage> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      if (category.id == 'all') {
-                        _selectedCategoryId = null;
-                        _categoryProducts = [];
-                      } else {
-                        _selectedCategoryId = category.id;
-                        fetchCategoryProducts(category.id);
-                      }
+                      _selectedCategoryId = category.id;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PopulorFiltter(categoryId: category.id),
+                        ),
+                      );
                     });
                   },
                   child: Container(
@@ -418,7 +419,12 @@ class _HomePageState extends State<HomePage> {
           id = product['id'];
           final isFavorite = controller.isInFavorites(productModel);
           return GestureDetector(
-            onTap: () => context.router.push(DetailRoute(productModel: productModel)),
+            onTap: () {
+              fetchAllByViewer();
+              incrementViewer();
+              viewerCount();
+              context.router.push(DetailRoute(productModel: productModel));
+            },
             child: Container(
               width: 200,
               margin: const EdgeInsets.only(left: 12),

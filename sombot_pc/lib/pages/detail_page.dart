@@ -55,7 +55,9 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
+  bool isCard = false;
   Future<void> _fetchCartQty() async {
+    isCard = true;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || widget.productModel == null) return;
     final cartQuery = await FirebaseFirestore.instance
@@ -71,6 +73,7 @@ class _DetailScreenState extends State<DetailScreen> {
         cartDocId = doc.id;
         cartPrice = ((widget.productModel?.price ?? 0.0) * cartQty).toDouble();
       });
+      
     } else {
       setState(() {
         cartQty = 1;
@@ -78,6 +81,7 @@ class _DetailScreenState extends State<DetailScreen> {
         cartPrice = 0.0;
       });
     }
+    isCard = false;
   }
 
   Future<void> _toggleFavorite() async {
@@ -113,54 +117,88 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _addToCart() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || widget.productModel == null) return;
-    if (cartQty > 0 && cartDocId != null) {
-      // Already in cart, increment qty
+
+    if (cartDocId != null) {
+      setState(() {
+        cartQty++;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
       await FirebaseFirestore.instance
           .collection('cart')
           .doc(cartDocId)
-          .update({'qty': cartQty + 1});
+          .update({'qty': cartQty});
     } else {
-      // Add new product to cart with qty 1
       final docRef = await FirebaseFirestore.instance.collection('cart').add({
         'userId': user.uid,
         'productId': widget.productModel!.id,
         'qty': 1,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      cartDocId = docRef.id;
+
+      setState(() {
+        cartQty = 1;
+        cartDocId = docRef.id;
+        cartPrice = (widget.productModel?.price ?? 0.0);
+      });
     }
+
     await _fetchCartQty();
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Added to cart')),
     );
   }
 
+
   Future<void> _increaseQty() async {
     if (cartDocId != null) {
+      setState(() {
+        cartQty++;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
       await FirebaseFirestore.instance
           .collection('cart')
           .doc(cartDocId)
-          .update({'qty': cartQty + 1});
+          .update({'qty': cartQty});
+
       await _fetchCartQty();
+    } else {
+      await _addToCart();
     }
   }
 
+
   Future<void> _decreaseQty() async {
-    if (cartDocId != null) {
-      if (cartQty > 1) {
-        await FirebaseFirestore.instance
-            .collection('cart')
-            .doc(cartDocId)
-            .update({'qty': cartQty - 1});
-      } else {
-        await FirebaseFirestore.instance
-            .collection('cart')
-            .doc(cartDocId)
-            .delete();
-      }
-      await _fetchCartQty();
+    if (cartDocId == null) return;
+
+    if (cartQty > 1) {
+      setState(() {
+        cartQty--;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('cart')
+          .doc(cartDocId)
+          .update({'qty': cartQty});
+    } else {
+      await FirebaseFirestore.instance
+          .collection('cart')
+          .doc(cartDocId)
+          .delete();
+
+      setState(() {
+        cartQty = 0;
+        cartDocId = null;
+        cartPrice = 0.0;
+      });
     }
+
+    await _fetchCartQty();
   }
+
 
   Future<void> _removeFromCart() async {
     if (cartDocId != null) {
@@ -523,11 +561,11 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Row(
+                isCard ? CircularProgressIndicator() :  Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton.icon(
+                     ElevatedButton.icon(
                         onPressed: widget.productModel?.quantity == 0
                             ? null
                             : _addToCart,
