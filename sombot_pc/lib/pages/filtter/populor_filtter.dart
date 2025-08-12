@@ -96,7 +96,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
         title: _buildSearchField(loc),
         toolbarHeight: 65,
         iconTheme: IconThemeData(
-          color: AppColors.white,
+          color: AppColors.second,
         ),
       ),
       body: SingleChildScrollView(
@@ -124,7 +124,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
         child: TextField(
           cursorColor: AppColors.primary,
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.second,
           ),
           controller: _searchController,
           onChanged: (value) {
@@ -137,9 +137,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
             hintStyle: TextStyle(
               color: AppColors.grey,
             ),
-            prefixIcon: const Icon(
+            prefixIcon:  Icon(
               Icons.search,
-              color: AppColors.white,
+              color: AppColors.second,
             ),
             // border: OutlineInputBorder(
             //   borderRadius: BorderRadius.circular(8),
@@ -147,7 +147,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.white,
+                color: AppColors.second,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -193,11 +193,11 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
   Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
       ProductController controller, double screenWidth) {
     if (products.isEmpty) {
-      return const Center(
+      return  Center(
         child: Text(
           'No products found.',
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.second,
           ),
         ),
       );
@@ -244,8 +244,8 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                 Container(
                   width: double.infinity,
                   height: 140,
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
+                  decoration:  BoxDecoration(
+                    color: AppColors.second,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: ClipRRect(
@@ -269,11 +269,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                               product['productName'],
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
-                              style: normal.copyWith(
-                                fontSize: 12,
+                              style: TextStyle( fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.white,
-                              ),
+                                color: AppColors.second,),
                             ),
                           ),
                           IconButton(
@@ -297,7 +295,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                                         : Icons.favorite_border,
                                     color: isFavorite
                                         ? AppColors.error
-                                        : AppColors.white,
+                                        : AppColors.second,
                                     size: 30,
                                   ),
                           ),
@@ -307,8 +305,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                         product['productDetails'],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: normal.copyWith(
-                            fontSize: 12, color: AppColors.white),
+                        style: TextStyle( fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.second,)
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -316,11 +315,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                         children: [
                           Text(
                             '\$${product['price'] ?? ''}',
-                            style: normal.copyWith(
-                              fontSize: 14,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle( fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.second,)
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {

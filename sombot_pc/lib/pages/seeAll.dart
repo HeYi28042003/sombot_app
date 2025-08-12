@@ -2,13 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:carousel_slider/carousel_options.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:sombot_pc/api/notification.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
@@ -26,7 +23,6 @@ class SeeAll extends StatefulWidget {
 class _SeeAllState extends State<SeeAll> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-  bool _isCategoryLoading = true;
   String? _selectedCategoryId;
   List<Map<String, dynamic>> _categoryProducts = [];
   bool _isCategoryProductsLoading = false;
@@ -122,7 +118,7 @@ class _SeeAllState extends State<SeeAll> {
         title: _buildSearchField(loc),
         toolbarHeight: 65,
         iconTheme: IconThemeData(
-          color: AppColors.white,
+          color: AppColors.text,
         ),
       ),
       body: SingleChildScrollView(
@@ -150,7 +146,7 @@ class _SeeAllState extends State<SeeAll> {
         child: TextField(
           cursorColor: AppColors.primary,
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.text,
           ),
           controller: _searchController,
           onChanged: (value) {
@@ -163,9 +159,9 @@ class _SeeAllState extends State<SeeAll> {
             hintStyle: TextStyle(
               color: AppColors.grey,
             ),
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.search,
-              color: AppColors.white,
+              color: AppColors.text,
             ),
             // border: OutlineInputBorder(
             //   borderRadius: BorderRadius.circular(8),
@@ -173,7 +169,7 @@ class _SeeAllState extends State<SeeAll> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.white,
+                color: AppColors.text,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -219,11 +215,11 @@ class _SeeAllState extends State<SeeAll> {
   Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
       ProductController controller, double screenWidth) {
     if (products.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No products found.',
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.text,
           ),
         ),
       );
@@ -270,8 +266,8 @@ class _SeeAllState extends State<SeeAll> {
                 Container(
                   width: double.infinity,
                   height: 140,
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
+                  decoration: BoxDecoration(
+                    color: AppColors.text,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: ClipRRect(
@@ -295,10 +291,10 @@ class _SeeAllState extends State<SeeAll> {
                               product['productName'],
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
-                              style: normal.copyWith(
+                              style: ThemeStyles.normal(context).copyWith(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.white,
+                                color: AppColors.text,
                               ),
                             ),
                           ),
@@ -323,7 +319,7 @@ class _SeeAllState extends State<SeeAll> {
                                         : Icons.favorite_border,
                                     color: isFavorite
                                         ? AppColors.error
-                                        : AppColors.white,
+                                        : AppColors.text,
                                     size: 30,
                                   ),
                           ),
@@ -333,8 +329,8 @@ class _SeeAllState extends State<SeeAll> {
                         product['productDetails'],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: normal.copyWith(
-                            fontSize: 12, color: AppColors.white),
+                        style: ThemeStyles.normal(context)
+                            .copyWith(fontSize: 12, color: AppColors.text),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -342,7 +338,7 @@ class _SeeAllState extends State<SeeAll> {
                         children: [
                           Text(
                             '\$${product['price'] ?? ''}',
-                            style: normal.copyWith(
+                            style: ThemeStyles.normal(context).copyWith(
                               fontSize: 14,
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
@@ -390,7 +386,7 @@ class _SeeAllState extends State<SeeAll> {
                                   horizontal: 6, vertical: 3),
                               textStyle: const TextStyle(fontSize: 10),
                               backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.text,
                               minimumSize: const Size(0, 32),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),

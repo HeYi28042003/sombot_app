@@ -3,19 +3,33 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/data/models/user_model.dart';
+import 'package:sombot_pc/utils/app_images.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
 class ProfileDetailPage extends StatelessWidget {
-  const ProfileDetailPage({Key? key}) : super(key: key);
+  const ProfileDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthController>(context, listen: false);
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Profile Detail'),
+        title: Text(
+          'Profile Detail',
+          style: TextStyle(
+            color: theme.unselectedWidgetColor,
+          ),
+        ),
+        // backgroundColor: AppColors.second2,
+        backgroundColor: theme.colorScheme.surface,
+        iconTheme: IconThemeData(color: theme.unselectedWidgetColor),
       ),
       body: FutureBuilder<Users?>(
         future: authController.getUserProfile(),
@@ -42,9 +56,35 @@ class ProfileDetailPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: data!.photoURL!.isNotEmpty ? MemoryImage(byte) : const AssetImage('assets/images/user.png') as ImageProvider,
+                    // CircleAvatar(
+                    //   radius: 50,
+                    //   backgroundImage: data.photoURL!.isNotEmpty
+                    //       ? MemoryImage(byte)
+                    //       : const AssetImage('assets/images/user.png')
+                    //           as ImageProvider,
+                    // ),
+
+                    Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          width: 1.5,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(20),
+                        child: Image(
+                          image: data.photoURL!.isNotEmpty
+                              ? MemoryImage(byte)
+                              : const AssetImage(AppImages.userIcon)
+                                  as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -61,18 +101,24 @@ class ProfileDetailPage extends StatelessWidget {
                   children: [
                     Text(
                       data.displayName ?? '',
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: theme.unselectedWidgetColor,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(data.email, style: medium),
+                Text(data.email, style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
-                Text(data.phone ?? '', style: medium),
+                Text(data.phone ?? '', style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
-                Text(data.address ?? '', style: medium),
+                Text(data.address ?? '', style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
-                Text('Created: ${data.createdAt.toLocal().toString().split(' ')[0]}', style: medium),
+                Text(
+                    'Created: ${data.createdAt.toLocal().toString().split(' ')[0]}',
+                    style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
               ],
             ),

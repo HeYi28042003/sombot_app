@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
@@ -104,9 +105,12 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
       // appBar: AppBar(title: const Text('Chat')),
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Column(
         children: [
           Expanded(
@@ -119,10 +123,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        );
                       }
                       if (!snapshot.hasData || !snapshot.data!.exists) {
-                        return const Center(child: Text('No messages yet.'));
+                        return const Center(
+                          child: Text('No messages yet.'),
+                        );
                       }
 
                       final data =
@@ -151,15 +161,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                 margin: const EdgeInsets.symmetric(
                                     vertical: 4, horizontal: 8),
                                 decoration: BoxDecoration(
+                                  // color: isMe
+                                  //     ? Colors.blue[100]
+                                  //     : Colors.orange[100],
                                   color: isMe
-                                      ? Colors.blue[100]
-                                      : Colors.orange[100],
+                                      ? AppColors.primary
+                                      : AppColors.primary,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: image != null
                                     ? Image.memory(base64Decode(image),
                                         width: 200)
-                                    : Text(text ?? ''),
+                                    : Text(
+                                        text ?? '',
+                                        style: TextStyle(
+                                          color: theme.unselectedWidgetColor,
+                                        ),
+                                      ),
                               ),
                             ),
                             subtitle: Align(
@@ -177,24 +195,65 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
           ),
-          const Divider(height: 1),
+          // const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.image),
+                  icon: Icon(
+                    Icons.image_rounded,
+                    color: AppColors.primary,
+                    size: 30,
+                  ),
                   onPressed: _sendImageMessage,
                 ),
                 Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration:
-                        const InputDecoration(hintText: 'Send a message...'),
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: AppColors.second2,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    child: TextField(
+                      controller: _messageController,
+                      cursorColor: AppColors.primary,
+                      style: TextStyle(
+                        color: AppColors.text,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Send a message...',
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.second2,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.second2,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: Icon(
+                    Icons.send_rounded,
+                    color: AppColors.primary,
+                    size: 27,
+                  ),
                   onPressed: _sendMessage,
                 ),
               ],

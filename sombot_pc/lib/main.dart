@@ -3,10 +3,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/firebase_options.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
@@ -17,11 +19,14 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  FlutterNativeSplash.remove();
+
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ChangeNotifierProvider(create: (_) => AuthController()),
       ChangeNotifierProvider(create: (_) => ProductController()),
+      ChangeNotifierProvider(create: (_) => ThemeNotifier()),
     ], child: const MyApp()),
   );
 }
@@ -39,6 +44,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+
     return MaterialApp.router(
       title: 'SOMBOT PC Super App',
       localizationsDelegates: const [
@@ -51,8 +58,13 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: provider.locale,
       routerConfig: _appRouter.config(),
-      // themeMode: ThemeMode.dark,
-      theme: ThemeData(brightness: Brightness.dark),
+      // theme: ThemeData(brightness: Brightness.dark),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeNotifier.currentTheme == ThemeModeType.light
+          ? ThemeMode.light
+          : themeNotifier.currentTheme == ThemeModeType.dark
+              ? ThemeMode.dark
+              : ThemeMode.dark,
     );
   }
 }

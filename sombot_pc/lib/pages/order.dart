@@ -14,10 +14,10 @@ class OrderSummaryPage extends StatefulWidget {
   final double total;
 
   const OrderSummaryPage({
-    Key? key,
+    super.key,
     required this.cartItems,
     required this.total,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderSummaryPage> createState() => _OrderSummaryPageState();
@@ -104,7 +104,8 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         });
 
         final userRef = FirebaseFirestore.instance.collection('users');
-        final existingDocs = await userRef.where('uid', isEqualTo: user.uid).limit(1).get();
+        final existingDocs =
+            await userRef.where('uid', isEqualTo: user.uid).limit(1).get();
 
         if (existingDocs.docs.isNotEmpty) {
           await existingDocs.docs.first.reference.update({
@@ -135,169 +136,173 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
   }
 
   void _confirmOrder() async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Confirm Order'),
-      content: const Text('Are you sure you want to place this order?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Yes'),
-        ),
-      ],
-    ),
-  );
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Order'),
+        content: const Text('Are you sure you want to place this order?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
 
-  if (confirmed == true) {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (confirmed == true) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
 
-    final addressText = _place?.displayName ?? 'Unknown';
-    final items = widget.cartItems.map((item) {
-      return {
-        'productId': item['productId'],
-        'productName': item['productName'],
-        'qty': item['qty'],
-        'price': item['price'],
-        'subtotal': (item['qty'] ?? 1) * (item['price'] ?? 0.0),
+      final addressText = _place?.displayName ?? 'Unknown';
+      final items = widget.cartItems.map((item) {
+        return {
+          'productId': item['productId'],
+          'productName': item['productName'],
+          'qty': item['qty'],
+          'price': item['price'],
+          'subtotal': (item['qty'] ?? 1) * (item['price'] ?? 0.0),
+        };
+      }).toList();
+
+      final orderData = {
+        'userId': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'total': widget.total,
+        'paymentMethod': _selectedPayment,
+        'address': addressText,
+        'items': items,
       };
-    }).toList();
 
-    final orderData = {
-      'userId': user.uid,
-      'createdAt': FieldValue.serverTimestamp(),
-      'total': widget.total,
-      'paymentMethod': _selectedPayment,
-      'address': addressText,
-      'items': items,
-    };
+      try {
+        await FirebaseFirestore.instance
+            .collection('order_history')
+            .add(orderData);
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('order_history')
-          .add(orderData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order saved successfully!')),
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Order saved successfully!')),
-      );
-
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save order: $e')),
-      );
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save order: $e')),
+        );
+      }
     }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Order Summary')),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const Text('Order Details',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.cartItems.length,
-                    itemBuilder: (context, index) {
-                      final item = widget.cartItems[index];
-                      final qty = item['qty'] ?? 1;
-                      final price = item['price'] ?? 0.0;
-                      return Card(
-                        child: ListTile(
-                          title: Text(item['productName']),
-                          subtitle: Text('Qty: $qty'),
-                          trailing: Text('฿${(qty * price).toStringAsFixed(2)}'),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                  cardAddress(_place),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _isLoadingAddress ? null : () => _selectAddress(context),
-                    child: _isLoadingAddress
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(loc.chanegAddress),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Total:',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text('฿${widget.total.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Select Payment Method',
-                      style: TextStyle(fontSize: 16)),
-        
-                  RadioListTile<String>(
-                    value: 'ABA',
-                    groupValue: _selectedPayment,
-                    title: const Text('Pay with ABA'),
-                    onChanged: (value) async {
-                      setState(() => _selectedPayment = value);
-                      await _openABAApp();
-                    },
-                  ),
-                  RadioListTile<String>(
-                    value: 'ACLEDA',
-                    groupValue: _selectedPayment,
-                    title: const Text('Pay with ACLEDA'),
-                    onChanged: (value) => setState(() => _selectedPayment = value),
-                  ),
-                  RadioListTile<String>(
-                    value: 'COD',
-                    groupValue: _selectedPayment,
-                    title: const Text('Cash on Delivery'),
-                    onChanged: (value) => setState(() => _selectedPayment = value),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _selectedPayment == null ? null : _confirmOrder,
-                    child: const Text('Confirm Order'),
-                  )
-                ],
+        appBar: AppBar(title: const Text('Order Summary')),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    const Text('Order Details',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: widget.cartItems.length,
+                      itemBuilder: (context, index) {
+                        final item = widget.cartItems[index];
+                        final qty = item['qty'] ?? 1;
+                        final price = item['price'] ?? 0.0;
+                        return Card(
+                          child: ListTile(
+                            title: Text(item['productName']),
+                            subtitle: Text('Qty: $qty'),
+                            trailing:
+                                Text('฿${(qty * price).toStringAsFixed(2)}'),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    cardAddress(_place),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: _isLoadingAddress
+                          ? null
+                          : () => _selectAddress(context),
+                      child: _isLoadingAddress
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(loc.chanegAddress),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Total:',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text('฿${widget.total.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green)),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Select Payment Method',
+                        style: TextStyle(fontSize: 16)),
+                    RadioListTile<String>(
+                      value: 'ABA',
+                      groupValue: _selectedPayment,
+                      title: const Text('Pay with ABA'),
+                      onChanged: (value) async {
+                        setState(() => _selectedPayment = value);
+                        await _openABAApp();
+                      },
+                    ),
+                    RadioListTile<String>(
+                      value: 'ACLEDA',
+                      groupValue: _selectedPayment,
+                      title: const Text('Pay with ACLEDA'),
+                      onChanged: (value) =>
+                          setState(() => _selectedPayment = value),
+                    ),
+                    RadioListTile<String>(
+                      value: 'COD',
+                      groupValue: _selectedPayment,
+                      title: const Text('Cash on Delivery'),
+                      onChanged: (value) =>
+                          setState(() => _selectedPayment = value),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed:
+                          _selectedPayment == null ? null : _confirmOrder,
+                      child: const Text('Confirm Order'),
+                    )
+                  ],
+                ),
               ),
-            ),
-            if (_isLoadingAddress)
-              Container(
-                color: Colors.black.withOpacity(0.2),
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-          ],
-        ),
-      )
-    );
+              if (_isLoadingAddress)
+                Container(
+                  color: Colors.black.withOpacity(0.2),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          ),
+        ));
   }
 
   Widget cardAddress(PlaceModel? place) {
@@ -319,7 +324,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(place?.displayName ?? 'Your Address', style: normal),
+            Text(
+              place?.displayName ?? 'Your Address',
+              style: ThemeStyles.normal(context),
+            ),
           ],
         ),
       ),

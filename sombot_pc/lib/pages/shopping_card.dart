@@ -1,17 +1,15 @@
+// ignore_for_file: use_build_context_synchronously, avoid_types_as_parameter_names, deprecated_member_use
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sombot_pc/api/map_api.dart';
-import 'package:sombot_pc/data/models/map_model.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/detail_page.dart';
-import 'package:sombot_pc/pages/map.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sombot_pc/pages/order.dart';
-import 'package:sombot_pc/utils/colors.dart';
-import 'package:sombot_pc/utils/text_style.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -24,43 +22,50 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class _ShoppingCartPageState extends State<ShoppingCartPage> {
-
-
   @override
   void initState() {
     super.initState();
-   // _loadUserAddress();
+    // _loadUserAddress();
   }
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-
     final loc = AppLocalizations.of(context)!;
+
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(title: const Text('Shopping Cart'),actions: [
-        IconButton(
-          icon: const Icon(Icons.download),
-          onPressed: () async {
-            final cartSnapshot = await FirebaseFirestore.instance
-                                      .collection('cart')
-                                      .where('userId', isEqualTo: user!.uid)
-                                      .get();
-                                  final cartItems = await _fetchCartProducts(cartSnapshot.docs);
-                                  final total = cartItems.fold(0.0, (sum, item) =>
-                                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Shopping Cart'),
+        backgroundColor: theme.colorScheme.surface,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () async {
+              final cartSnapshot = await FirebaseFirestore.instance
+                  .collection('cart')
+                  .where('userId', isEqualTo: user!.uid)
+                  .get();
+              final cartItems = await _fetchCartProducts(cartSnapshot.docs);
+              final total = cartItems.fold(
+                  0.0,
+                  (sum, item) =>
+                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
 
-                                  await _generateInvoice(cartItems, total);
+              await _generateInvoice(cartItems, total);
 
-                                  // Optional: Clear cart or navigate to success page
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Invoice generated successfully!')),
-                                  );
-          },
-          
-        ),
-      ],),
+              // Optional: Clear cart or navigate to success page
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Invoice generated successfully!')),
+              );
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           StreamBuilder<QuerySnapshot>(
@@ -85,8 +90,10 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                   }
 
                   final cartItems = productSnapshot.data!;
-                  double total = cartItems.fold(0.0, (sum, item) =>
-                      sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
+                  double total = cartItems.fold(
+                      0.0,
+                      (sum, item) =>
+                          sum + ((item['price'] ?? 0.0) * (item['qty'] ?? 1)));
 
                   return Column(
                     children: [
@@ -105,8 +112,9 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                   productDetails: item['productDetails'] ?? '',
                                   price: (item['price'] ?? 0.0).toDouble(),
                                   quantity: item['quantity'],
-                                  imagePreview:
-                                      (item['imagePreview'] as List?)?.cast<String>() ?? [],
+                                  imagePreview: (item['imagePreview'] as List?)
+                                          ?.cast<String>() ??
+                                      [],
                                   ramGB: item['ramGB'] ?? 0,
                                   storageGB: item['storageGB'],
                                   color: item['color'],
@@ -124,15 +132,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                 margin: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.surface,
                                   borderRadius: BorderRadius.circular(12),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 6,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(12.0),
@@ -148,7 +149,9 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                                 fit: BoxFit.cover,
                                               )
                                             : const SizedBox(
-                                                width: 60, height: 60),
+                                                width: 60,
+                                                height: 60,
+                                              ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -162,12 +165,17 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             const SizedBox(height: 4),
-                                            Text(item['productDetails'] ?? '',
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.black54)),
+                                            Text(
+                                              item['productDetails'] ?? '',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: theme
+                                                    .unselectedWidgetColor
+                                                    .withOpacity(0.7),
+                                              ),
+                                            ),
                                             const SizedBox(height: 6),
                                             Text('฿${item['price'] ?? ''}',
                                                 style: const TextStyle(
@@ -191,7 +199,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                                         .instance
                                                         .collection('cart')
                                                         .doc(item['cartDocId'])
-                                                        .update({'qty': qty - 1});
+                                                        .update(
+                                                            {'qty': qty - 1});
                                                   } else {
                                                     await FirebaseFirestore
                                                         .instance
@@ -201,12 +210,14 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                                   }
                                                 },
                                               ),
-                                              Text('$qty',
-                                                  style: const TextStyle(
-                                                      fontSize: 14)),
+                                              Text(
+                                                '$qty',
+                                                style: const TextStyle(
+                                                    fontSize: 14),
+                                              ),
                                               IconButton(
-                                                icon: const Icon(Icons
-                                                    .add_circle_outline),
+                                                icon: const Icon(
+                                                    Icons.add_circle_outline),
                                                 onPressed: () async {
                                                   await FirebaseFirestore
                                                       .instance
@@ -249,16 +260,16 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       //       onMapCreated: (controller) {},
                       //     ),
                       //   ),
-                     
+
                       Container(
                         padding: const EdgeInsets.all(16),
-                        color: Colors.white,
+                        color: theme.colorScheme.surface,
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                 Text(loc.total,
+                                Text(loc.total,
                                     style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold)),
@@ -274,18 +285,41 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                             const SizedBox(height: 10),
                             SizedBox(
                               width: double.infinity,
+                              height: 50,
                               child: ElevatedButton(
-                                  onPressed: () {
+                                onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => OrderSummaryPage(cartItems: cartItems, total: total),
+                                      builder: (context) => OrderSummaryPage(
+                                          cartItems: cartItems, total: total),
                                     ),
                                   );
                                 },
-                                child: const Text('Order'),
+                                style: ButtonStyle(
+                                  foregroundColor: WidgetStatePropertyAll(
+                                      theme.primaryColor),
+                                  backgroundColor: WidgetStatePropertyAll(
+                                      theme.scaffoldBackgroundColor),
+                                  side: WidgetStatePropertyAll(
+                                    BorderSide(
+                                      color: theme.primaryColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Order',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
+                            const SizedBox(height: 10),
                           ],
                         ),
                       ),
@@ -295,7 +329,6 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
               );
             },
           ),
-         
         ],
       ),
     );
@@ -330,65 +363,73 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     return cartItems;
   }
 
+  Future<void> _generateInvoice(
+      List<Map<String, dynamic>> cartItems, double total) async {
+    final pdf = pw.Document();
 
-  Future<void> _generateInvoice(List<Map<String, dynamic>> cartItems, double total) async {
-  final pdf = pw.Document();
-
-  pdf.addPage(
-    pw.Page(
-      build: (context) => pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text('Invoice', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 20),
-          pw.Text('Date: ${DateTime.now()}'),
-          pw.SizedBox(height: 10),
-          pw.Text('Items:', style: pw.TextStyle(fontSize: 18)),
-          pw.SizedBox(height: 10),
-
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              pw.Text('Product', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(width: 20),
-              pw.Text('Qty', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.Text('Price', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ],
-          ),
-          pw.SizedBox(height: 20),
-          ...cartItems.map((item) {
-            final qty = item['qty'] ?? 1;
-            final price = item['price'] ?? 0.0;
-            return pw.Row(
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text('Invoice',
+                style:
+                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+            pw.SizedBox(height: 20),
+            pw.Text('Date: ${DateTime.now()}'),
+            pw.SizedBox(height: 10),
+            pw.Text('Items:', style: pw.TextStyle(fontSize: 18)),
+            pw.SizedBox(height: 10),
+            pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.SizedBox(width: 200,
-                child: pw.Text(item['productName'] ?? '',maxLines: 2,overflow: pw.TextOverflow.clip),),
-                
-                pw.Text('x$qty'),
-                pw.Text('\$${(qty * price).toStringAsFixed(2)}'),
+                pw.Text('Product',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(width: 20),
+                pw.Text('Qty',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                pw.Text('Price',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               ],
-            );
-          }),
-          pw.Divider(),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              pw.Text('Total:', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-              pw.Text('\$${total.toStringAsFixed(2)}',
-                  style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-            ],
-          ),
-        ],
+            ),
+            pw.SizedBox(height: 20),
+            ...cartItems.map((item) {
+              final qty = item['qty'] ?? 1;
+              final price = item['price'] ?? 0.0;
+              return pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.SizedBox(
+                    width: 200,
+                    child: pw.Text(item['productName'] ?? '',
+                        maxLines: 2, overflow: pw.TextOverflow.clip),
+                  ),
+                  pw.Text('x$qty'),
+                  pw.Text('\$${(qty * price).toStringAsFixed(2)}'),
+                ],
+              );
+            }),
+            pw.Divider(),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text('Total:',
+                    style: pw.TextStyle(
+                        fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                pw.Text('\$${total.toStringAsFixed(2)}',
+                    style: pw.TextStyle(
+                        fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
 
-  await Printing.layoutPdf(
-    onLayout: (PdfPageFormat format) async => pdf.save(),
-  );
-}
-
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
 
   // void _showPaymentOptions(BuildContext context) {
   //   showModalBottomSheet(

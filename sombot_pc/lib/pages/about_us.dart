@@ -23,7 +23,7 @@ class AboutUsPage extends StatelessWidget {
         // ),
         backgroundColor: AppColors.second2,
       ),
-      body: const Padding(
+      body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

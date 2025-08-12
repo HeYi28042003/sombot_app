@@ -2,11 +2,11 @@
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/utils/app_images.dart';
-import 'package:sombot_pc/utils/colors.dart';
 
-// Optional: your own loading widget
 @RoutePage()
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -40,8 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned(
@@ -50,8 +53,8 @@ class _SplashScreenState extends State<SplashScreen> {
             right: BorderSide.strokeAlignCenter,
             child: Center(
               child: Image.asset(
-                AppImages.sombotWeb02,
-                width: 300,
+                AppImages.sombotWeb01,
+                width: 270,
               ),
             ),
           ),
@@ -63,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
               children: [
                 Text(
                   "© 2025 SOMBOT PC Super App",
-                  style: TextStyle(color: AppColors.white),
+                  style: TextStyle(color: theme.unselectedWidgetColor),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   children: [
                     Text(
                       "Version : ",
-                      style: TextStyle(color: AppColors.white),
+                      style: TextStyle(color: theme.unselectedWidgetColor),
                     ),
                     // get form app info
                   ],

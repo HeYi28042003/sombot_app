@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/data/models/user_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/edit_profile.dart';
 import 'package:sombot_pc/pages/profile_detail.dart';
+import 'package:sombot_pc/pages/theme/theme_selection_page.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/app_images.dart';
 import 'package:sombot_pc/utils/colors.dart';
@@ -47,6 +49,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final firebaseUser = autProvider.user;
     final loc = AppLocalizations.of(context)!;
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     // Determine the image provider based on user data
     ImageProvider userImageProvider;
     if (user != null && user!.photoURL != null && user!.photoURL!.isNotEmpty) {
@@ -65,39 +70,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
-
-            // Stack(
-            //   alignment: Alignment.bottomRight,
-            //   children: [
-            //     CircleAvatar(
-            //       radius: 50,
-            //       backgroundImage:
-            //           userImageProvider, // Use the determined image provider
-            //     ),
-            //     InkWell(
-            //       child: Container(
-            //         width: 30,
-            //         height: 30,
-            //         decoration: BoxDecoration(
-            //           color: AppColors.background,
-            //           shape: BoxShape.circle,
-            //           border: Border.all(color: Colors.white, width: 2),
-            //         ),
-            //         child: const Icon(
-            //           Icons.edit,
-            //           size: 20,
-            //           color: Colors.white,
-            //         ),
-            //       ),
-            //     )
-            //   ],
-            // ),
-
             Stack(
               alignment: AlignmentDirectional.center,
               children: [
@@ -105,16 +82,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 150,
                   width: 150,
                   decoration: BoxDecoration(
-                    color: AppColors.second2,
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       width: 1.5,
-                      color: AppColors.primary,
+                      color: theme.primaryColor,
                     ),
                   ),
-                  child: Image(
-                    image: userImageProvider,
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(20),
+                    child: Image(
+                      image: userImageProvider,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Positioned(
@@ -147,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 25,
                       margin: EdgeInsets.all(1.5),
                       decoration: BoxDecoration(
-                        color: AppColors.black.withOpacity(0.3),
+                        color: AppColors.second2.withOpacity(0.3),
                         borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(20),
                         ),
@@ -155,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Center(
                         child: Icon(
                           Icons.edit_document,
-                          color: AppColors.primary,
+                          color: theme.primaryColor,
                           size: 20,
                         ),
                       ),
@@ -168,6 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildMenuItem(
               Icons.person,
               loc.viewProfile,
+              theme,
               onTap: () {
                 Navigator.push(
                   context,
@@ -175,11 +156,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-            _buildMenuItem(Icons.history, loc.orderHistory,
+            _buildMenuItem(Icons.history, loc.orderHistory, theme,
                 onTap: () => context.router.push(const OrderHistoryRoute())),
-            _buildMenuItem(Icons.language, loc.changeLanguage,
-                onTap: () => showLanguageBottomSheet(context)),
-            _buildMenuItem(Icons.info_outline, loc.aboutUs, onTap: () {
+            _buildMenuItem(Icons.language, loc.changeLanguage, theme,
+                onTap: () => showLanguageBottomSheet(context, theme)),
+            _buildMenuItem(Icons.color_lens, "Theme Mode", theme, onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => ThemeSelectionPage(),
+              //   ),
+              // );
+              showThemeModeBottomSheet(context);
+            }),
+            _buildMenuItem(Icons.info_outline, loc.aboutUs, theme, onTap: () {
               context.router.push(const AboutUsRoute());
             }),
             // _buildMenuItem(Icons.group_add, loc.inviteFriend, onTap: () {}),
@@ -191,6 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildMenuItem(
               Icons.logout,
               loc.logout,
+              theme,
               onTap: () => _showLogoutDialog(context, autProvider),
             ),
           ],
@@ -199,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void showLanguageBottomSheet(BuildContext context) {
+  void showLanguageBottomSheet(BuildContext context, ThemeData theme) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.background,
@@ -218,8 +209,10 @@ class _ProfilePageState extends State<ProfilePage> {
               height: 7,
               width: 50,
               decoration: BoxDecoration(
-                  color: AppColors.second2,
-                  borderRadius: BorderRadius.circular(50)),
+                // color: AppColors.second2,
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(50),
+              ),
             ),
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -227,14 +220,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 return Container(
                   margin: EdgeInsets.only(top: 15, left: 15, right: 15),
                   decoration: BoxDecoration(
-                      color: AppColors.second2,
-                      borderRadius: BorderRadius.circular(10)),
+                    color: AppColors.second2,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: ListTile(
                     leading: Text(
                       L10n.getFlag(locale),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
-                        color: AppColors.white,
+                        color: theme.unselectedWidgetColor,
                       ),
                     ),
                     title: Text(L10n.getLanguageName(locale)),
@@ -255,6 +249,33 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               }).toList(),
             ),
+            const SizedBox(height: 35),
+          ],
+        );
+      },
+    );
+  }
+
+  void showThemeModeBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 15),
+            Container(
+              height: 7,
+              width: 50,
+              decoration: BoxDecoration(
+                  color: AppColors.second2,
+                  borderRadius: BorderRadius.circular(50)),
+            ),
+            ThemeSelectionPage(),
             const SizedBox(height: 35),
           ],
         );
@@ -285,7 +306,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String text, {VoidCallback? onTap}) {
+  Widget _buildMenuItem(IconData icon, String text, ThemeData theme,
+      {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
       child: InkWell(
@@ -294,22 +316,27 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: AppColors.second2,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 4,
-                offset: Offset(0, 2),
-              ),
-            ],
+            color: theme.colorScheme.surface,
+            // boxShadow: const [
+            //   BoxShadow(
+            //     color: Colors.black12,
+            //     blurRadius: 4,
+            //     offset: Offset(0, 2),
+            //   ),
+            // ],
           ),
           child: ListTile(
             leading: Icon(icon, color: AppColors.primary),
-            title: Text(text),
-            trailing: const Icon(
+            title: Text(
+              text,
+              style: TextStyle(
+                color: theme.unselectedWidgetColor,
+              ),
+            ),
+            trailing: Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: AppColors.primary,
+              color: theme.unselectedWidgetColor,
             ),
           ),
         ),

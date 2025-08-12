@@ -1,11 +1,15 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/theme_notifier.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String uid;
-  const EditProfilePage({required this.uid});
+  const EditProfilePage({super.key, required this.uid});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -26,7 +30,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _loadUserData() async {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(widget.uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.uid)
+        .get();
     if (doc.exists) {
       final data = doc.data();
       _nameController.text = data?['name'] ?? '';
@@ -50,7 +57,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _updateProfile() async {
     if (_formKey.currentState!.validate()) {
-      await FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .update({
         'name': _nameController.text,
         'phone': _phoneController.text,
         'address': _addressController.text,
@@ -92,8 +102,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = themeNotifier.themeData;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: theme.unselectedWidgetColor,
+          ),
+        ),
+        backgroundColor: theme.colorScheme.surface,
+        iconTheme: IconThemeData(color: theme.unselectedWidgetColor),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -104,20 +127,67 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  labelStyle: TextStyle(
+                    color: theme.unselectedWidgetColor.withOpacity(0.5),
+                  ),
+                ),
+                style: TextStyle(
+                  color: theme.unselectedWidgetColor,
+                ),
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(
+                  labelText: 'Phone',
+                  labelStyle: TextStyle(
+                    color: theme.unselectedWidgetColor.withOpacity(0.5),
+                  ),
+                ),
+                style: TextStyle(
+                  color: theme.unselectedWidgetColor,
+                ),
               ),
               TextFormField(
                 controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
+                decoration: InputDecoration(
+                  labelText: 'Address',
+                  labelStyle: TextStyle(
+                    color: theme.unselectedWidgetColor.withOpacity(0.5),
+                  ),
+                ),
+                style: TextStyle(
+                  color: theme.unselectedWidgetColor,
+                ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _updateProfile,
-                child: const Text('Save'),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _updateProfile,
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStatePropertyAll(theme.primaryColor),
+                    backgroundColor:
+                        WidgetStatePropertyAll(theme.scaffoldBackgroundColor),
+                    side: WidgetStatePropertyAll(
+                      BorderSide(
+                        color: theme.primaryColor,
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
