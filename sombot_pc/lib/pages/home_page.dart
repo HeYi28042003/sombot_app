@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, unused_element, avoid_print, use_build_context_synchronously
+// ignore_for_file: unused_local_variable, avoid_print, unused_element
 
 import 'dart:convert';
 
@@ -12,6 +12,7 @@ import 'package:redacted/redacted.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
+import 'package:sombot_pc/pages/filtter/populor_filtter.dart';
 import 'package:sombot_pc/pages/seeAll.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
@@ -42,13 +43,13 @@ class CategoryModel {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> _orders = [];
-  bool _isLoading = true;
+  final List<Map<String, dynamic>> _orders = [];
+  // bool _isLoading = true;
   List<CategoryModel> _categories = [];
   bool _isCategoryLoading = true;
   String? _selectedCategoryId;
-  List<Map<String, dynamic>> _categoryProducts = [];
-  bool _isCategoryProductsLoading = false;
+  final List<Map<String, dynamic>> _categoryProducts = [];
+  //bool _isCategoryProductsLoading = false;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -56,58 +57,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchOrders();
     fetchCategories();
     fetchProducts();
     fetchNews();
+    fetchAllByViewer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false)
           .loadFavoritesFromFirestore();
     });
-  }
-
-  // Future<void> fetchOrders() async {
-  //   try {
-  //     var snapshot = await FirebaseFirestore.instance
-  //         .collection('Product Master')
-  //         .where('type', isEqualTo: 'popular')
-  //         .get();
-  //     List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
-  //       return {'id': doc.id, ...doc.data()};
-  //     }).toList();
-  //     setState(() {
-  //       _orders = orders;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     print('Error fetching orders: $e');
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
-  Future<void> fetchOrders() async {
-    try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('Product Master')
-          .where('type', isEqualTo: 'popular')
-          .get();
-      if (!mounted) return;
-      List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-      setState(() {
-        _orders = orders;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      print('Error fetching orders: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   List<Map<String, dynamic>> _allProduct = [];
@@ -148,26 +105,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Future<void> fetchCategories() async {
-  //   try {
-  //     var snapshot =
-  //         await FirebaseFirestore.instance.collection('categories').get();
-  //     List<CategoryModel> categories = snapshot.docs
-  //         .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
-  //         .toList();
-  //     categories.insert(0, CategoryModel(id: 'all', name: 'All', imageUrl: ''));
-  //     setState(() {
-  //       _categories = categories;
-  //       _isCategoryLoading = false;
-  //     });
-  //   } catch (e) {
-  //     print('Error fetching categories: $e');
-  //     setState(() {
-  //       _isCategoryLoading = false;
-  //     });
-  //   }
-  // }
-
   Future<void> fetchCategories() async {
     try {
       var snapshot =
@@ -190,17 +127,65 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> fetchCategoryProducts(String categoryId) async {
+  // Future<void> fetchCategoryProducts(String categoryId) async {
+  //   setState(() {
+  //     _isCategoryProductsLoading = true;
+  //     _selectedCategoryId = categoryId;
+  //   });
+  //   try {
+  //     var snapshot = await FirebaseFirestore.instance
+  //         .collection('Product Master')
+  //         .where('category', isEqualTo: categoryId)
+  //         .get();
+  //     List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
+  //       final data = doc.data();
+  //       if (data['createdAt'] is Timestamp) {
+  //         data['createdAt'] =
+  //             (data['createdAt'] as Timestamp).toDate().toIso8601String();
+  //       }
+  //       return {'id': doc.id, ...data};
+  //     }).toList();
+  //     setState(() {
+  //       _categoryProducts = products;
+  //       _isCategoryProductsLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching category products: $e');
+  //     setState(() {
+  //       _isCategoryProductsLoading = false;
+  //     });
+  //   }
+  // }
+  String id = '';
+  int viewer = 0;
+  Future<void> viewerCount() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .doc(id)
+          .update({
+        'viewer': viewer,
+      });
+    } catch (e) {
+      print('Error fetching viewer count: $e');
+    }
+  }
+
+  void incrementViewer() {
     setState(() {
-      _isCategoryProductsLoading = true;
-      _selectedCategoryId = categoryId;
+      viewer++;
     });
+  }
+
+  List<Map<String, dynamic>> allByViewer = [];
+  Future<void> fetchAllByViewer() async {
     try {
       var snapshot = await FirebaseFirestore.instance
           .collection('Product Master')
-          .where('category', isEqualTo: categoryId)
+          .orderBy('viewer', descending: true)
+          .limit(5)
           .get();
-      List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
+      allByViewer = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
           data['createdAt'] =
@@ -208,15 +193,8 @@ class _HomePageState extends State<HomePage> {
         }
         return {'id': doc.id, ...data};
       }).toList();
-      setState(() {
-        _categoryProducts = products;
-        _isCategoryProductsLoading = false;
-      });
     } catch (e) {
-      print('Error fetching category products: $e');
-      setState(() {
-        _isCategoryProductsLoading = false;
-      });
+      print('Error fetching products by viewer count: $e');
     }
   }
 
@@ -257,9 +235,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             //  _buildSearchField(loc),
             const SizedBox(height: 10),
-            // Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            // Text(loc.hotNew, style: ThemeStyles.normal(context).copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             CarouselDemoWithIndicator(imageUrls: imgs),
-            // Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            // Text("Category", style: ThemeStyles.normal(context).copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
@@ -275,40 +253,43 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 10),
-            _buildHorizontalProductList(displayList, productController, loc),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Text("All Products",
+            _buildHorizontalProductList(allByViewer, productController, loc),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("All Products",
                       style: ThemeStyles.normal(context).copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.text,
                       )),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SeeAll(),
-                        ));
-                  },
-                  child: Text(
-                    loc.seeAll,
-                    style: TextStyle(
-                      color: AppColors.primary,
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SeeAll(),
+                          ));
+                    },
+                    child: Text(
+                      loc.seeAll,
+                      style: TextStyle(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
             _buildHorizontalProductList(
-                filteredAllProducts, productController, loc),
+              filteredAllProducts,
+              productController,
+              loc,
+            ),
 
             const SizedBox(height: 10),
           ],
@@ -328,9 +309,7 @@ class _HomePageState extends State<HomePage> {
       decoration: InputDecoration(
         hintText: loc.search,
         prefixIcon: const Icon(Icons.search),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -389,13 +368,14 @@ class _HomePageState extends State<HomePage> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      if (category.id == 'all') {
-                        _selectedCategoryId = null;
-                        _categoryProducts = [];
-                      } else {
-                        _selectedCategoryId = category.id;
-                        fetchCategoryProducts(category.id);
-                      }
+                      _selectedCategoryId = category.id;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PopulorFiltter(categoryId: category.id),
+                        ),
+                      );
                     });
                   },
                   child: Container(
@@ -403,31 +383,28 @@ class _HomePageState extends State<HomePage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          // ? AppColors.grey.withOpacity(0.4)
-                          ? AppColors.primary
-                          : AppColors.second2,
+                      color: isSelected ? AppColors.primary : AppColors.second2,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isSelected
-                            // ? AppColors.grey.withOpacity(0.4)
-                            ? AppColors.primary
-                            : AppColors.second2,
+                        color:
+                            isSelected ? AppColors.primary : AppColors.second2,
                       ),
                     ),
                     child: Row(
                       children: [
                         if (category.imageUrl.isNotEmpty)
-                          Image.memory(base64Decode(category.imageUrl),
-                              width: 30, height: 30),
+                          Image.memory(
+                            base64Decode(category.imageUrl),
+                            width: 30,
+                            height: 30,
+                          ),
                         if (category.imageUrl.isNotEmpty)
                           const SizedBox(width: 8),
-                        Text(
-                          category.name,
-                          style: ThemeStyles.normal(context).copyWith(
-                            color: isSelected ? Colors.white : AppColors.text,
-                          ),
-                        ),
+                        Text(category.name,
+                            style: ThemeStyles.normal(context).copyWith(
+                                color: isSelected
+                                    ? AppColors.text
+                                    : AppColors.text)),
                       ],
                     ),
                   ),
@@ -473,7 +450,7 @@ class _HomePageState extends State<HomePage> {
                         Text("sadfghjdfghn"),
                         const SizedBox(height: 10),
                         Text(
-                          "sdfghdfghsadfghjkhgfdsdfghsdfhghjgfdsweruyykjhgfdsf",
+                          "sdfghdfghsadfghjkhgfdsdfghsdfhghjgfdsweruyyk",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -517,16 +494,25 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           final product = products[index];
           final productModel = ProductsModel.fromMap(product['id'], product);
+          id = product['id'];
           final isFavorite = controller.isInFavorites(productModel);
           return GestureDetector(
-            onTap: () =>
-                context.router.push(DetailRoute(productModel: productModel)),
+            onTap: () {
+              fetchAllByViewer();
+              incrementViewer();
+              viewerCount();
+              context.router.push(DetailRoute(productModel: productModel));
+            },
             child: Container(
               width: 200,
               margin: const EdgeInsets.only(left: 12),
               decoration: BoxDecoration(
                 color: AppColors.second2,
                 borderRadius: BorderRadius.circular(12),
+                // boxShadow: [
+                //   BoxShadow(
+                //       color: Colors.black.withOpacity(0.1), blurRadius: 5),
+                // ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,7 +626,7 @@ class _HomePageState extends State<HomePage> {
                                   style: const TextStyle(fontSize: 10)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
+                                foregroundColor: AppColors.text,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 3),
                                 minimumSize: const Size(0, 32),
@@ -775,7 +761,7 @@ class _CarouselDemoWithIndicatorState extends State<CarouselDemoWithIndicator> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   // color: (Theme.of(context).brightness == Brightness.dark
-                  //         ? Colors.white
+                  //         ? Colors.text
                   //         : Colors.black)
                   //     .withOpacity(_current == entry.key ? 0.9 : 0.4),
                   color: _current == entry.key

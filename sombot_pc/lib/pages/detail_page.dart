@@ -1,11 +1,13 @@
-// ignore_for_file: unused_element, must_be_immutable
+// ignore_for_file: unused_element
 
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -53,7 +55,9 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
+  bool isCard = false;
   Future<void> _fetchCartQty() async {
+    isCard = true;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || widget.productModel == null) return;
     final cartQuery = await FirebaseFirestore.instance
@@ -76,6 +80,7 @@ class _DetailScreenState extends State<DetailScreen> {
         cartPrice = 0.0;
       });
     }
+    isCard = false;
   }
 
   Future<void> _toggleFavorite() async {
@@ -91,7 +96,7 @@ class _DetailScreenState extends State<DetailScreen> {
       // Remove from favorites
       await favQuery.docs.first.reference.delete();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Removed from favorites')),
+        SnackBar(content: Text('Removed from favorites')),
       );
     } else {
       // Add to favorites
@@ -101,7 +106,7 @@ class _DetailScreenState extends State<DetailScreen> {
         'createdAt': FieldValue.serverTimestamp(),
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to favorites')),
+        SnackBar(content: Text('Added to favorites')),
       );
     }
     // Always reload favorite status after change
@@ -111,53 +116,84 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _addToCart() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || widget.productModel == null) return;
-    if (cartQty > 0 && cartDocId != null) {
-      // Already in cart, increment qty
+
+    if (cartDocId != null) {
+      setState(() {
+        cartQty++;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
       await FirebaseFirestore.instance
           .collection('cart')
           .doc(cartDocId)
-          .update({'qty': cartQty + 1});
+          .update({'qty': cartQty});
     } else {
-      // Add new product to cart with qty 1
       final docRef = await FirebaseFirestore.instance.collection('cart').add({
         'userId': user.uid,
         'productId': widget.productModel!.id,
         'qty': 1,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      cartDocId = docRef.id;
+
+      setState(() {
+        cartQty = 1;
+        cartDocId = docRef.id;
+        cartPrice = (widget.productModel?.price ?? 0.0);
+      });
     }
+
     await _fetchCartQty();
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Added to cart')),
+      SnackBar(content: Text('Added to cart')),
     );
   }
 
   Future<void> _increaseQty() async {
     if (cartDocId != null) {
+      setState(() {
+        cartQty++;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
       await FirebaseFirestore.instance
           .collection('cart')
           .doc(cartDocId)
-          .update({'qty': cartQty + 1});
+          .update({'qty': cartQty});
+
       await _fetchCartQty();
+    } else {
+      await _addToCart();
     }
   }
 
   Future<void> _decreaseQty() async {
-    if (cartDocId != null) {
-      if (cartQty > 1) {
-        await FirebaseFirestore.instance
-            .collection('cart')
-            .doc(cartDocId)
-            .update({'qty': cartQty - 1});
-      } else {
-        await FirebaseFirestore.instance
-            .collection('cart')
-            .doc(cartDocId)
-            .delete();
-      }
-      await _fetchCartQty();
+    if (cartDocId == null) return;
+
+    if (cartQty > 1) {
+      setState(() {
+        cartQty--;
+        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('cart')
+          .doc(cartDocId)
+          .update({'qty': cartQty});
+    } else {
+      await FirebaseFirestore.instance
+          .collection('cart')
+          .doc(cartDocId)
+          .delete();
+
+      setState(() {
+        cartQty = 0;
+        cartDocId = null;
+        cartPrice = 0.0;
+      });
     }
+
+    await _fetchCartQty();
   }
 
   Future<void> _removeFromCart() async {
@@ -177,7 +213,7 @@ class _DetailScreenState extends State<DetailScreen> {
     final isFav = controller.isInFavorites(widget.productModel!);
     final loc = AppLocalizations.of(context)!;
     if (isLoading) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -194,7 +230,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 ),
               ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
                 onPressed: () {
                   context.router.pop();
                 },
@@ -221,7 +257,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             SmoothPageIndicator(
               controller: _pageController,
               count: widget.productModel?.imagePreview?.length ?? 0,
@@ -235,9 +271,9 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
             // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,7 +300,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   // StreamBuilder<QuerySnapshot>(
                   //   stream: FirebaseAuth.instance.currentUser == null ||
                   //           widget.productModel == null
-                  //       ? const Stream.empty()
+                  //       ?  Stream.empty()
                   //       : FirebaseFirestore.instance
                   //           .collection('favorites')
                   //           .where('userId',
@@ -289,9 +325,9 @@ class _DetailScreenState extends State<DetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -303,7 +339,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       color: AppColors.text,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -331,7 +367,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -357,7 +393,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -383,7 +419,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -411,7 +447,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -437,7 +473,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -465,7 +501,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -493,7 +529,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   SizedBox(
                     child: Card(
                       color: AppColors.second2,
@@ -520,59 +556,61 @@ class _DetailScreenState extends State<DetailScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: widget.productModel?.quantity == 0
-                            ? null
-                            : _addToCart,
-                        icon: Icon(
-                          Icons.shopping_cart,
-                          color: AppColors.text,
-                        ),
-                        label: Text(
-                          cartQty > 0
-                              ? '${loc.addMore} (${cartQty} in cart)'
-                              : 'Add to Cart',
-                          style: TextStyle(
-                            color: AppColors.text,
-                          ),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStatePropertyAll(AppColors.primary),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.remove_circle_outline,
-                              color: AppColors.text,
-                            ),
-                            onPressed: _decreaseQty,
-                          ),
-                          Text('$cartQty',
-                              style: TextStyle(
-                                fontSize: 16,
+                  SizedBox(height: 20),
+                  isCard
+                      ? CircularProgressIndicator()
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: widget.productModel?.quantity == 0
+                                  ? null
+                                  : _addToCart,
+                              icon: Icon(
+                                Icons.shopping_cart,
                                 color: AppColors.text,
-                              )),
-                          IconButton(
-                            icon: Icon(
-                              Icons.add_circle_outline,
-                              color: AppColors.text,
+                              ),
+                              label: Text(
+                                cartQty > 0
+                                    ? '${loc.addMore} (${cartQty} in cart)'
+                                    : 'Add to Cart',
+                                style: TextStyle(
+                                  color: AppColors.text,
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStatePropertyAll(AppColors.primary),
+                              ),
                             ),
-                            onPressed: _increaseQty,
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.remove_circle_outline,
+                                    color: AppColors.text,
+                                  ),
+                                  onPressed: _decreaseQty,
+                                ),
+                                Text('$cartQty',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.text,
+                                    )),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.add_circle_outline,
+                                    color: AppColors.text,
+                                  ),
+                                  onPressed: _increaseQty,
+                                ),
+                                SizedBox(width: 8),
+                              ],
+                            ),
+                          ],
+                        ),
+                  SizedBox(height: 15),
                 ],
               ),
             )
@@ -600,7 +638,7 @@ class CarouselDemo extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
                 blurRadius: 5,
-                offset: const Offset(0, 3),
+                offset: Offset(0, 3),
               ),
             ],
           ),
@@ -617,8 +655,8 @@ class CarouselDemo extends StatelessWidget {
         autoPlay: true,
         enlargeCenterPage: true,
         enableInfiniteScroll: true,
-        autoPlayInterval: const Duration(seconds: 3),
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
+        autoPlayInterval: Duration(seconds: 3),
+        autoPlayAnimationDuration: Duration(milliseconds: 800),
         viewportFraction: 0.8,
       ),
     );
