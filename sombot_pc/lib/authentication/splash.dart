@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Version : ",
+                      "Version : 1.0.0+1",
                       style: TextStyle(color: theme.unselectedWidgetColor),
                     ),
                     // get form app info

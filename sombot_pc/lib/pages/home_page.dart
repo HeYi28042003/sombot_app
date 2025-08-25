@@ -14,6 +14,7 @@ import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/filtter/populor_filtter.dart';
 import 'package:sombot_pc/pages/seeAll.dart';
+import 'package:sombot_pc/pages/seeAll_popular.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
@@ -234,16 +235,34 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             if (_searchQuery.isEmpty) _buildCategoryList(),
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Text(
-                loc.popular,
-                style: ThemeStyles.normal(context).copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Text(loc.popular,
+                      style: ThemeStyles.normal(context).copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text,
+                      )),
                 ),
-              ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SeeAllPopular(),
+                        ));
+                  },
+                  child: Text(
+                    loc.seeAll,
+                    style: TextStyle(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             _buildHorizontalProductList(allByViewer, productController, loc),

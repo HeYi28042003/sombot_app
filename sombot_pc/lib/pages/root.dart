@@ -59,9 +59,10 @@ class _ExampleState extends State<RootPage> {
             width: 0.5,
           ),
         ),
+        automaticallyImplyLeading: false,
         iconTheme: null,
         title: Image.asset(
-          AppImages.sombotWeb01,
+          AppImages.logApp,
           width: 120,
         ),
         toolbarHeight: 65,
