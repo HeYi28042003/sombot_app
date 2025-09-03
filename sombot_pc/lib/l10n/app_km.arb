@@ -20,5 +20,20 @@
   "chanegAddress" : "ផ្លាស់ប្តូរអាសយដ្ឋាន",
   "seeAll" : "មើលទាំងអស់",
   "hotNew" : "ព័ត៌មានថ្មីៗអំពីផលិតផល",
-  "popular" : "ផលិតផលដែលពេញនិយម"
+  "popular" : "ផលិតផលដែលពេញនិយម",
+  "itemDetail": "ពត៌មានអំពីទំនិញ",
+  "qty": "បរិមាណមានសល់",
+  "screenSize": "ទំហំអេក្រង់",
+  "brand": "ម៉ាក",
+  "hardDiskSize": "ទំហំថាសរឹង",
+  "color": "ពណ៌",
+  "ramSize": "ទំហំ RAM",
+  "status": "ស្ថានភាព",
+  "detailScreen": "អេក្រង់លម្អិត",
+  "allProduct" : "ផលិតផលទាំងអស់",
+  "computer" : "កុំព្យូទ័រ",
+  "monitor" : "ម៉ូនីទ័រ",
+  "profiledetail" : "ពត៌មានលំអិត",
+  "created" : "បានបង្កើត",
+  "themeMode" : "Theme Mode"
 }

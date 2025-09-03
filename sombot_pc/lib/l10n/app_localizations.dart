@@ -223,6 +223,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Popular Products'**
   String get popular;
+
+  /// No description provided for @itemDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Detail'**
+  String get itemDetail;
+
+  /// No description provided for @qty.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity Available'**
+  String get qty;
+
+  /// No description provided for @screenSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen Size'**
+  String get screenSize;
+
+  /// No description provided for @brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get brand;
+
+  /// No description provided for @hardDiskSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard Disk Size'**
+  String get hardDiskSize;
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @ramSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Ram Size'**
+  String get ramSize;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @detailScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail Screen'**
+  String get detailScreen;
+
+  /// No description provided for @allProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'All Product'**
+  String get allProduct;
+
+  /// No description provided for @computer.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer'**
+  String get computer;
+
+  /// No description provided for @monitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor'**
+  String get monitor;
+
+  /// No description provided for @profiledetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Detail'**
+  String get profiledetail;
+
+  /// No description provided for @created.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get created;
+
+  /// No description provided for @themeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'ប្រភេទផ្ទៃខាងក្រោយ'**
+  String get themeMode;
 }
 
 class _AppLocalizationsDelegate

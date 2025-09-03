@@ -117,11 +117,6 @@ class _DetailScreenState extends State<DetailScreen> {
     if (user == null || widget.productModel == null) return;
 
     if (cartDocId != null) {
-      setState(() {
-        cartQty++;
-        cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
-      });
-
       await FirebaseFirestore.instance
           .collection('cart')
           .doc(cartDocId)
@@ -130,12 +125,11 @@ class _DetailScreenState extends State<DetailScreen> {
       final docRef = await FirebaseFirestore.instance.collection('cart').add({
         'userId': user.uid,
         'productId': widget.productModel!.id,
-        'qty': 1,
+        'qty': cartQty,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       setState(() {
-        cartQty = 1;
         cartDocId = docRef.id;
         cartPrice = (widget.productModel?.price ?? 0.0);
       });
@@ -150,51 +144,21 @@ class _DetailScreenState extends State<DetailScreen> {
 
 
   Future<void> _increaseQty() async {
-    if (cartDocId != null) {
       setState(() {
         cartQty++;
         cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
       });
-
-      await FirebaseFirestore.instance
-          .collection('cart')
-          .doc(cartDocId)
-          .update({'qty': cartQty});
-
-      await _fetchCartQty();
-    } else {
-      await _addToCart();
-    }
   }
 
 
   Future<void> _decreaseQty() async {
-    if (cartDocId == null) return;
-
     if (cartQty > 1) {
       setState(() {
         cartQty--;
         cartPrice = (widget.productModel?.price ?? 0.0) * cartQty;
       });
 
-      await FirebaseFirestore.instance
-          .collection('cart')
-          .doc(cartDocId)
-          .update({'qty': cartQty});
-    } else {
-      await FirebaseFirestore.instance
-          .collection('cart')
-          .doc(cartDocId)
-          .delete();
-
-      setState(() {
-        cartQty = 0;
-        cartDocId = null;
-        cartPrice = 0.0;
-      });
-    }
-
-    await _fetchCartQty();
+    } 
   }
 
 
@@ -346,7 +310,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Quantity Available',
+                        loc.qty,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
@@ -374,14 +338,14 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Screen Size: ',
+                        loc.ramSize,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
                         ),
                       ),
                       Text(
-                        '15.6 Inches',
+                        '${widget.productModel?.screenSize ?? 0.0} Inches',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -400,7 +364,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Brand: ',
+                        loc.brand,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
@@ -426,7 +390,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Hard Disk Size: ',
+                        loc.hardDiskSize,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
@@ -454,7 +418,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Color: ',
+                        loc.color,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
@@ -480,7 +444,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'RAM Size: ',
+                        loc.ramSize,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,
@@ -508,7 +472,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Status: ',
+                        loc.status,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.text,

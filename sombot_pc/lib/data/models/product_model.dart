@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductsModel {
@@ -7,7 +8,6 @@ class ProductsModel {
   String? category;
   String? productDetails;
   int? quantity;
-  
   double? price;
   String? expireDate;
   String? supplierId;
@@ -21,6 +21,7 @@ class ProductsModel {
   final int? ramGB;
   final String? gpu;
   final String? style;
+  double? screenSize;
   final Timestamp? createdAt;
 
   ProductsModel({
@@ -43,6 +44,7 @@ class ProductsModel {
     this.ramGB,
     this.gpu,
     this.style,
+    this.screenSize,
     this.createdAt,
   });
 
@@ -66,6 +68,7 @@ class ProductsModel {
       'ramGB': ramGB,
       'gpu': gpu,
       'style': style,
+      'screenSize': screenSize,
       'createdAt': DateTime.now(),
     };
   }
@@ -91,6 +94,11 @@ class ProductsModel {
       ramGB: map['ramGB'],
       gpu: map['gpu'],
       style: map['style'],
+      screenSize: map['screenSize'] != null
+          ? (map['screenSize'] is int
+              ? (map['screenSize'] as int).toDouble()
+              : map['screenSize'] as double)
+          : null,
       createdAt: map['createdAt'] is Timestamp
           ? map['createdAt']
           : Timestamp.fromDate(DateTime.now()),

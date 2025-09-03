@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
 import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/data/models/user_model.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/utils/app_images.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
@@ -17,12 +18,13 @@ class ProfileDetailPage extends StatelessWidget {
 
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = themeNotifier.themeData;
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Profile Detail',
+          loc.profiledetail,
           style: TextStyle(
             color: theme.unselectedWidgetColor,
           ),
@@ -117,7 +119,7 @@ class ProfileDetailPage extends StatelessWidget {
                 Text(data.address ?? '', style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
                 Text(
-                    'Created: ${data.createdAt.toLocal().toString().split(' ')[0]}',
+                    '${loc.created}  ${data.createdAt.toLocal().toString().split(' ')[0]}',
                     style: ThemeStyles.medium(context)),
                 Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
               ],

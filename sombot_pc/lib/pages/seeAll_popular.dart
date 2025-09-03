@@ -12,6 +12,7 @@ import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
+import 'package:sombot_pc/utils/loading_data.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
 class SeeAllPopular extends StatefulWidget {
@@ -68,7 +69,7 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    var screenWidth = MediaQuery.of(context).size.width;
     final loc = AppLocalizations.of(context)!;
     final productController = Provider.of<ProductController>(context);
 
@@ -92,72 +93,7 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
             const SizedBox(height: 10),
             _isLoading ?
               // const Center(child: CircularProgressIndicator())
-              SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: EdgeInsets.only(right: 12),
-          scrollDirection: Axis.horizontal,
-          itemCount: 2,
-          itemBuilder: (context, index) {
-            return Container(
-              width: 200,
-              margin: const EdgeInsets.only(left: 12),
-              decoration: BoxDecoration(
-                color: AppColors.second,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 140,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("sadfghjdfghn"),
-                        const SizedBox(height: 10),
-                        Text(
-                          "sdfghdfghsadfghjkhgfdsdfghsdfhghjgfdsweruyykjhgfdsf",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("\$10000"),
-                            Container(
-                              height: 32,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ).redacted(
-              context: context,
-              redact: true,
-              configuration: RedactedConfiguration(
-                redactedColor: AppColors.second,
-              ),
-            );
-          },
-        ),
-      )
+          LoadingGrid(screenWidth: screenWidth)
           : 
               _buildGrid(_filteredBySearch, loc, productController, screenWidth),
           ],
@@ -212,33 +148,7 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
     );
   }
 
-  Widget _loadingGrid(double screenWidth) {
-    double aspectRatio = screenWidth > 400 ? 0.7 : 0.58;
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: aspectRatio,
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.second2,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 
   Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
       ProductController controller, double screenWidth) {

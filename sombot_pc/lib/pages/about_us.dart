@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()
@@ -8,10 +9,11 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('About Us'),
+        title:  Text(loc.aboutUs),
         // flexibleSpace: Container(
         //   decoration: const BoxDecoration(
         //     gradient: LinearGradient(

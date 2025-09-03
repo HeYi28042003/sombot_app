@@ -70,4 +70,49 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get popular => 'ផលិតផលដែលពេញនិយម';
+
+  @override
+  String get itemDetail => 'ពត៌មានអំពីទំនិញ';
+
+  @override
+  String get qty => 'បរិមាណមានសល់';
+
+  @override
+  String get screenSize => 'ទំហំអេក្រង់';
+
+  @override
+  String get brand => 'ម៉ាក';
+
+  @override
+  String get hardDiskSize => 'ទំហំថាសរឹង';
+
+  @override
+  String get color => 'ពណ៌';
+
+  @override
+  String get ramSize => 'ទំហំ RAM';
+
+  @override
+  String get status => 'ស្ថានភាព';
+
+  @override
+  String get detailScreen => 'អេក្រង់លម្អិត';
+
+  @override
+  String get allProduct => 'ផលិតផលទាំងអស់';
+
+  @override
+  String get computer => 'កុំព្យូទ័រ';
+
+  @override
+  String get monitor => 'ម៉ូនីទ័រ';
+
+  @override
+  String get profiledetail => 'ពត៌មានលំអិត';
+
+  @override
+  String get created => 'បានបង្កើត';
+
+  @override
+  String get themeMode => 'Theme Mode';
 }

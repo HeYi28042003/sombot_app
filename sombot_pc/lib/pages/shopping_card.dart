@@ -160,10 +160,13 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(item['productName'] ?? '',
-                                                style: const TextStyle(
+                                                style:  TextStyle(
+                                                  color: theme
+                                                    .unselectedWidgetColor
+                                                    .withOpacity(0.7),
                                                     fontSize: 16,
                                                     fontWeight:
-                                                        FontWeight.bold)),
+                                                        FontWeight.bold,)),
                                             const SizedBox(height: 4),
                                             Text(
                                               item['productDetails'] ?? '',

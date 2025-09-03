@@ -70,4 +70,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get popular => 'Popular Products';
+
+  @override
+  String get itemDetail => 'Item Detail';
+
+  @override
+  String get qty => 'Quantity Available';
+
+  @override
+  String get screenSize => 'Screen Size';
+
+  @override
+  String get brand => 'Brand';
+
+  @override
+  String get hardDiskSize => 'Hard Disk Size';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get ramSize => 'Ram Size';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get detailScreen => 'Detail Screen';
+
+  @override
+  String get allProduct => 'All Product';
+
+  @override
+  String get computer => 'Computer';
+
+  @override
+  String get monitor => 'Monitor';
+
+  @override
+  String get profiledetail => 'Profile Detail';
+
+  @override
+  String get created => 'Created';
+
+  @override
+  String get themeMode => 'ប្រភេទផ្ទៃខាងក្រោយ';
 }

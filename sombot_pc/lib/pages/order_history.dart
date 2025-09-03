@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/theme_notifier.dart';
+import 'package:sombot_pc/l10n/app_localizations.dart';
 
 @RoutePage()
 class OrderHistoryPage extends StatelessWidget {
@@ -13,6 +14,7 @@ class OrderHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final loc = AppLocalizations.of(context)!;
 
     if (user == null) {
       return const Scaffold(
@@ -27,7 +29,7 @@ class OrderHistoryPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Order History',
+          loc.orderHistory,
           style: TextStyle(
             color: theme.unselectedWidgetColor,
           ),

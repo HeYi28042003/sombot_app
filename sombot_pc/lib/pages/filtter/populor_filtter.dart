@@ -269,9 +269,10 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                               product['productName'],
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
-                              style: TextStyle( fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.second,),
+                              style: ThemeStyles.normal(context).copyWith(
+                            fontSize: 12,
+                            color: AppColors.text,
+                          ),
                             ),
                           ),
                           IconButton(
@@ -295,7 +296,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                                         : Icons.favorite_border,
                                     color: isFavorite
                                         ? AppColors.error
-                                        : AppColors.second,
+                                        : AppColors.text,
                                     size: 30,
                                   ),
                           ),
@@ -305,9 +306,10 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                         product['productDetails'],
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: TextStyle( fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.second,)
+                        style: ThemeStyles.normal(context).copyWith(
+                            fontSize: 12,
+                            color: AppColors.text,
+                          ),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -315,9 +317,10 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                         children: [
                           Text(
                             '\$${product['price'] ?? ''}',
-                            style: TextStyle( fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.second,)
+                            style: ThemeStyles.normal(context).copyWith(
+                            fontSize: 12,
+                            color: AppColors.text,
+                          ),
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {

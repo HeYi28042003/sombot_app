@@ -160,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () => context.router.push(const OrderHistoryRoute())),
             _buildMenuItem(Icons.language, loc.changeLanguage, theme,
                 onTap: () => showLanguageBottomSheet(context, theme)),
-            _buildMenuItem(Icons.color_lens, "Theme Mode", theme, onTap: () {
+            _buildMenuItem(Icons.color_lens, loc.themeMode, theme, onTap: () {
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(

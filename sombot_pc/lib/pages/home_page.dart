@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
             CarouselDemoWithIndicator(imageUrls: imgs),
             // Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            if (_searchQuery.isEmpty) _buildCategoryList(),
+            if (_searchQuery.isEmpty) _buildCategoryList(loc),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,11 +272,12 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
-                  child: Text("All Products",
+                  child: Text(loc.allProduct,
                       style: ThemeStyles.normal(context).copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.text,
+                        fontFamily: 'Battambang-Bold',
                       )),
                 ),
                 TextButton(
@@ -325,7 +326,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildCategoryList(AppLocalizations loc) {
     return _isCategoryLoading
         // ? const Center(child: CircularProgressIndicator())
         ? SizedBox(
@@ -413,7 +414,7 @@ class _HomePageState extends State<HomePage> {
                         if (category.imageUrl.isNotEmpty)
                           const SizedBox(width: 8),
                         Text(
-                          category.name,
+                           category.name,
                           style: ThemeStyles.normal(context).copyWith(
                             color: isSelected ? Colors.white : AppColors.text,
                           ),

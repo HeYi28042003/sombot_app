@@ -6,6 +6,7 @@ import 'package:sombot_pc/api/map_api.dart';
 import 'package:sombot_pc/data/models/map_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/map.dart';
+import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -65,7 +66,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
   }
 
   Future<void> _openABAApp() async {
-    final uri = Uri.parse("aba://open");
+    final uri = Uri.parse("https://link.payway.com.kh/ABAPAYXj375803b");
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
@@ -176,6 +177,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         'paymentMethod': _selectedPayment,
         'address': addressText,
         'items': items,
+        'status': 'pending',
       };
 
       try {
@@ -272,13 +274,13 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                         await _openABAApp();
                       },
                     ),
-                    RadioListTile<String>(
-                      value: 'ACLEDA',
-                      groupValue: _selectedPayment,
-                      title: const Text('Pay with ACLEDA'),
-                      onChanged: (value) =>
-                          setState(() => _selectedPayment = value),
-                    ),
+                    // RadioListTile<String>(
+                    //   value: 'ACLEDA',
+                    //   groupValue: _selectedPayment,
+                    //   title: const Text('Pay with ACLEDA'),
+                    //   onChanged: (value) =>
+                    //       setState(() => _selectedPayment = value),
+                    // ),
                     RadioListTile<String>(
                       value: 'COD',
                       groupValue: _selectedPayment,
@@ -309,7 +311,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
@@ -326,7 +328,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           children: [
             Text(
               place?.displayName ?? 'Your Address',
-              style: ThemeStyles.normal(context),
+              style: ThemeStyles.normal(context).copyWith(color: AppColors.text),
             ),
           ],
         ),
