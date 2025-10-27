@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @themeMode.
   ///
   /// In en, this message translates to:
-  /// **'ប្រភេទផ្ទៃខាងក្រោយ'**
+  /// **'Theme Mode'**
   String get themeMode;
 }
 

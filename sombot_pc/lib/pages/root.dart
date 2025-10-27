@@ -8,14 +8,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
-import 'package:sombot_pc/pages/chat.dart';
+import 'package:sombot_pc/pages/chat/chat.dart';
 import 'package:sombot_pc/pages/favorite.dart';
-import 'package:sombot_pc/pages/home_page.dart';
-import 'package:sombot_pc/pages/profile_page.dart';
+import 'package:sombot_pc/pages/home/home_page.dart';
+import 'package:sombot_pc/pages/setting/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sombot_pc/pages/search/search_product.dart';
-import 'package:sombot_pc/pages/shopping_card.dart';
+import 'package:sombot_pc/pages/order/shopping_card.dart';
 import 'package:sombot_pc/utils/app_images.dart';
 import 'package:sombot_pc/utils/colors.dart';
 

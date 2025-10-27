@@ -25,7 +25,7 @@ Future<void> main() async {
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ChangeNotifierProvider(create: (_) => AuthController()),
-      ChangeNotifierProvider(create: (_) => ProductController()),
+      ChangeNotifierProvider(create: (_) => ProductController()..init()),
       ChangeNotifierProvider(create: (_) => ThemeNotifier()),
     ], child: const MyApp()),
   );

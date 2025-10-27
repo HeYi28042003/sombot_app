@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Form(
             key: _formKey,
             child: Column(
@@ -73,10 +73,10 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'Login',
                   style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.text,
-                  ),
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.text,
+                      fontFamily: "Battambang-Bold"),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -87,20 +87,18 @@ class _LoginPageState extends State<LoginPage> {
                     // labelText: 'Email',
                     hintText: "Email",
                     hintStyle: TextStyle(
-                      color: AppColors.grey,
-                    ),
+                        color: AppColors.grey, fontFamily: "Battambang"),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(
-                        color: AppColors.text,
-                        width: 1.5,
+                        color: AppColors.grey,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(
-                        color: AppColors.primary,
-                        width: 1.5,
+                        color: AppColors.grey,
+                        width: 1,
                       ),
                     ),
                     suffixIcon: Icon(
@@ -130,20 +128,19 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     hintText: 'Password',
                     hintStyle: TextStyle(
-                      color: AppColors.grey,
-                    ),
+                        color: AppColors.grey, fontFamily: "Battambang"),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(
-                        color: AppColors.text,
-                        width: 1.5,
+                        color: AppColors.grey,
+                        width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide(
-                        color: AppColors.primary,
-                        width: 1.5,
+                        color: AppColors.grey,
+                        width: 1,
                       ),
                     ),
                     suffixIcon: IconButton(
@@ -177,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                       side: WidgetStatePropertyAll(
                         BorderSide(
                           color: AppColors.second2,
-                          width: 1.0,
+                          width: 1,
                         ),
                       ),
                     ),
@@ -187,9 +184,9 @@ class _LoginPageState extends State<LoginPage> {
                           : Text(
                               'Login',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  fontFamily: "Battambang-Bold"),
                             ),
                     ),
                   ),
@@ -206,36 +203,49 @@ class _LoginPageState extends State<LoginPage> {
                 //     ),
                 //   ),
                 // ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.router.pushNamed('/signup');
-                    },
-                    style: ButtonStyle(
-                      foregroundColor:
-                          WidgetStatePropertyAll(AppColors.primary),
-                      backgroundColor:
-                          WidgetStatePropertyAll(AppColors.background),
-                      side: WidgetStatePropertyAll(
-                        BorderSide(
-                          color: AppColors.primary,
-                          width: 1.0,
-                        ),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Are you already have account?'),
+                    TextButton(
+                        onPressed: () {
+                          context.router.pushNamed('/signup');
+                        },
+                        child: Text('Sign Up'))
+                  ],
                 ),
+
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: 50,
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       context.router.pushNamed('/signup');
+                //     },
+                //     style: ButtonStyle(
+                //       foregroundColor:
+                //           WidgetStatePropertyAll(AppColors.primary),
+                //       backgroundColor:
+                //           WidgetStatePropertyAll(AppColors.background),
+                //       side: WidgetStatePropertyAll(
+                //         BorderSide(
+                //           color: AppColors.primary,
+                //           width: 1.0,
+                //         ),
+                //       ),
+                //     ),
+                //     child: Center(
+                //       child: Text(
+                //         'Register',
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.bold,
+                //           fontSize: 16,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

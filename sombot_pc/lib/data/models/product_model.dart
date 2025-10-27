@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductsModel {
-  String? id;
+  String id;
   String? productCode;
   String? productName;
   String? category;
@@ -25,7 +25,7 @@ class ProductsModel {
   final Timestamp? createdAt;
 
   ProductsModel({
-    this.id,
+    required this.id,
     this.productCode,
     this.productName,
     this.category,

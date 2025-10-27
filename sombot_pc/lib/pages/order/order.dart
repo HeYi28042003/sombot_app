@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sombot_pc/api/map_api.dart';
 import 'package:sombot_pc/data/models/map_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
-import 'package:sombot_pc/pages/map.dart';
+import 'package:sombot_pc/pages/order/map.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 import 'package:url_launcher/url_launcher.dart';

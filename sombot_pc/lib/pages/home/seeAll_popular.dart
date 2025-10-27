@@ -6,26 +6,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:redacted/redacted.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
+import 'package:sombot_pc/utils/loading_data.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
-class SeeAll extends StatefulWidget {
-  const SeeAll({super.key});
+class SeeAllPopular extends StatefulWidget {
+  const SeeAllPopular({super.key});
 
   @override
-  State<SeeAll> createState() => _SeeAllState();
+  State<SeeAllPopular> createState() => _SeeAllPopularState();
 }
 
-class _SeeAllState extends State<SeeAll> {
-  List<Map<String, dynamic>> _orders = [];
+class _SeeAllPopularState extends State<SeeAllPopular> {
   bool _isLoading = true;
-  String? _selectedCategoryId;
-  List<Map<String, dynamic>> _categoryProducts = [];
-  bool _isCategoryProductsLoading = false;
 
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -33,43 +31,22 @@ class _SeeAllState extends State<SeeAll> {
   @override
   void initState() {
     super.initState();
-    fetchOrders();
+    fetchAllByViewer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false)
           .loadFavoritesFromFirestore();
     });
   }
 
-  Future<void> fetchOrders() async {
+  List<Map<String, dynamic>> allByViewer = [];
+  Future<void> fetchAllByViewer() async {
     try {
-      var snapshot =
-          await FirebaseFirestore.instance.collection('Product Master').get();
-      List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-      setState(() {
-        _orders = orders;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching orders: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> fetchCategoryProducts(String categoryId) async {
-    setState(() {
-      _isCategoryProductsLoading = true;
-      _selectedCategoryId = categoryId;
-    });
-    try {
+      _isLoading = true;
       var snapshot = await FirebaseFirestore.instance
           .collection('Product Master')
-          .where('category', isEqualTo: categoryId)
+          .orderBy('viewer', descending: true)
           .get();
-      List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
+      allByViewer = snapshot.docs.map((doc) {
         final data = doc.data();
         if (data['createdAt'] is Timestamp) {
           data['createdAt'] =
@@ -77,38 +54,27 @@ class _SeeAllState extends State<SeeAll> {
         }
         return {'id': doc.id, ...data};
       }).toList();
-      setState(() {
-        _categoryProducts = products;
-        _isCategoryProductsLoading = false;
-      });
+      _isLoading = false;
     } catch (e) {
-      print('Error fetching category products: $e');
-      setState(() {
-        _isCategoryProductsLoading = false;
-      });
+      print('Error fetching products by viewer count: $e');
     }
+  }
+
+  List<Map<String, dynamic>> get _filteredBySearch {
+    if (_searchQuery.isEmpty) return allByViewer;
+    return allByViewer.where((product) {
+      final name = (product['productName'] ?? '').toString().toLowerCase();
+      final details =
+          (product['productDetails'] ?? '').toString().toLowerCase();
+      return name.contains(_searchQuery) || details.contains(_searchQuery);
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    var screenWidth = MediaQuery.of(context).size.width;
     final loc = AppLocalizations.of(context)!;
     final productController = Provider.of<ProductController>(context);
-
-    final allList = _selectedCategoryId == null ? _orders : _categoryProducts;
-    final displayList = _searchQuery.isEmpty
-        ? allList
-        : allList.where((product) {
-            final name =
-                (product['productName'] ?? '').toString().toLowerCase();
-            final details =
-                (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) ||
-                details.contains(_searchQuery);
-          }).toList();
-
-    final isLoading =
-        _selectedCategoryId == null ? _isLoading : _isCategoryProductsLoading;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -127,11 +93,12 @@ class _SeeAllState extends State<SeeAll> {
           children: [
             // _buildSearchField(loc),
             const SizedBox(height: 10),
-            if (isLoading)
-              // const Center(child: CircularProgressIndicator())
-              _loadingGrid(screenWidth)
-            else
-              _buildGrid(displayList, loc, productController, screenWidth),
+            _isLoading
+                ?
+                // const Center(child: CircularProgressIndicator())
+                LoadingGrid(screenWidth: screenWidth)
+                : _buildGrid(
+                    _filteredBySearch, loc, productController, screenWidth),
           ],
         ),
       ),
@@ -146,7 +113,7 @@ class _SeeAllState extends State<SeeAll> {
         child: TextField(
           cursorColor: AppColors.primary,
           style: TextStyle(
-            color: AppColors.text,
+            color: AppColors.transparent,
           ),
           controller: _searchController,
           onChanged: (value) {
@@ -157,7 +124,7 @@ class _SeeAllState extends State<SeeAll> {
           decoration: InputDecoration(
             hintText: loc.search,
             hintStyle: TextStyle(
-              color: AppColors.grey,
+              color: AppColors.transparent,
             ),
             prefixIcon: Icon(
               Icons.search,
@@ -181,34 +148,6 @@ class _SeeAllState extends State<SeeAll> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _loadingGrid(double screenWidth) {
-    double aspectRatio = screenWidth > 400 ? 0.7 : 0.58;
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: aspectRatio,
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.second2,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
-          ),
-        );
-      },
     );
   }
 

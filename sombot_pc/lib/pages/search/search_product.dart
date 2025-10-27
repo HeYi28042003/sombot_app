@@ -5,80 +5,19 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
-import 'package:sombot_pc/pages/detail_page.dart';
+import 'package:sombot_pc/pages/home/detail_page.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
-class SearchProductPage extends StatefulWidget {
+class SearchProductPage extends StatelessWidget {
   const SearchProductPage({super.key});
 
   @override
-  State<SearchProductPage> createState() => _SearchProductPageState();
-}
-
-class _SearchProductPageState extends State<SearchProductPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  List<ProductsModel> _allProduct = [];
-  List<ProductsModel> _filteredProduct = [];
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // fetchProducts();
-    _controller = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> fetchProducts() async {
-    try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('Product Master')
-          .limit(50)
-          .get();
-      List<ProductsModel> products = snapshot.docs.map((doc) {
-        var id = doc.id;
-        return ProductsModel.fromMap(id, doc.data());
-      }).toList();
-      setState(() {
-        _allProduct = products;
-        _filteredProduct = products;
-      });
-    } catch (e) {
-      print('Error fetching all products: $e');
-    }
-  }
-
-  void _onSearchChanged(String value) {
-    setState(() {
-      if (value.isEmpty) {
-        _filteredProduct = [];
-        _searchController.clear();
-        return;
-      }
-      {
-        fetchProducts();
-      }
-
-      _filteredProduct = _allProduct.where((product) {
-        final name = (product.productName ?? '').toLowerCase();
-        final details = (product.productDetails ?? '').toLowerCase();
-        return name.contains(value.toLowerCase()) ||
-            details.contains(value.toLowerCase());
-      }).toList();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final productController = context.watch<ProductController>();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -86,7 +25,7 @@ class _SearchProductPageState extends State<SearchProductPage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: TextField(
-              controller: _searchController,
+              controller: productController.searchController,
               cursorColor: AppColors.primary,
               style: TextStyle(
                 color: AppColors.text,
@@ -112,24 +51,24 @@ class _SearchProductPageState extends State<SearchProductPage>
                     color: AppColors.primary,
                   ),
                 ),
-                suffixIcon: _searchController.text.isNotEmpty
+                suffixIcon: productController.searchController.text.isNotEmpty
                     ? IconButton(
                         icon: Icon(
                           Icons.clear,
                           color: AppColors.text,
                         ),
                         onPressed: () {
-                          _searchController.clear();
-                          _onSearchChanged('');
+                          productController.searchController.clear();
+                          productController.onSearchChanged('');
                         },
                       )
                     : null,
               ),
-              onChanged: _onSearchChanged,
+              onChanged: productController.onSearchChanged,
             ),
           ),
           Expanded(
-            child: _filteredProduct.isEmpty
+            child: productController.searchController.text.isEmpty
                 ? Center(
                     child: Text(
                       'No products found',
@@ -141,21 +80,19 @@ class _SearchProductPageState extends State<SearchProductPage>
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: ListView.builder(
-                      itemCount: _filteredProduct.length,
+                      itemCount: productController.filteredProduct.length,
                       itemBuilder: (context, index) {
-                        var product = _filteredProduct[index];
+                        var product = productController.filteredProduct[index];
                         return Card(
                           color: AppColors.second2,
-                          // elevation: 2,
-
                           child: ListTile(
                             leading: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                color: AppColors.grey,
+                                // color: AppColors.grey,
                               ),
                               child: Image.memory(
-                                Base64Codec().decode(product.image ?? ''),
+                                Base64Codec().decode(product['image'] ?? ''),
                                 width: 50,
                                 height: double.infinity,
                                 fit: BoxFit.cover,
@@ -164,30 +101,32 @@ class _SearchProductPageState extends State<SearchProductPage>
                               ),
                             ),
                             title: Text(
-                              product.productName ?? 'No Name',
+                              product['productName'] ?? 'No Name',
                               style: ThemeStyles.medium(context).copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.text,
                               ),
                             ),
                             subtitle: Text(
-                              product.productDetails ?? '',
+                              product['productDetails'] ?? '',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Text(
-                              '\$${product.price ?? 'N/A'}',
+                              '\$${product['price'] ?? 'N/A'}',
                               style: ThemeStyles.medium(context).copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.accentDark,
+                                color: AppColors.success,
                               ),
                             ),
                             onTap: () {
+                              final productModel =
+                                  ProductsModel.fromMap(product['id'], product);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailScreen(
-                                    productModel: product,
+                                    productModel: productModel,
                                   ),
                                 ),
                               );

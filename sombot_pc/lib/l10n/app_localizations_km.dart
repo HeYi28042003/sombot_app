@@ -114,5 +114,5 @@ class AppLocalizationsKm extends AppLocalizations {
   String get created => 'បានបង្កើត';
 
   @override
-  String get themeMode => 'Theme Mode';
+  String get themeMode => 'ប្រភេទផ្ទៃខាងក្រោយ';
 }

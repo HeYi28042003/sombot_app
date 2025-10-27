@@ -13,11 +13,12 @@ import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/filtter/populor_filtter.dart';
-import 'package:sombot_pc/pages/seeAll.dart';
-import 'package:sombot_pc/pages/seeAll_popular.dart';
+import 'package:sombot_pc/pages/home/seeAll.dart';
+import 'package:sombot_pc/pages/home/seeAll_popular.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
+import 'package:sombot_pc/model/category_model.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -27,169 +28,40 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class CategoryModel {
-  final String id;
-  final String name;
-  final String imageUrl;
-
-  CategoryModel({required this.id, required this.name, required this.imageUrl});
-
-  factory CategoryModel.fromMap(String id, Map<String, dynamic> data) {
-    return CategoryModel(
-      id: id,
-      name: data['categoryName'] ?? '',
-      imageUrl: data['imageBase64'] ?? '',
-    );
-  }
-}
-
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> _orders = [];
-  //  bool _isLoading = true;
-  List<CategoryModel> _categories = [];
-  bool _isCategoryLoading = true;
   String? _selectedCategoryId;
-  List<Map<String, dynamic>> _categoryProducts = [];
-  //bool _isCategoryProductsLoading = false;
 
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+  // final TextEditingController _searchController = TextEditingController();
+  // String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    fetchCategories();
-    fetchProducts();
-    fetchNews();
-    fetchAllByViewer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false)
           .loadFavoritesFromFirestore();
     });
   }
 
-  List<Map<String, dynamic>> _allProduct = [];
-  Future<void> fetchProducts() async {
-    try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('Product Master')
-          .limit(20)
-          .get();
-      List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-      setState(() {
-        _allProduct = products;
-      });
-    } catch (e) {
-      print('Error fetching all products: $e');
-    }
-  }
-
-  List<String> imgs = [];
-
-  Future<void> fetchNews() async {
-    try {
-      // Fix: collection name should not have `=`, assuming you meant "Hot-News"
-      var response =
-          await FirebaseFirestore.instance.collection("Hot_News").get();
-
-      // Loop through each document and extract the image URL (assumes field is named "image" or similar)
-      for (var doc in response.docs) {
-        String? imageUrl = doc.data()['image']; // Adjust field name if needed
-        if (imageUrl != null) {
-          imgs.add(imageUrl);
-        }
-      }
-    } catch (e) {
-      print('Error fetching news: $e');
-    }
-  }
-
-
-  Future<void> fetchCategories() async {
-    try {
-      var snapshot =
-          await FirebaseFirestore.instance.collection('categories').get();
-      if (!mounted) return;
-      List<CategoryModel> categories = snapshot.docs
-          .map((doc) => CategoryModel.fromMap(doc.id, doc.data()))
-          .toList();
-      categories.insert(0, CategoryModel(id: 'all', name: 'All', imageUrl: ''));
-      setState(() {
-        _categories = categories;
-        _isCategoryLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      print('Error fetching categories: $e');
-      setState(() {
-        _isCategoryLoading = false;
-      });
-    }
-  }
-
-  // Future<void> fetchCategoryProducts(String categoryId) async {
-  //   setState(() {
-  //     _isCategoryProductsLoading = true;
-  //     _selectedCategoryId = categoryId;
-  //   });
-  //   try {
-  //     var snapshot = await FirebaseFirestore.instance
-  //         .collection('Product Master')
-  //         .where('category', isEqualTo: categoryId)
-  //         .get();
-  //     List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
-  //       final data = doc.data();
-  //       if (data['createdAt'] is Timestamp) {
-  //         data['createdAt'] =
-  //             (data['createdAt'] as Timestamp).toDate().toIso8601String();
-  //       }
-  //       return {'id': doc.id, ...data};
-  //     }).toList();
-  //     setState(() {
-  //       _categoryProducts = products;
-  //       _isCategoryProductsLoading = false;
-  //     });
-  //   } catch (e) {
-  //     print('Error fetching category products: $e');
-  //     setState(() {
-  //       _isCategoryProductsLoading = false;
-  //     });
-  //   }
-  // }
   String id = '';
   int viewer = 0;
   Future<void> viewerCount() async {
     try {
-      final doc = await FirebaseFirestore.instance.collection('Product Master').doc(id).update({
+      await FirebaseFirestore.instance
+          .collection('Product Master')
+          .doc(id)
+          .update({
         'viewer': viewer,
       });
-      
     } catch (e) {
       print('Error fetching viewer count: $e');
     }
   }
+
   void incrementViewer() {
     setState(() {
       viewer++;
     });
-  }
-
-  List<Map<String,dynamic>> allByViewer = [];
-  Future<void> fetchAllByViewer() async {
-    try {
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').orderBy('viewer', descending: true).limit(5).get();
-       allByViewer = snapshot.docs.map((doc) {
-        final data = doc.data();
-        if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
-        }
-        return {'id': doc.id, ...data};
-      }).toList();
-    } catch (e) {
-      print('Error fetching products by viewer count: $e');
-    }
   }
 
   @override
@@ -197,43 +69,40 @@ class _HomePageState extends State<HomePage> {
     final loc = AppLocalizations.of(context)!;
     final productController = Provider.of<ProductController>(context);
 
-    final allList = _selectedCategoryId == null ? _orders : _categoryProducts;
-    final displayList = _searchQuery.isEmpty
-        ? allList
-        : allList.where((product) {
-            final name =
-                (product['productName'] ?? '').toString().toLowerCase();
-            final details =
-                (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) ||
-                details.contains(_searchQuery);
-          }).toList();
+    // final allList = _selectedCategoryId == null ? _orders : _categoryProducts;
+    // final displayList = _searchQuery.isEmpty
+    //     ? allList
+    //     : allList.where((product) {
+    //         final name =
+    //             (product['productName'] ?? '').toString().toLowerCase();
+    //         final details =
+    //             (product['productDetails'] ?? '').toString().toLowerCase();
+    //         return name.contains(_searchQuery) ||
+    //             details.contains(_searchQuery);
+    //       }).toList();
 
-    final filteredAllProducts = _searchQuery.isEmpty
-        ? _allProduct
-        : _allProduct.where((product) {
-            final name =
-                (product['productName'] ?? '').toString().toLowerCase();
-            final details =
-                (product['productDetails'] ?? '').toString().toLowerCase();
-            return name.contains(_searchQuery) ||
-                details.contains(_searchQuery);
-          }).toList();
+    // final filteredAllProducts = _searchQuery.isEmpty
+    //     ? _allProduct
+    //     : _allProduct.where((product) {
+    //         final name =
+    //             (product['productName'] ?? '').toString().toLowerCase();
+    //         final details =
+    //             (product['productDetails'] ?? '').toString().toLowerCase();
+    //         return name.contains(_searchQuery) ||
+    //             details.contains(_searchQuery);
+    //       }).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        // padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //  _buildSearchField(loc),
             const SizedBox(height: 10),
-            // Text(loc.hotNew, style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
-            CarouselDemoWithIndicator(imageUrls: imgs),
-            // Text("Category", style: normal.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+            CarouselDemoWithIndicator(imageUrls: productController.imgs),
             const SizedBox(height: 10),
-            if (_searchQuery.isEmpty) _buildCategoryList(loc),
+            _buildCategoryList(
+                loc, productController.categories, productController),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +134,8 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const SizedBox(height: 10),
-            _buildHorizontalProductList(allByViewer, productController, loc),
+            _buildHorizontalProductList(
+                productController.allByViewer, productController, loc),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -299,8 +169,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 5),
             _buildHorizontalProductList(
-                filteredAllProducts, productController, loc),
-
+                productController.allProduct, productController, loc),
             const SizedBox(height: 10),
           ],
         ),
@@ -308,26 +177,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSearchField(AppLocalizations loc) {
-    return TextField(
-      controller: _searchController,
-      onChanged: (value) {
-        setState(() {
-          _searchQuery = value.trim().toLowerCase();
-        });
-      },
-      decoration: InputDecoration(
-        hintText: loc.search,
-        prefixIcon: const Icon(Icons.search),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
-  }
+  // Widget _buildSearchField(AppLocalizations loc) {
+  //   return TextField(
+  //     controller: _searchController,
+  //     onChanged: (value) {
+  //       setState(() {
+  //         _searchQuery = value.trim().toLowerCase();
+  //       });
+  //     },
+  //     decoration: InputDecoration(
+  //       hintText: loc.search,
+  //       prefixIcon: const Icon(Icons.search),
+  //       border: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildCategoryList(AppLocalizations loc) {
-    return _isCategoryLoading
+  Widget _buildCategoryList(AppLocalizations loc,
+      List<CategoryModel> _categories, ProductController productController) {
+    return productController.isLoading
         // ? const Center(child: CircularProgressIndicator())
         ? SizedBox(
             height: 60,
@@ -384,7 +254,8 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PopulorFiltter(categoryId: category.id),
+                          builder: (context) =>
+                              PopulorFiltter(categoryId: category.id),
                         ),
                       );
                     });
@@ -414,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                         if (category.imageUrl.isNotEmpty)
                           const SizedBox(width: 8),
                         Text(
-                           category.name,
+                          category.name,
                           style: ThemeStyles.normal(context).copyWith(
                             color: isSelected ? Colors.white : AppColors.text,
                           ),
@@ -512,7 +383,6 @@ class _HomePageState extends State<HomePage> {
           final isFavorite = controller.isInFavorites(productModel);
           return GestureDetector(
             onTap: () {
-              fetchAllByViewer();
               incrementViewer();
               viewerCount();
               context.router.push(DetailRoute(productModel: productModel));

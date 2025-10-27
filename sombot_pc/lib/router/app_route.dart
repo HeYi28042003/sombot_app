@@ -4,15 +4,15 @@ import 'package:sombot_pc/authentication/login_page.dart';
 import 'package:sombot_pc/authentication/signUp_page.dart';
 import 'package:sombot_pc/authentication/splash.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
-import 'package:sombot_pc/pages/about_us.dart';
-import 'package:sombot_pc/pages/chat.dart';
-import 'package:sombot_pc/pages/detail_page.dart';
+import 'package:sombot_pc/pages/setting/about_us.dart';
+import 'package:sombot_pc/pages/chat/chat.dart';
+import 'package:sombot_pc/pages/home/detail_page.dart';
 import 'package:sombot_pc/pages/favorite.dart';
-import 'package:sombot_pc/pages/home_page.dart';
-import 'package:sombot_pc/pages/map.dart';
-import 'package:sombot_pc/pages/order_history.dart';
-import 'package:sombot_pc/pages/order_product.dart';
-import 'package:sombot_pc/pages/profile_page.dart';
+import 'package:sombot_pc/pages/home/home_page.dart';
+import 'package:sombot_pc/pages/order/map.dart';
+import 'package:sombot_pc/pages/setting/order_history.dart';
+import 'package:sombot_pc/pages/order/order_product.dart';
+import 'package:sombot_pc/pages/setting/profile_page.dart';
 
 import '../pages/root.dart';
 

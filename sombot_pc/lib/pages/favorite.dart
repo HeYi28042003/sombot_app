@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'dart:convert';
-import 'package:sombot_pc/pages/detail_page.dart';
+import 'package:sombot_pc/pages/home/detail_page.dart';
 import 'package:sombot_pc/utils/colors.dart';
 
 @RoutePage()

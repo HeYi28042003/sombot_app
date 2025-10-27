@@ -6,25 +6,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:redacted/redacted.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
-import 'package:sombot_pc/utils/loading_data.dart';
 import 'package:sombot_pc/utils/text_style.dart';
 
-class SeeAllPopular extends StatefulWidget {
-  const SeeAllPopular({super.key});
+class SeeAll extends StatefulWidget {
+  const SeeAll({super.key});
 
   @override
-  State<SeeAllPopular> createState() => _SeeAllPopularState();
+  State<SeeAll> createState() => _SeeAllState();
 }
 
-class _SeeAllPopularState extends State<SeeAllPopular> {
+class _SeeAllState extends State<SeeAll> {
+  List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
-
+  String? _selectedCategoryId;
+  List<Map<String, dynamic>> _categoryProducts = [];
+  bool _isCategoryProductsLoading = false;
 
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -32,47 +33,92 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
   @override
   void initState() {
     super.initState();
-    fetchAllByViewer();
+    fetchOrders();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductController>(context, listen: false)
           .loadFavoritesFromFirestore();
     });
   }
 
-   List<Map<String,dynamic>> allByViewer = [];
-  Future<void> fetchAllByViewer() async {
+  Future<void> fetchOrders() async {
     try {
-      _isLoading = true;
-      var snapshot = await FirebaseFirestore.instance.collection('Product Master').orderBy('viewer', descending: true).get();
-       allByViewer = snapshot.docs.map((doc) {
+      // Use pagination and limit to improve performance
+      var snapshot = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .limit(50) // Limit results for better performance
+          .get();
+          
+      List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
         final data = doc.data();
+        // Convert timestamp to string to avoid UI issues
         if (data['createdAt'] is Timestamp) {
           data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
         }
         return {'id': doc.id, ...data};
-        
       }).toList();
-      _isLoading = false;
+      
+      setState(() {
+        _orders = orders;
+        _isLoading = false;
+      });
     } catch (e) {
-      print('Error fetching products by viewer count: $e');
+      print('Error fetching orders: $e');
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  List<Map<String,dynamic>> get _filteredBySearch {
-    if (_searchQuery.isEmpty) return allByViewer;
-    return allByViewer.where((product) {
-      final name = (product['productName'] ?? '').toString().toLowerCase();
-      final details = (product['productDetails'] ?? '').toString().toLowerCase();
-      return name.contains(_searchQuery) || details.contains(_searchQuery);
-    }).toList();
+  Future<void> fetchCategoryProducts(String categoryId) async {
+    setState(() {
+      _isCategoryProductsLoading = true;
+      _selectedCategoryId = categoryId;
+    });
+    try {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .where('category', isEqualTo: categoryId)
+          .get();
+      List<Map<String, dynamic>> products = snapshot.docs.map((doc) {
+        final data = doc.data();
+        if (data['createdAt'] is Timestamp) {
+          data['createdAt'] =
+              (data['createdAt'] as Timestamp).toDate().toIso8601String();
+        }
+        return {'id': doc.id, ...data};
+      }).toList();
+      setState(() {
+        _categoryProducts = products;
+        _isCategoryProductsLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching category products: $e');
+      setState(() {
+        _isCategoryProductsLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final loc = AppLocalizations.of(context)!;
     final productController = Provider.of<ProductController>(context);
 
+    final allList = _selectedCategoryId == null ? _orders : _categoryProducts;
+    final displayList = _searchQuery.isEmpty
+        ? allList
+        : allList.where((product) {
+            final name =
+                (product['productName'] ?? '').toString().toLowerCase();
+            final details =
+                (product['productDetails'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) ||
+                details.contains(_searchQuery);
+          }).toList();
+
+    final isLoading =
+        _selectedCategoryId == null ? _isLoading : _isCategoryProductsLoading;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -91,11 +137,11 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
           children: [
             // _buildSearchField(loc),
             const SizedBox(height: 10),
-            _isLoading ?
+            if (isLoading)
               // const Center(child: CircularProgressIndicator())
-          LoadingGrid(screenWidth: screenWidth)
-          : 
-              _buildGrid(_filteredBySearch, loc, productController, screenWidth),
+              _loadingGrid(screenWidth)
+            else
+              _buildGrid(displayList, loc, productController, screenWidth),
           ],
         ),
       ),
@@ -148,7 +194,33 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
     );
   }
 
-
+  Widget _loadingGrid(double screenWidth) {
+    double aspectRatio = screenWidth > 400 ? 0.7 : 0.58;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: aspectRatio,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.second2,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
       ProductController controller, double screenWidth) {

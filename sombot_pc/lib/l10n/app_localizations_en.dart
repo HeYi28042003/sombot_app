@@ -114,5 +114,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get created => 'Created';
 
   @override
-  String get themeMode => 'ប្រភេទផ្ទៃខាងក្រោយ';
+  String get themeMode => 'Theme Mode';
 }
