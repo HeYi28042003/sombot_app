@@ -12,11 +12,12 @@ import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/router/app_route.dart';
 import 'package:sombot_pc/utils/colors.dart';
 import 'package:sombot_pc/utils/text_style.dart';
+import 'package:sombot_pc/widget/custome_appbar.dart';
 
 // ignore: must_be_immutable
 class PopulorFiltter extends StatefulWidget {
   String categoryId;
-   PopulorFiltter({super.key,required this.categoryId});
+  PopulorFiltter({super.key, required this.categoryId});
 
   @override
   State<PopulorFiltter> createState() => _PopulorFiltterState();
@@ -45,12 +46,16 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
   Future<void> fetchOrders() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot;
-      var snapshotFilter =
-          await FirebaseFirestore.instance.collection('Product Master').where('category', isEqualTo: widget.categoryId).get();
-          var snapshotAll =
+      var snapshotFilter = await FirebaseFirestore.instance
+          .collection('Product Master')
+          .where('category', isEqualTo: widget.categoryId)
+          .get();
+      var snapshotAll =
           await FirebaseFirestore.instance.collection('Product Master').get();
-    widget.categoryId == 'all' ? snapshot = snapshotAll : snapshot = snapshotFilter;
-      
+      widget.categoryId == 'all'
+          ? snapshot = snapshotAll
+          : snapshot = snapshotFilter;
+
       List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
         return {'id': doc.id, ...doc.data()};
       }).toList();
@@ -65,7 +70,6 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -90,15 +94,18 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
+      appBar: CustomeAppBar(
         title: _buildSearchField(loc),
-        toolbarHeight: 65,
-        iconTheme: IconThemeData(
-          color: AppColors.second,
-        ),
       ),
+      // appBar: AppBar(
+      //   backgroundColor: AppColors.transparent,
+      //   elevation: 0,
+      //   title: _buildSearchField(loc),
+      //   toolbarHeight: 65,
+      //   iconTheme: IconThemeData(
+      //     color: AppColors.second,
+      //   ),
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -135,11 +142,11 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
           decoration: InputDecoration(
             hintText: loc.search,
             hintStyle: TextStyle(
-              color: AppColors.grey,
+              color: AppColors.text,
             ),
-            prefixIcon:  Icon(
+            prefixIcon: Icon(
               Icons.search,
-              color: AppColors.second,
+              color: AppColors.text,
             ),
             // border: OutlineInputBorder(
             //   borderRadius: BorderRadius.circular(8),
@@ -147,13 +154,13 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.second,
+                color: AppColors.text,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.primary,
+                color: AppColors.text,
               ),
             ),
           ),
@@ -178,7 +185,8 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
         return Container(
           decoration: BoxDecoration(
             color: AppColors.second2,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
           ),
           child: Center(
             child: CircularProgressIndicator(
@@ -193,7 +201,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
   Widget _buildGrid(List<Map<String, dynamic>> products, AppLocalizations loc,
       ProductController controller, double screenWidth) {
     if (products.isEmpty) {
-      return  Center(
+      return Center(
         child: Text(
           'No products found.',
           style: TextStyle(
@@ -244,7 +252,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                 Container(
                   width: double.infinity,
                   height: 140,
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.second,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
@@ -270,9 +278,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: ThemeStyles.normal(context).copyWith(
-                            fontSize: 12,
-                            color: AppColors.text,
-                          ),
+                                fontSize: 12,
+                                color: AppColors.text,
+                              ),
                             ),
                           ),
                           IconButton(
@@ -307,9 +315,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: ThemeStyles.normal(context).copyWith(
-                            fontSize: 12,
-                            color: AppColors.text,
-                          ),
+                          fontSize: 12,
+                          color: AppColors.text,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -318,9 +326,9 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
                           Text(
                             '\$${product['price'] ?? ''}',
                             style: ThemeStyles.normal(context).copyWith(
-                            fontSize: 12,
-                            color: AppColors.text,
-                          ),
+                              fontSize: 12,
+                              color: AppColors.text,
+                            ),
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {

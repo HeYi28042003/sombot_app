@@ -47,16 +47,17 @@ class _SeeAllState extends State<SeeAll> {
           .collection('Product Master')
           .limit(50) // Limit results for better performance
           .get();
-          
+
       List<Map<String, dynamic>> orders = snapshot.docs.map((doc) {
         final data = doc.data();
         // Convert timestamp to string to avoid UI issues
         if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+          data['createdAt'] =
+              (data['createdAt'] as Timestamp).toDate().toIso8601String();
         }
         return {'id': doc.id, ...data};
       }).toList();
-      
+
       setState(() {
         _orders = orders;
         _isLoading = false;
@@ -171,7 +172,7 @@ class _SeeAllState extends State<SeeAll> {
             ),
             prefixIcon: Icon(
               Icons.search,
-              color: AppColors.text,
+              // color: AppColors.text,
             ),
             // border: OutlineInputBorder(
             //   borderRadius: BorderRadius.circular(8),
@@ -277,7 +278,7 @@ class _SeeAllState extends State<SeeAll> {
                   width: double.infinity,
                   height: 140,
                   decoration: BoxDecoration(
-                    color: AppColors.text,
+                    // color: AppColors.text,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: ClipRRect(

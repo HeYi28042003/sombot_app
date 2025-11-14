@@ -11,6 +11,7 @@ import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/chat/chat.dart';
 import 'package:sombot_pc/pages/favorite.dart';
 import 'package:sombot_pc/pages/home/home_page.dart';
+import 'package:sombot_pc/pages/notification/notification.dart';
 import 'package:sombot_pc/pages/setting/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -148,7 +149,12 @@ class _ExampleState extends State<RootPage> {
               color: theme.primaryColor,
             ),
             onPressed: () {
-              // TODO: Navigate to notifications page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationPage(),
+                ),
+              );
             },
             tooltip: 'Notifications',
           ),

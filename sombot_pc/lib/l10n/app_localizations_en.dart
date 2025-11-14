@@ -115,4 +115,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeMode => 'Theme Mode';
+
+  @override
+  String get myOrder => 'My Order';
+
+  @override
+  String get order => 'Order';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get orderDetail => 'Order Detail';
+
+  @override
+  String get comfirmOrder => 'Comfirm Order';
+
+  @override
+  String get spm => 'Select Payment Method';
+
+  @override
+  String get aba => 'Pay with ABA';
+
+  @override
+  String get delivery => 'Cash on Delivery';
 }

@@ -115,4 +115,28 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get themeMode => 'ប្រភេទផ្ទៃខាងក្រោយ';
+
+  @override
+  String get myOrder => 'ការកុម្ម៉ង់របស់ខ្ញំុ';
+
+  @override
+  String get order => 'ការកុម្ម៉ង់';
+
+  @override
+  String get orderSummary => 'សង្ខេបការបញ្ជាទិញ';
+
+  @override
+  String get orderDetail => 'ព័ត៌មានលម្អិត';
+
+  @override
+  String get comfirmOrder => 'បញ្ជាទិញ';
+
+  @override
+  String get spm => 'ជ្រើសរើសវិធីទូទាត់';
+
+  @override
+  String get aba => 'ទូទាត់ជាមួយអេប៊ីអេ';
+
+  @override
+  String get delivery => 'ទូទាត់ជាមួយអ្នកដឹកជញ្ជូន';
 }

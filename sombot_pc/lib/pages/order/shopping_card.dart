@@ -13,6 +13,7 @@ import 'package:sombot_pc/pages/order/order.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:sombot_pc/utils/text_style.dart';
 
 class ShoppingCartPage extends StatefulWidget {
   const ShoppingCartPage({super.key});
@@ -39,7 +40,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title: Text(loc.myOrder, style: ThemeStyles.medium(context)),
+        centerTitle: true,
         backgroundColor: theme.colorScheme.surface,
         actions: [
           IconButton(
@@ -160,13 +162,13 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(item['productName'] ?? '',
-                                                style:  TextStyle(
+                                                style: TextStyle(
                                                   color: theme
-                                                    .unselectedWidgetColor
-                                                    .withOpacity(0.7),
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.bold,)),
+                                                      .unselectedWidgetColor
+                                                      .withOpacity(0.7),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                )),
                                             const SizedBox(height: 4),
                                             Text(
                                               item['productDetails'] ?? '',
@@ -312,13 +314,10 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                   ),
                                 ),
                                 child: Center(
-                                  child: Text(
-                                    'Order',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                                  child: Text(loc.order,
+                                      style: ThemeStyles.medium(context)
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold)),
                                 ),
                               ),
                             ),

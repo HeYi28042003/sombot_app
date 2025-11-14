@@ -429,7 +429,7 @@ class _HomePageState extends State<HomePage> {
                               icon: Icon(
                                 isFavorite
                                     ? Icons.favorite
-                                    : Icons.favorite_border,
+                                    : Icons.favorite_border_outlined,
                                 color: isFavorite ? Colors.red : AppColors.text,
                               ),
                               onPressed: () {

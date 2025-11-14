@@ -13,6 +13,7 @@ import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/utils/colors.dart';
+import 'package:sombot_pc/utils/text_style.dart';
 
 @RoutePage()
 class DetailScreen extends StatefulWidget {
@@ -185,11 +186,12 @@ class _DetailScreenState extends State<DetailScreen> {
           children: [
             AppBar(
               title: Text(
-                'Detail Screen',
+                loc.detailScreen,
                 style: TextStyle(
                   color: AppColors.text,
                 ),
               ),
+              centerTitle: true,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
@@ -241,10 +243,9 @@ class _DetailScreenState extends State<DetailScreen> {
                 children: [
                   Text(
                     '\$${price.toStringAsFixed(2)}',
-                    style: TextStyle(
+                    style: ThemeStyles.normalBold(context).copyWith(
                       fontSize: 24,
-                      color: AppColors.success,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
                     ),
                   ),
                   IconButton(
@@ -294,9 +295,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 children: [
                   Text(
                     widget.productModel?.productName ?? 'No name',
-                    style: TextStyle(
+                    style: ThemeStyles.normalBold(context).copyWith(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
                       color: AppColors.text,
                     ),
                   ),
@@ -306,8 +306,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         loc.qty,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -315,9 +314,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         widget.productModel?.quantity == 0
                             ? '0'
                             : '${widget.productModel?.quantity}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -334,16 +331,13 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         loc.ramSize,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
                       Text(
                         '${widget.productModel?.screenSize ?? 0.0} Inches',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -354,40 +348,36 @@ class _DetailScreenState extends State<DetailScreen> {
                     thickness: 1,
                     height: 20,
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        loc.brand,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      Text(
-                        widget.productModel?.category ?? 'No brand',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.text,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    color: Colors.grey[300],
-                    thickness: 1,
-                    height: 20,
-                  ),
+                  // const SizedBox(height: 10),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Text(
+                  //       loc.brand,
+                  //       style: ThemeStyles.medium(context).copyWith(
+                  //         color: AppColors.text,
+                  //       ),
+                  //     ),
+                  //     Text(
+                  //       widget.productModel?.category ?? 'No brand',
+                  //       style: ThemeStyles.medium(context).copyWith(
+                  //         color: AppColors.text,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // Divider(
+                  //   color: Colors.grey[300],
+                  //   thickness: 1,
+                  //   height: 20,
+                  // ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         loc.hardDiskSize,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -395,9 +385,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         widget.productModel?.storageGB == 0
                             ? 'No storage'
                             : '${widget.productModel?.storageGB} GB',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -414,16 +402,13 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         loc.color,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
                       Text(
                         widget.productModel?.color ?? 'No color',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -440,8 +425,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         loc.ramSize,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -449,9 +433,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         widget.productModel?.ramGB == 0
                             ? 'No RAM'
                             : '${widget.productModel?.ramGB} GB',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -468,8 +450,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         loc.status,
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -477,9 +458,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         widget.productModel?.quantity == 0
                             ? 'Out of stock'
                             : 'In stock',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: ThemeStyles.medium(context).copyWith(
                           color: AppColors.text,
                         ),
                       ),
@@ -501,7 +480,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         backgroundColor: AppColors.background,
                         title: Text(
                           loc.productDetail,
-                          style: TextStyle(
+                          style: ThemeStyles.medium(context).copyWith(
                             color: AppColors.text,
                           ),
                         ),
@@ -509,7 +488,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           Text(
                             widget.productModel?.productDetails ??
                                 'No description',
-                            style: TextStyle(
+                            style: ThemeStyles.medium(context).copyWith(
                               color: AppColors.text,
                             ),
                           )
@@ -533,13 +512,10 @@ class _DetailScreenState extends State<DetailScreen> {
                                 color: AppColors.text,
                               ),
                               label: Text(
-                                cartQty > 0
-                                    ? '${loc.addMore} (${cartQty} in cart)'
-                                    : 'Add to Cart',
-                                style: TextStyle(
-                                  color: AppColors.text,
-                                ),
-                              ),
+                                  cartQty > 0
+                                      ? '${loc.addMore} (${cartQty} in cart)'
+                                      : 'Add to Cart',
+                                  style: ThemeStyles.normal(context)),
                               style: ButtonStyle(
                                 backgroundColor:
                                     WidgetStatePropertyAll(AppColors.primary),
@@ -555,10 +531,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   onPressed: _decreaseQty,
                                 ),
                                 Text('$cartQty',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.text,
-                                    )),
+                                    style: ThemeStyles.medium(context)),
                                 IconButton(
                                   icon: Icon(
                                     Icons.add_circle_outline,

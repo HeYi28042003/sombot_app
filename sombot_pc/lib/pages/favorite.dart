@@ -6,6 +6,7 @@ import 'package:sombot_pc/data/models/product_model.dart';
 import 'dart:convert';
 import 'package:sombot_pc/pages/home/detail_page.dart';
 import 'package:sombot_pc/utils/colors.dart';
+import 'package:sombot_pc/utils/text_style.dart';
 
 @RoutePage()
 class FavoritePage extends StatefulWidget {
@@ -160,12 +161,19 @@ class _FavoritePageState extends State<FavoritePage> {
                                 fit: BoxFit.cover,
                               )
                             : const SizedBox(width: 60, height: 60),
-                        title: Text(product['productName'] ?? ''),
+                        title: Text(
+                          product['productName'] ?? '',
+                          style: ThemeStyles.medium(context),
+                        ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(product['productDetails'] ?? '',
-                                maxLines: 2, overflow: TextOverflow.ellipsis),
+                            Text(
+                              product['productDetails'] ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: ThemeStyles.normal(context),
+                            ),
                             Text(
                               '฿${product['price'] ?? ''}',
                               style: const TextStyle(

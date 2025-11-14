@@ -144,7 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       style: ThemeStyles.normalBold(context)
                           .copyWith(fontSize: 28),
                     ),
-                   const SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     TextFormField(
                       controller: _name,
                       keyboardType: TextInputType.name,
@@ -364,7 +364,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Are you have account?'),
+                        Text('Already have an account?'),
                         TextButton(
                             onPressed: () {
                               context.router.pushNamed('/login');

@@ -313,6 +313,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Theme Mode'**
   String get themeMode;
+
+  /// No description provided for @myOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'My Order'**
+  String get myOrder;
+
+  /// No description provided for @order.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get orderSummary;
+
+  /// No description provided for @orderDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Detail'**
+  String get orderDetail;
+
+  /// No description provided for @comfirmOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfirm Order'**
+  String get comfirmOrder;
+
+  /// No description provided for @spm.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Payment Method'**
+  String get spm;
+
+  /// No description provided for @aba.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with ABA'**
+  String get aba;
+
+  /// No description provided for @delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on Delivery'**
+  String get delivery;
 }
 
 class _AppLocalizationsDelegate

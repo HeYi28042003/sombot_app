@@ -158,6 +158,16 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     if (confirmed == true) {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
+      // Ensure address is present before creating an order
+      if (_place?.displayName == null ||
+          (_place?.displayName?.trim().isEmpty ?? true)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Please select an address before confirming the order.')),
+        );
+        return;
+      }
 
       final addressText = _place?.displayName ?? 'Unknown';
       final items = widget.cartItems.map((item) {
@@ -203,7 +213,14 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Order Summary')),
+        appBar: AppBar(
+          title: Text(loc.orderSummary,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Battambang-Bold")),
+          centerTitle: true,
+        ),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -211,9 +228,11 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    const Text('Order Details',
+                    Text(loc.orderDetail,
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Battambang-Bold")),
                     const SizedBox(height: 10),
                     ListView.builder(
                       shrinkWrap: true,
@@ -252,9 +271,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total:',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(loc.total, style: ThemeStyles.medium(context)),
                         Text('฿${widget.total.toStringAsFixed(2)}',
                             style: const TextStyle(
                                 fontSize: 16,
@@ -263,12 +280,11 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const Text('Select Payment Method',
-                        style: TextStyle(fontSize: 16)),
+                    Text(loc.spm, style: TextStyle(fontSize: 16)),
                     RadioListTile<String>(
                       value: 'ABA',
                       groupValue: _selectedPayment,
-                      title: const Text('Pay with ABA'),
+                      title: Text(loc.aba),
                       onChanged: (value) async {
                         setState(() => _selectedPayment = value);
                         await _openABAApp();
@@ -284,15 +300,18 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     RadioListTile<String>(
                       value: 'COD',
                       groupValue: _selectedPayment,
-                      title: const Text('Cash on Delivery'),
+                      title: Text(loc.delivery),
                       onChanged: (value) =>
                           setState(() => _selectedPayment = value),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed:
-                          _selectedPayment == null ? null : _confirmOrder,
-                      child: const Text('Confirm Order'),
+                      onPressed: (_selectedPayment == null ||
+                              _place?.displayName == null ||
+                              (_place?.displayName?.trim().isEmpty ?? true))
+                          ? null
+                          : _confirmOrder,
+                      child: Text(loc.comfirmOrder),
                     )
                   ],
                 ),
@@ -328,7 +347,8 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           children: [
             Text(
               place?.displayName ?? 'Your Address',
-              style: ThemeStyles.normal(context).copyWith(color: AppColors.text),
+              style:
+                  ThemeStyles.normal(context).copyWith(color: AppColors.text),
             ),
           ],
         ),

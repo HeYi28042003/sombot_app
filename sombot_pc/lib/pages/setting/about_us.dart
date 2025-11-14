@@ -13,7 +13,7 @@ class AboutUsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:  Text(loc.aboutUs),
+        title: Text(loc.aboutUs),
         // flexibleSpace: Container(
         //   decoration: const BoxDecoration(
         //     gradient: LinearGradient(
@@ -57,6 +57,19 @@ class AboutUsPage extends StatelessWidget {
             Text('- Task automation capabilities'),
             Text('- User-friendly interface'),
             Text('- Multi-language support'),
+            SizedBox(height: 20),
+            Text(
+              'Help Center:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+                'If you have any questions or feedback, feel free to reach out to us at SOMBOT TECHNOLOGY CO.,LTD Or email us at: heyidevkpt@gmail.com'),
+            Text('Thank you for choosing Sombot PC!'),
           ],
         ),
       ),

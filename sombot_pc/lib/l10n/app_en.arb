@@ -35,5 +35,13 @@
   "monitor" : "Monitor",
   "profiledetail" : "Profile Detail",
   "created" : "Created",
-  "themeMode" : "Theme Mode"
+  "themeMode" : "Theme Mode",
+  "myOrder" : "My Order",
+  "order" : "Order",
+  "orderSummary" : "Order Summary",
+  "orderDetail" : "Order Detail",
+  "comfirmOrder" : "Comfirm Order",
+  "spm" : "Select Payment Method",
+  "aba" : "Pay with ABA",
+  "delivery" : "Cash on Delivery"
 }

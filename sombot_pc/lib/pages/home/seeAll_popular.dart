@@ -124,8 +124,8 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
           decoration: InputDecoration(
             hintText: loc.search,
             hintStyle: TextStyle(
-              color: AppColors.transparent,
-            ),
+                // color: AppColors.transparent,
+                ),
             prefixIcon: Icon(
               Icons.search,
               color: AppColors.text,
@@ -206,7 +206,7 @@ class _SeeAllPopularState extends State<SeeAllPopular> {
                   width: double.infinity,
                   height: 140,
                   decoration: BoxDecoration(
-                    color: AppColors.text,
+                    // color: AppColors.text,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: ClipRRect(

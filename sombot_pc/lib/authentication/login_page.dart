@@ -207,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Are you already have account?'),
+                    Text('Don not you have an account?'),
                     TextButton(
                         onPressed: () {
                           context.router.pushNamed('/signup');
