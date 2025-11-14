@@ -139,4 +139,42 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get delivery => 'ទូទាត់ជាមួយអ្នកដឹកជញ្ជូន';
+
+  @override
+  String get mainTheme => 'ផ្ទៃពណ៏ដើម';
+
+  @override
+  String get lightTheme => 'ផ្ទៃពណ៏ស';
+
+  @override
+  String get darkTheme => 'ផ្ទៃពណ៏ខ្មៅ';
+
+  @override
+  String get sombotpcis =>
+      'Sombot PC គឺជាវេទិកា chatbot ដ៏មានអានុភាព និងអាចប្រើប្រាស់បានច្រើនយ៉ាង ដែលត្រូវបានរចនាឡើងដើម្បីបង្កើនផលិតភាពរបស់អ្នក និងសម្រួលដល់ដំណើរការការងាររបស់អ្នក។ មិនថាអ្នកត្រូវការជំនួយជាមួយកិច្ចការ ការទាញយកព័ត៌មាន ឬគ្រាន់តែជាការជជែកគ្នាលេងទេ Sombot PC នៅទីនេះដើម្បីជួយ។';
+
+  @override
+  String get features => 'លក្ខណៈពិសេស៖';
+
+  @override
+  String get fea1 => '- ការគ្រប់គ្រងការសន្ទនាឆ្លាតវៃ';
+
+  @override
+  String get fea2 => '- សមត្ថភាពស្វ័យប្រវត្តិកម្មភារកិច្ច';
+
+  @override
+  String get fea3 => '- ចំណុចប្រទាក់ងាយស្រួលប្រើ';
+
+  @override
+  String get fea4 => '- ការគាំទ្រពហុភាសា';
+
+  @override
+  String get helpCenter => 'មជ្ឈមណ្ឌលជំនួយ៖';
+
+  @override
+  String get helpCenter1 =>
+      'ប្រសិនបើអ្នកមានសំណួរ ឬមតិយោបល់ណាមួយ សូមទាក់ទងមកយើងខ្ញុំតាមរយៈ SOMBOT TECHNOLOGY CO.,LTD ឬផ្ញើអ៊ីមែលមកយើងខ្ញុំតាមរយៈ៖ heyidevkpt@gmail.com';
+
+  @override
+  String get thx => 'សូមអរគុណសម្រាប់ការជ្រើសរើស Sombot PC!';
 }

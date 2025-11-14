@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../utils/colors.dart';
+
 @RoutePage()
 class ChooseLocationScreen extends StatefulWidget {
   const ChooseLocationScreen({super.key});
@@ -65,6 +67,7 @@ class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(title: const Text('Choose Location')),
       body: _currentLocation == null
           ? const Center(child: CircularProgressIndicator())

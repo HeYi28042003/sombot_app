@@ -361,6 +361,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cash on Delivery'**
   String get delivery;
+
+  /// No description provided for @mainTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Theme'**
+  String get mainTheme;
+
+  /// No description provided for @lightTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Theme'**
+  String get lightTheme;
+
+  /// No description provided for @darkTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Theme'**
+  String get darkTheme;
+
+  /// No description provided for @sombotpcis.
+  ///
+  /// In en, this message translates to:
+  /// **'Sombot PC is a powerful and versatile chatbot platform designed to enhance your productivity and streamline your workflow. Whether you need assistance with tasks, information retrieval, or just a friendly chat, Sombot PC is here to help.'**
+  String get sombotpcis;
+
+  /// No description provided for @features.
+  ///
+  /// In en, this message translates to:
+  /// **'Features:'**
+  String get features;
+
+  /// No description provided for @fea1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Intelligent conversation handling'**
+  String get fea1;
+
+  /// No description provided for @fea2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Task automation capabilities'**
+  String get fea2;
+
+  /// No description provided for @fea3.
+  ///
+  /// In en, this message translates to:
+  /// **'- User-friendly interface'**
+  String get fea3;
+
+  /// No description provided for @fea4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Multi-language support'**
+  String get fea4;
+
+  /// No description provided for @helpCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center:'**
+  String get helpCenter;
+
+  /// No description provided for @helpCenter1.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have any questions or feedback, feel free to reach out to us at SOMBOT TECHNOLOGY CO.,LTD Or email us at: heyidevkpt@gmail.com'**
+  String get helpCenter1;
+
+  /// No description provided for @thx.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for choosing Sombot PC!'**
+  String get thx;
 }
 
 class _AppLocalizationsDelegate

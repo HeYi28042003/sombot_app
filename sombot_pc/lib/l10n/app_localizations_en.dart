@@ -139,4 +139,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delivery => 'Cash on Delivery';
+
+  @override
+  String get mainTheme => 'Main Theme';
+
+  @override
+  String get lightTheme => 'Light Theme';
+
+  @override
+  String get darkTheme => 'Dark Theme';
+
+  @override
+  String get sombotpcis =>
+      'Sombot PC is a powerful and versatile chatbot platform designed to enhance your productivity and streamline your workflow. Whether you need assistance with tasks, information retrieval, or just a friendly chat, Sombot PC is here to help.';
+
+  @override
+  String get features => 'Features:';
+
+  @override
+  String get fea1 => '- Intelligent conversation handling';
+
+  @override
+  String get fea2 => '- Task automation capabilities';
+
+  @override
+  String get fea3 => '- User-friendly interface';
+
+  @override
+  String get fea4 => '- Multi-language support';
+
+  @override
+  String get helpCenter => 'Help Center:';
+
+  @override
+  String get helpCenter1 =>
+      'If you have any questions or feedback, feel free to reach out to us at SOMBOT TECHNOLOGY CO.,LTD Or email us at: heyidevkpt@gmail.com';
+
+  @override
+  String get thx => 'Thank you for choosing Sombot PC!';
 }

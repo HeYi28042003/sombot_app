@@ -213,7 +213,9 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
+        backgroundColor: AppColors.background,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: Text(loc.orderSummary,
               style: TextStyle(
                   fontSize: 18,
@@ -243,6 +245,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                         final qty = item['qty'] ?? 1;
                         final price = item['price'] ?? 0.0;
                         return Card(
+                          color: AppColors.second2,
                           child: ListTile(
                             title: Text(item['productName']),
                             subtitle: Text('Qty: $qty'),
@@ -256,6 +259,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     cardAddress(_place),
                     const SizedBox(height: 8),
                     ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(AppColors.primary),
+                      ),
                       onPressed: _isLoadingAddress
                           ? null
                           : () => _selectAddress(context),
@@ -306,6 +313,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(AppColors.primary),
+                      ),
                       onPressed: (_selectedPayment == null ||
                               _place?.displayName == null ||
                               (_place?.displayName?.trim().isEmpty ?? true))
@@ -330,7 +341,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: AppColors.second2,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(

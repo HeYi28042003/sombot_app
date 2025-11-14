@@ -369,7 +369,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onPressed: () {
                               context.router.pushNamed('/login');
                             },
-                            child: Text('Sign In'))
+                            child: Text('Login'))
                       ],
                     )
                   ],

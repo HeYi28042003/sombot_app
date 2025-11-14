@@ -132,8 +132,8 @@ flutter:
     - family: Battambang
       fonts:
         - asset: assets/fonts/Battambang-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
     - family: Battambang-Bold
       fonts:
         - asset: assets/fonts/Battambang-Bold.ttf

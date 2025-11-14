@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sombot_pc/controller/theme_notifier.dart';
 import 'package:sombot_pc/utils/colors.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class ThemeSelectionPage extends StatelessWidget {
   const ThemeSelectionPage({super.key});
 
@@ -10,6 +12,7 @@ class ThemeSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     // final theme = themeNotifier.themeData;
+    final loc = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -17,21 +20,24 @@ class ThemeSelectionPage extends StatelessWidget {
         children: [
           _buildThemeCard(
             context,
-            'Main Theme',
+            // 'Main Theme',
+            loc.mainTheme,
             ThemeModeType.main,
             themeNotifier,
             // theme,
           ),
           _buildThemeCard(
             context,
-            'Light Theme',
+            // 'Light Theme',
+            loc.lightTheme,
             ThemeModeType.light,
             themeNotifier,
             // theme,
           ),
           _buildThemeCard(
             context,
-            'Dark Theme',
+            // 'Dark Theme',
+            loc.darkTheme,
             ThemeModeType.dark,
             themeNotifier,
             // theme,

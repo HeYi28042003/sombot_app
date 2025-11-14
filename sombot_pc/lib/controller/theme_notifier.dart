@@ -90,7 +90,7 @@ enum ThemeModeType { main, light, dark }
 // }
 
 class ThemeNotifier with ChangeNotifier {
-  ThemeModeType _currentTheme = ThemeModeType.main;
+  ThemeModeType _currentTheme = ThemeModeType.light;
   bool _isInitialized = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

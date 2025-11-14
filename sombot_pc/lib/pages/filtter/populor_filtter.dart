@@ -95,6 +95,7 @@ class _PopulorFiltterState extends State<PopulorFiltter> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomeAppBar(
+        backgroundColor: Colors.transparent,
         title: _buildSearchField(loc),
       ),
       // appBar: AppBar(

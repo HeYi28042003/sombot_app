@@ -92,6 +92,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const SignUpPage(),
       );
     },
+    ForgotRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const ForgotPage(),
+      );
+    },
     SplashRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -288,6 +294,20 @@ class SignUpRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'SignUpRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [SignUpPage]
+class ForgotRoute extends PageRouteInfo<void> {
+  const ForgotRoute({List<PageRouteInfo>? children})
+      : super(
+          ForgotRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ForgotRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
