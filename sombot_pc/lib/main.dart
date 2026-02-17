@@ -7,6 +7,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:sombot_pc/api/notification.dart';
 import 'package:sombot_pc/controller/auth_controller.dart';
+import 'package:sombot_pc/controller/card_contrller.dart';
 import 'package:sombot_pc/controller/locale_provider.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/controller/theme_notifier.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => AuthController()),
       ChangeNotifierProvider(create: (_) => ProductController()..init()),
       ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+      ChangeNotifierProvider(create: (_) => CartController()),
     ], child: const MyApp()),
   );
 }

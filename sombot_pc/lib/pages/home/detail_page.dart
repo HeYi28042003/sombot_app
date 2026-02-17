@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sombot_pc/controller/product_controller.dart';
 import 'package:sombot_pc/data/models/product_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
@@ -221,18 +220,18 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            SmoothPageIndicator(
-              controller: _pageController,
-              count: widget.productModel?.imagePreview?.length ?? 0,
-              effect: WormEffect(
-                dotHeight: 10,
-                dotWidth: 10,
-                // activeDotColor: Colors.black,
-                activeDotColor: AppColors.primary,
-                // dotColor: Colors.grey.shade300,
-                dotColor: AppColors.text,
-              ),
-            ),
+            // SmoothPageIndicator(
+            //   controller: _pageController,
+            //   count: widget.productModel?.imagePreview?.length ?? 0,
+            //   effect: WormEffect(
+            //     dotHeight: 10,
+            //     dotWidth: 10,
+            //     // activeDotColor: Colors.black,
+            //     activeDotColor: AppColors.primary,
+            //     // dotColor: Colors.grey.shade300,
+            //     dotColor: AppColors.text,
+            //   ),
+            // ),
             // CarouselDemo(imageUrls: widget.productModel?.imagePreview ?? []),
             const SizedBox(height: 20),
             Padding(
@@ -497,53 +496,50 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  isCard
-                      ? CircularProgressIndicator()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: widget.productModel?.quantity == 0
-                                  ? null
-                                  : _addToCart,
-                              icon: Icon(
-                                Icons.shopping_cart,
-                                color: AppColors.text,
-                              ),
-                              label: Text(
-                                  cartQty > 0
-                                      ? '${loc.addMore} (${cartQty} in cart)'
-                                      : 'Add to Cart',
-                                  style: ThemeStyles.normal(context)),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStatePropertyAll(AppColors.primary),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.remove_circle_outline,
-                                    color: AppColors.text,
-                                  ),
-                                  onPressed: _decreaseQty,
-                                ),
-                                Text('$cartQty',
-                                    style: ThemeStyles.medium(context)),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.add_circle_outline,
-                                    color: AppColors.text,
-                                  ),
-                                  onPressed: _increaseQty,
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-                            ),
-                          ],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: widget.productModel?.quantity == 0
+                            ? null
+                            : _addToCart,
+                        icon: Icon(
+                          Icons.shopping_cart,
+                          color: AppColors.text,
                         ),
+                        label: Text(
+                            cartQty > 0
+                                ? '${loc.addMore} (${cartQty} in cart)'
+                                : 'Add to Cart',
+                            style: ThemeStyles.normal(context)),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStatePropertyAll(AppColors.primary),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.remove_circle_outline,
+                              color: AppColors.text,
+                            ),
+                            onPressed: _decreaseQty,
+                          ),
+                          Text('$cartQty', style: ThemeStyles.medium(context)),
+                          IconButton(
+                            icon: Icon(
+                              Icons.add_circle_outline,
+                              color: AppColors.text,
+                            ),
+                            onPressed: _increaseQty,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 15),
                 ],
               ),

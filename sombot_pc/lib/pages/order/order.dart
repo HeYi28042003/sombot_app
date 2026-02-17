@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:sombot_pc/api/map_api.dart';
+import 'package:sombot_pc/controller/card_contrller.dart';
 import 'package:sombot_pc/data/models/map_model.dart';
 import 'package:sombot_pc/l10n/app_localizations.dart';
 import 'package:sombot_pc/pages/order/map.dart';
@@ -11,13 +13,8 @@ import 'package:sombot_pc/utils/text_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderSummaryPage extends StatefulWidget {
-  final List<Map<String, dynamic>> cartItems;
-  final double total;
-
   const OrderSummaryPage({
     super.key,
-    required this.cartItems,
-    required this.total,
   });
 
   @override
@@ -169,8 +166,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         return;
       }
 
+      final cartController =
+          Provider.of<CartController>(context, listen: false);
       final addressText = _place?.displayName ?? 'Unknown';
-      final items = widget.cartItems.map((item) {
+      final items = cartController.cartItems.map((item) {
         return {
           'productId': item['productId'],
           'productName': item['productName'],
@@ -183,7 +182,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
       final orderData = {
         'userId': user.uid,
         'createdAt': FieldValue.serverTimestamp(),
-        'total': widget.total,
+        'total': cartController.total,
         'paymentMethod': _selectedPayment,
         'address': addressText,
         'items': items,
@@ -194,6 +193,9 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         await FirebaseFirestore.instance
             .collection('order_history')
             .add(orderData);
+
+        // Clear cart items after successful order
+        await cartController.clearCart();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Order saved successfully!')),
@@ -236,22 +238,26 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                             fontWeight: FontWeight.bold,
                             fontFamily: "Battambang-Bold")),
                     const SizedBox(height: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.cartItems.length,
-                      itemBuilder: (context, index) {
-                        final item = widget.cartItems[index];
-                        final qty = item['qty'] ?? 1;
-                        final price = item['price'] ?? 0.0;
-                        return Card(
-                          color: AppColors.second2,
-                          child: ListTile(
-                            title: Text(item['productName']),
-                            subtitle: Text('Qty: $qty'),
-                            trailing:
-                                Text('฿${(qty * price).toStringAsFixed(2)}'),
-                          ),
+                    Consumer<CartController>(
+                      builder: (context, cartController, _) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: cartController.cartItems.length,
+                          itemBuilder: (context, index) {
+                            final item = cartController.cartItems[index];
+                            final qty = item['qty'] ?? 1;
+                            final price = item['price'] ?? 0.0;
+                            return Card(
+                              color: AppColors.second2,
+                              child: ListTile(
+                                title: Text(item['productName']),
+                                subtitle: Text('Qty: $qty'),
+                                trailing: Text(
+                                    '\$${(qty * price).toStringAsFixed(2)}'),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -275,16 +281,20 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                           : Text(loc.chanegAddress),
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(loc.total, style: ThemeStyles.medium(context)),
-                        Text('฿${widget.total.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green)),
-                      ],
+                    Consumer<CartController>(
+                      builder: (context, cartController, _) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(loc.total, style: ThemeStyles.medium(context)),
+                            Text('\$${cartController.total.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green)),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                     Text(loc.spm, style: TextStyle(fontSize: 16)),
